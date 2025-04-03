@@ -3,15 +3,18 @@ import { usePathname, useSearchParams, useParams } from "next/navigation";
 import { ApiData } from "../../DTO/apiData";
 import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { NamedListData } from "@/app/DTO/oneListData";
+import { OneListSkeleton } from "./oneListSkeleton";
+import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const params = useParams();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
-
+  const [showAddItem, setShowAddItem] = useState<boolean>(false);
   const [lists, setLists] = useState<ApiData<NamedListData>>({
     rows: [],
     timeStamp: "",
@@ -22,7 +25,9 @@ export default function Page() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(`https://${envVariable}${baseQuery}`);
+      const data = await fetch(`https://${envVariable}${baseQuery}`, {
+        cache: "force-cache",
+      });
       const lists: ApiData<NamedListData> = await data.json();
       // Fix the first index if it is empty
       FixFirstPostIndex(lists);
@@ -31,12 +36,46 @@ export default function Page() {
     fetchData();
   }, [baseQuery, envVariable]);
 
+  const handleAdd = () => {
+    setShowAddItem(true);
+  };
+
   return (
-    <div>
-      <div className="p-3">List: {decodeURI(params.slug!.toString())}</div>
-      <div className="p-3 mb-4 w-4/6">
-        <OneListTable list={lists.rows} pageParams={pageParam} />
-      </div>
-    </div>
+    <Fragment>
+      {lists.rows.length === 0 && (
+        <div>
+          <div className="pt-5 px-3 pb-2 text-xl">
+            {decodeURI(params.slug!.toString())}
+          </div>
+          <div className="py-2 px-3 mb-4">
+            <OneListSkeleton />
+          </div>
+        </div>
+      )}
+      {lists.rows.length > 0 && (
+        <div>
+          <div className="pt-5 px-3 pb-2 text-xl">
+            {decodeURI(params.slug!.toString())}
+          </div>
+          <div className="py-2 px-3 mb-4">
+            <OneListTable
+              list={lists.rows}
+              pageParams={pageParam}
+              onAdd={handleAdd}
+            />
+          </div>
+        </div>
+      )}
+      {showAddItem && (
+        <OverlayWithCenteredInput>
+          <div className="text-center text-lg font-semibold mb-4">
+            Add new item Text in the center
+            <Button onClick={() => setShowAddItem(false)} variant="outline">
+              close
+            </Button>
+          </div>
+        </OverlayWithCenteredInput>
+      )}
+    </Fragment>
   );
 }

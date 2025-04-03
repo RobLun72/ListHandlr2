@@ -33,7 +33,7 @@ export function TableTopView<TData>({
           className="max-w-sm"
         />
       )}
-      <Button className="ml-auto bg-primary" onClick={onAdd}>
+      <Button className="ml-auto bg-appBlue" onClick={onAdd}>
         {addButtonText}
       </Button>
     </div>

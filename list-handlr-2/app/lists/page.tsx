@@ -4,7 +4,8 @@ import { ApiData } from "../DTO/apiData";
 import { ListData } from "../DTO/listsData";
 import { FixFirstPostIndex } from "../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { ListsSkeleton } from "./listsSkeleton";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -21,7 +22,9 @@ export default function Page() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(`https://${envVariable}${baseQuery}`);
+      const data = await fetch(`https://${envVariable}${baseQuery}`, {
+        cache: "force-cache",
+      });
       const lists: ApiData<ListData> = await data.json();
       // Fix the first index if it is empty
       FixFirstPostIndex(lists);
@@ -31,11 +34,23 @@ export default function Page() {
   }, [envVariable]);
 
   return (
-    <div>
-      <div className="p-3">All Lists</div>
-      <div className="p-3 mb-4 w-4/6">
-        <ListsTable lists={lists.rows} pageParams={pageParam} />
-      </div>
-    </div>
+    <Fragment>
+      {lists.rows.length === 0 && (
+        <div>
+          <div className="p-3">All lists</div>
+          <div className="p-3 mb-4 ">
+            <ListsSkeleton />
+          </div>
+        </div>
+      )}
+      {lists.rows.length > 0 && (
+        <div>
+          <div className="p-3">All Lists</div>
+          <div className="p-3 mb-4 ">
+            <ListsTable lists={lists.rows} pageParams={pageParam} />
+          </div>
+        </div>
+      )}
+    </Fragment>
   );
 }

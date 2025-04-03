@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-appBlue: oklch(60.72% 0.059 237.53);
+  --color-mint-500: oklch(0.72 0.11 178);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

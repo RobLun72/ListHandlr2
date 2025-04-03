@@ -10,21 +10,21 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { NamedListData } from "../../DTO/oneListData";
-import { useRouter } from "next/navigation";
-
+import Link from "next/link";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 export function OneListTable({
   list,
   pageParams,
+  onAdd,
 }: {
   list: NamedListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
+  onAdd: () => void;
 }) {
-  const router = useRouter();
-
   const handleAdd = () => {
     // Handle add button click here
     // For example, navigate to a new page or show a modal
-    router.push("/lists/-1");
+    onAdd();
   };
 
   const pageParam = pageParams.params.get("page");
@@ -38,7 +38,7 @@ export function OneListTable({
     <DataTable
       columns={getColumns(pageParams)}
       data={list}
-      addButtonText="New Item"
+      addButtonText={<PlusCircleIcon className="h-5" />}
       filterColumnName="text"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
       sortingState={sorting}
@@ -50,7 +50,6 @@ export function OneListTable({
 }
 
 function ContextMenu({ row }: { row: Row<NamedListData> }) {
-  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,10 +63,18 @@ function ContextMenu({ row }: { row: Row<NamedListData> }) {
         <DropdownMenuItem
           onClick={() =>
             // Handle edit action here
-            router.push("/lists/" + row.original.index)
+            console.log("Edit", row.original.text)
           }
         >
-          View list
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            // Handle delete action here
+            console.log("Delete", row.original.text)
+          }
+        >
+          Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -107,6 +114,21 @@ function getColumns(pageParams: {
       },
       cell: ({ row }) => {
         return row.original.text;
+      },
+    },
+    {
+      accessorKey: "link",
+      header: "Link",
+      cell: ({ row }) => {
+        if (row.original.link === "") {
+          return <span className="text-muted-foreground">No link</span>;
+        } else {
+          return (
+            <Link href={row.original.link} target="_blank">
+              Go to resource
+            </Link>
+          );
+        }
       },
     },
     {
