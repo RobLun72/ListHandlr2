@@ -32,15 +32,10 @@ export default function Page() {
 
   return (
     <div>
-      <div>All Lists</div>
-      <ul>
-        {lists.rows.map((list) => (
-          <li key={"allLists" + list.index}>
-            {list.index}-{list.listName}
-          </li>
-        ))}
-      </ul>
-      <ListsTable lists={lists.rows} pageParams={pageParam} />
+      <div className="p-3">All Lists</div>
+      <div className="p-3 mb-4 w-4/6">
+        <ListsTable lists={lists.rows} pageParams={pageParam} />
+      </div>
     </div>
   );
 }

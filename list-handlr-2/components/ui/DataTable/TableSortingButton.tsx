@@ -1,8 +1,8 @@
 import { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUpDown } from "lucide-react";
 import { useCallback } from "react";
-//import { useNavigate } from "react-router-dom";
 import cn from "../../../app/Helpers/cn";
+import { useRouter } from "next/navigation";
 
 interface TableSortingButtonProps<T> {
   text: string;
@@ -14,7 +14,7 @@ export function TableSortingButton<T>({
   column,
   pageParams,
 }: TableSortingButtonProps<T>) {
-  //const navigate = useNavigate();
+  const router = useRouter();
 
   const handleClick = useCallback(() => {
     if (!pageParams) {
@@ -36,10 +36,10 @@ export function TableSortingButton<T>({
       newParamString += `sortBy=${column.id}&direction=asc&`;
     }
 
-    //navigate(`${pageParams.pagePath}${newParamString}`);
+    router.push(`${pageParams.pagePath}${newParamString}`);
 
     column.toggleSorting(column.getIsSorted() === "asc");
-  }, [column, pageParams]);
+  }, [column, pageParams, router]);
 
   const sorted = column.getIsSorted();
   return (

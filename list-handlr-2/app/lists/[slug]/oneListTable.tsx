@@ -1,22 +1,22 @@
 import { ColumnDef, Row, SortingState } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { DataTable } from "../../components/ui/DataTable/DataTable";
-import { TableSortingButton } from "../../components/ui/DataTable/TableSortingButton";
+import { DataTable } from "../../../components/ui/DataTable/DataTable";
+import { TableSortingButton } from "../../../components/ui/DataTable/TableSortingButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { ListData } from "../DTO/listsData";
+} from "../../../components/ui/dropdown-menu";
+import { NamedListData } from "../../DTO/oneListData";
 import { useRouter } from "next/navigation";
 
-export function ListsTable({
-  lists,
+export function OneListTable({
+  list,
   pageParams,
 }: {
-  lists: ListData[];
+  list: NamedListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
 }) {
   const router = useRouter();
@@ -37,9 +37,9 @@ export function ListsTable({
   return (
     <DataTable
       columns={getColumns(pageParams)}
-      data={lists}
-      addButtonText="New List"
-      filterColumnName="listName"
+      data={list}
+      addButtonText="New Item"
+      filterColumnName="text"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
       sortingState={sorting}
       pageParams={pageParams}
@@ -49,7 +49,7 @@ export function ListsTable({
   );
 }
 
-function ContextMenu({ row }: { row: Row<ListData> }) {
+function ContextMenu({ row }: { row: Row<NamedListData> }) {
   const router = useRouter();
   return (
     <DropdownMenu>
@@ -60,11 +60,11 @@ function ContextMenu({ row }: { row: Row<ListData> }) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">
-        <DropdownMenuLabel>{row.original.listName}</DropdownMenuLabel>
+        <DropdownMenuLabel>{row.original.text}</DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() =>
             // Handle edit action here
-            router.push("/lists/" + row.original.listName)
+            router.push("/lists/" + row.original.index)
           }
         >
           View list
@@ -77,7 +77,7 @@ function ContextMenu({ row }: { row: Row<ListData> }) {
 function getColumns(pageParams: {
   pagePath: string;
   params: URLSearchParams;
-}): ColumnDef<ListData>[] {
+}): ColumnDef<NamedListData>[] {
   return [
     {
       accessorKey: "index",
@@ -95,18 +95,18 @@ function getColumns(pageParams: {
       },
     },
     {
-      accessorKey: "listName",
+      accessorKey: "text",
       header: ({ column }) => {
         return (
           <TableSortingButton
-            text="Name"
+            text="Text"
             column={column}
             pageParams={pageParams}
           />
         );
       },
       cell: ({ row }) => {
-        return row.original.listName;
+        return row.original.text;
       },
     },
     {
