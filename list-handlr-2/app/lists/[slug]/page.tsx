@@ -8,6 +8,9 @@ import { NamedListData } from "@/app/DTO/oneListData";
 import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
 import { Button } from "@/components/ui/button";
+import { moveDown, moveUp } from "@/app/Helpers/collectionHelper";
+import { sortAscending } from "@/app/Helpers/sortAndFilter";
+import { formatDate } from "@/app/Helpers/formatDate";
 
 export default function Page() {
   const params = useParams();
@@ -15,10 +18,8 @@ export default function Page() {
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
   const [showAddItem, setShowAddItem] = useState<boolean>(false);
-  const [lists, setLists] = useState<ApiData<NamedListData>>({
-    rows: [],
-    timeStamp: "",
-  });
+  const [lists, setLists] = useState<NamedListData[]>([]);
+  const [timestamp, setTimestamp] = useState<string>("");
 
   const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
   const baseQuery = "?type=List&name=" + params.slug;
@@ -31,7 +32,8 @@ export default function Page() {
       const lists: ApiData<NamedListData> = await data.json();
       // Fix the first index if it is empty
       FixFirstPostIndex(lists);
-      setLists(lists);
+      setTimestamp(lists.timeStamp);
+      setLists(lists.rows);
     };
     fetchData();
   }, [baseQuery, envVariable]);
@@ -39,12 +41,27 @@ export default function Page() {
   const handleAdd = () => {
     setShowAddItem(true);
   };
+  const handleDone = (index: number) => {
+    const newLists = [...lists];
+    newLists[index].done = !newLists[index].done;
+    setLists(newLists);
+  };
+  const handleUp = (index: number) => {
+    moveUp(lists, index - 1, index);
+    sortAscending(lists, "index");
+    setLists(new Array<NamedListData>(...lists));
+  };
+  const handleDown = (index: number) => {
+    moveDown(lists, index + 1, index);
+    sortAscending(lists, "index");
+    setLists(new Array<NamedListData>(...lists));
+  };
 
   return (
     <Fragment>
-      {lists.rows.length === 0 && (
+      {lists.length === 0 && (
         <div>
-          <div className="pt-5 px-3 pb-2 text-xl">
+          <div className="pt-8 px-3 pb-2 text-xl">
             {decodeURI(params.slug!.toString())}
           </div>
           <div className="py-2 px-3 mb-4">
@@ -52,16 +69,21 @@ export default function Page() {
           </div>
         </div>
       )}
-      {lists.rows.length > 0 && (
+      {lists.length > 0 && (
         <div>
-          <div className="pt-5 px-3 pb-2 text-xl">
-            {decodeURI(params.slug!.toString())}
+          <div className="pt-8 px-3 pb-2 text-xl">
+            {`${decodeURI(params.slug!.toString())}  - last saved: ${formatDate(
+              timestamp
+            )}`}
           </div>
           <div className="py-2 px-3 mb-4">
             <OneListTable
-              list={lists.rows}
+              list={lists}
               pageParams={pageParam}
               onAdd={handleAdd}
+              onDone={handleDone}
+              onUp={handleUp}
+              onDown={handleDown}
             />
           </div>
         </div>

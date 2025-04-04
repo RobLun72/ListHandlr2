@@ -1,6 +1,5 @@
 import { Table as TableCore } from "@tanstack/table-core";
 import { Input } from "../input";
-import { Button } from "../button";
 import { ReactNode } from "react";
 
 interface TableTopViewProps<TData> {
@@ -33,9 +32,9 @@ export function TableTopView<TData>({
           className="max-w-sm"
         />
       )}
-      <Button className="ml-auto bg-appBlue" onClick={onAdd}>
+      <div className="ml-auto flex items-center" onClick={onAdd}>
         {addButtonText}
-      </Button>
+      </div>
     </div>
   );
 }

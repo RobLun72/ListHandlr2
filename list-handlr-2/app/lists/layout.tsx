@@ -8,7 +8,7 @@ export default function ListsLayout({
   return (
     <section>
       <div className="flex flex-col justify-center items-center">
-        <div className="pl-2 pr-2 ">
+        <div className="pl-2 pr-2 min-w-3xl">
           <div
             className="flex"
             style={{
@@ -30,9 +30,9 @@ export default function ListsLayout({
           <div
             className="border-appBlue border-4 border-solid"
             style={{
-              marginTop: "-20px",
+              marginTop: "-27px",
               marginLeft: "1px",
-              width: "99.9%",
+              width: "100%",
               minHeight: "80vh",
             }}
           >

@@ -37,16 +37,16 @@ export default function Page() {
     <Fragment>
       {lists.rows.length === 0 && (
         <div>
-          <div className="p-3">All lists</div>
-          <div className="p-3 mb-4 ">
+          <div className="pt-8 px-3 pb-2 text-xl">All lists</div>
+          <div className="py-2 px-3 mb-4">
             <ListsSkeleton />
           </div>
         </div>
       )}
       {lists.rows.length > 0 && (
         <div>
-          <div className="p-3">All Lists</div>
-          <div className="p-3 mb-4 ">
+          <div className="pt-8 px-3 pb-2 text-xl">All Lists</div>
+          <div className="py-2 px-3 mb-4">
             <ListsTable lists={lists.rows} pageParams={pageParam} />
           </div>
         </div>

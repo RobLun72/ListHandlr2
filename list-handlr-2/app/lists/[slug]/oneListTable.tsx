@@ -1,7 +1,6 @@
 import { ColumnDef, Row, SortingState } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { DataTable } from "../../../components/ui/DataTable/DataTable";
-import { TableSortingButton } from "../../../components/ui/DataTable/TableSortingButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,20 +10,37 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import { NamedListData } from "../../DTO/oneListData";
 import Link from "next/link";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import {
+  PlusCircleIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
+
 export function OneListTable({
   list,
   pageParams,
   onAdd,
+  onDone,
+  onUp,
+  onDown,
 }: {
   list: NamedListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
   onAdd: () => void;
+  onDone: (index: number) => void;
+  onUp: (index: number) => void;
+  onDown: (index: number) => void;
 }) {
   const handleAdd = () => {
     // Handle add button click here
     // For example, navigate to a new page or show a modal
     onAdd();
+  };
+  const handleUp = (index: number) => {
+    onUp(index);
+  };
+  const handleDown = (index: number) => {
+    onDown(index);
   };
 
   const pageParam = pageParams.params.get("page");
@@ -32,13 +48,15 @@ export function OneListTable({
   const directionParam = pageParams.params.get("direction");
   const sorting: SortingState = sortingParam
     ? [{ id: sortingParam, desc: directionParam === "desc" }]
-    : [];
+    : [{ id: "index", desc: false }];
 
   return (
     <DataTable
-      columns={getColumns(pageParams)}
+      columns={getColumns(pageParams, onDone, handleUp, handleDown)}
       data={list}
-      addButtonText={<PlusCircleIcon className="h-5" />}
+      addButtonText={
+        <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
+      }
       filterColumnName="text"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
       sortingState={sorting}
@@ -49,7 +67,13 @@ export function OneListTable({
   );
 }
 
-function ContextMenu({ row }: { row: Row<NamedListData> }) {
+function ContextMenu({
+  row,
+  onDone,
+}: {
+  row: Row<NamedListData>;
+  onDone: (index: number) => void;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -76,44 +100,56 @@ function ContextMenu({ row }: { row: Row<NamedListData> }) {
         >
           Delete
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onDone(row.original.index)}>
+          Toggle Done
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function getColumns(pageParams: {
-  pagePath: string;
-  params: URLSearchParams;
-}): ColumnDef<NamedListData>[] {
+function getColumns(
+  pageParams: {
+    pagePath: string;
+    params: URLSearchParams;
+  },
+  onDone: (index: number) => void,
+  handleUp: (index: number) => void,
+  handleDown: (index: number) => void
+): ColumnDef<NamedListData>[] {
   return [
     {
       accessorKey: "index",
-      header: ({ column }) => {
-        return (
-          <TableSortingButton
-            text="Index"
-            column={column}
-            pageParams={pageParams}
-          />
-        );
-      },
+      header: "Index",
       cell: ({ row }) => {
-        return row.original.index;
+        return (
+          <div className="flex justify-between">
+            <ChevronUpIcon
+              className="h-6 cursor-pointer text-appBlue px-2"
+              onClick={() => handleUp(row.original.index)}
+            />
+
+            <ChevronDownIcon
+              className="h-6 cursor-pointer text-appBlue px-2"
+              onClick={() => handleDown(row.original.index)}
+            />
+          </div>
+        );
       },
     },
     {
       accessorKey: "text",
-      header: ({ column }) => {
-        return (
-          <TableSortingButton
-            text="Text"
-            column={column}
-            pageParams={pageParams}
-          />
-        );
-      },
+      header: "Text",
       cell: ({ row }) => {
-        return row.original.text;
+        if (row.original.done) {
+          return (
+            <span className="line-through text-appBlue">
+              {row.original.text}
+            </span>
+          );
+        } else {
+          return <span className=" text-appBlue">{row.original.text}</span>;
+        }
       },
     },
     {
@@ -134,7 +170,7 @@ function getColumns(pageParams: {
     {
       id: "actions",
       cell: ({ row }) => {
-        return ContextMenu({ row });
+        return ContextMenu({ row, onDone });
       },
     },
   ];

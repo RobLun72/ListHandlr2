@@ -57,7 +57,9 @@ export function TableView<TData>({
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
               onClick={() => onRowClick && onRowClick(row.index)}
-              className={activeRowIndex === row.index ? "bg-neutral-100" : ""} // Highlight active row
+              className={
+                activeRowIndex === row.index ? "bg-neutral-100" : "bg-appWhite"
+              } // Highlight active row
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>

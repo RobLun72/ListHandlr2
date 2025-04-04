@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --color-appWhite: oklch(98.45% 0.007 17.28);
   --color-appBlue: oklch(60.72% 0.059 237.53);
-  --color-mint-500: oklch(0.72 0.11 178);
 }
 
 @theme inline {
