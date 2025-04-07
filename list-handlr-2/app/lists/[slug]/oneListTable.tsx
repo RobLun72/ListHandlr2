@@ -15,11 +15,14 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import cn from "@/app/Helpers/cn";
 
 export function OneListTable({
   list,
   pageParams,
   onAdd,
+  onEdit,
+  onDelete,
   onDone,
   onUp,
   onDown,
@@ -27,6 +30,8 @@ export function OneListTable({
   list: NamedListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
   onAdd: () => void;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
   onDone: (index: number) => void;
   onUp: (index: number) => void;
   onDown: (index: number) => void;
@@ -35,12 +40,6 @@ export function OneListTable({
     // Handle add button click here
     // For example, navigate to a new page or show a modal
     onAdd();
-  };
-  const handleUp = (index: number) => {
-    onUp(index);
-  };
-  const handleDown = (index: number) => {
-    onDown(index);
   };
 
   const pageParam = pageParams.params.get("page");
@@ -52,7 +51,7 @@ export function OneListTable({
 
   return (
     <DataTable
-      columns={getColumns(pageParams, onDone, handleUp, handleDown)}
+      columns={getColumns(pageParams, onEdit, onDelete, onDone, onUp, onDown)}
       data={list}
       addButtonText={
         <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
@@ -69,14 +68,18 @@ export function OneListTable({
 
 function ContextMenu({
   row,
+  onEdit,
+  onDelete,
   onDone,
 }: {
   row: Row<NamedListData>;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
   onDone: (index: number) => void;
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger className="cursor-pointer" asChild>
         <button className="h-12 w-12 bg-transparent p-0 float-end focus:outline-none group">
           <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-6 mx-auto text-steel text-center w-6 group-focus:text-primary " />
@@ -85,26 +88,50 @@ function ContextMenu({
       <DropdownMenuContent align="center">
         <DropdownMenuLabel>{row.original.text}</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={() =>
-            // Handle edit action here
-            console.log("Edit", row.original.text)
-          }
+          className="cursor-pointer"
+          onClick={() => onEdit(row.original.index)}
         >
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() =>
-            // Handle delete action here
-            console.log("Delete", row.original.text)
-          }
+          className="cursor-pointer"
+          onClick={() => onDelete(row.original.index)}
         >
           Delete
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onDone(row.original.index)}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => onDone(row.original.index)}
+        >
           Toggle Done
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function textLayout(row: NamedListData, onDone: (index: number) => void) {
+  return (
+    <div className="flex flex-col">
+      <span
+        onClick={() => onDone(row.index)}
+        className={cn(
+          "text-appBlue cursor-pointer",
+          row.done ? "line-through" : ""
+        )}
+      >
+        {row.text}
+      </span>
+      {row.link && (
+        <Link
+          href={row.link}
+          target="_blank"
+          className="text-muted-foreground italic text-sm"
+        >
+          {row.link}
+        </Link>
+      )}
+    </div>
   );
 }
 
@@ -113,9 +140,11 @@ function getColumns(
     pagePath: string;
     params: URLSearchParams;
   },
+  onEdit: (index: number) => void,
+  onDelete: (index: number) => void,
   onDone: (index: number) => void,
-  handleUp: (index: number) => void,
-  handleDown: (index: number) => void
+  onUp: (index: number) => void,
+  onDown: (index: number) => void
 ): ColumnDef<NamedListData>[] {
   return [
     {
@@ -126,12 +155,12 @@ function getColumns(
           <div className="flex justify-between">
             <ChevronUpIcon
               className="h-6 cursor-pointer text-appBlue px-2"
-              onClick={() => handleUp(row.original.index)}
+              onClick={() => onUp(row.original.index)}
             />
 
             <ChevronDownIcon
               className="h-6 cursor-pointer text-appBlue px-2"
-              onClick={() => handleDown(row.original.index)}
+              onClick={() => onDown(row.original.index)}
             />
           </div>
         );
@@ -141,36 +170,28 @@ function getColumns(
       accessorKey: "text",
       header: "Text",
       cell: ({ row }) => {
-        if (row.original.done) {
-          return (
-            <span className="line-through text-appBlue">
-              {row.original.text}
-            </span>
-          );
-        } else {
-          return <span className=" text-appBlue">{row.original.text}</span>;
-        }
+        return textLayout(row.original, onDone);
       },
     },
-    {
-      accessorKey: "link",
-      header: "Link",
-      cell: ({ row }) => {
-        if (row.original.link === "") {
-          return <span className="text-muted-foreground">No link</span>;
-        } else {
-          return (
-            <Link href={row.original.link} target="_blank">
-              Go to resource
-            </Link>
-          );
-        }
-      },
-    },
+    // {
+    //   accessorKey: "link",
+    //   header: "Link",
+    //   cell: ({ row }) => {
+    //     if (row.original.link === "") {
+    //       return <span className="text-muted-foreground">No link</span>;
+    //     } else {
+    //       return (
+    //         <Link href={row.original.link} target="_blank">
+    //           Go to resource
+    //         </Link>
+    //       );
+    //     }
+    //   },
+    // },
     {
       id: "actions",
       cell: ({ row }) => {
-        return ContextMenu({ row, onDone });
+        return ContextMenu({ row, onEdit, onDelete, onDone });
       },
     },
   ];

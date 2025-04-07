@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "All Lists",
+  description: "All lists in app",
+};
 
 export default function ListsLayout({
   children,

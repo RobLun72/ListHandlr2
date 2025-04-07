@@ -7,18 +7,20 @@ import { Fragment, useEffect, useState } from "react";
 import { NamedListData } from "@/app/DTO/oneListData";
 import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
-import { Button } from "@/components/ui/button";
 import { moveDown, moveUp } from "@/app/Helpers/collectionHelper";
 import { sortAscending } from "@/app/Helpers/sortAndFilter";
 import { formatDate } from "@/app/Helpers/formatDate";
+import Head from "next/head";
+import { OneListForm } from "./oneListForm";
 
 export default function Page() {
   const params = useParams();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
-  const [showAddItem, setShowAddItem] = useState<boolean>(false);
+  const [showItemForm, setShowItemForm] = useState<boolean>(false);
   const [lists, setLists] = useState<NamedListData[]>([]);
+  const [item, setItem] = useState<NamedListData>();
   const [timestamp, setTimestamp] = useState<string>("");
 
   const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
@@ -39,8 +41,34 @@ export default function Page() {
   }, [baseQuery, envVariable]);
 
   const handleAdd = () => {
-    setShowAddItem(true);
+    setShowItemForm(true);
   };
+
+  const handleEdit = (index: number) => {
+    const item = lists[index];
+    setItem(item);
+    setShowItemForm(true);
+  };
+
+  const handleDelete = (index: number) => {
+    const newLists = [...lists];
+    newLists.splice(index, 1);
+    setLists(newLists);
+  };
+
+  const handleNewValues = (item: NamedListData) => {
+    const newLists = [...lists];
+    if (item.index >= 0) {
+      newLists[item.index] = item;
+    } else {
+      item.index = lists.length;
+      newLists.push(item);
+    }
+    setLists(newLists);
+    setShowItemForm(false);
+    setItem(undefined);
+  };
+
   const handleDone = (index: number) => {
     const newLists = [...lists];
     newLists[index].done = !newLists[index].done;
@@ -59,6 +87,11 @@ export default function Page() {
 
   return (
     <Fragment>
+      <Head>
+        <title>List</title>
+        <meta name="description" content="One named list" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {lists.length === 0 && (
         <div>
           <div className="pt-8 px-3 pb-2 text-xl">
@@ -81,6 +114,8 @@ export default function Page() {
               list={lists}
               pageParams={pageParam}
               onAdd={handleAdd}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
               onDone={handleDone}
               onUp={handleUp}
               onDown={handleDown}
@@ -88,13 +123,17 @@ export default function Page() {
           </div>
         </div>
       )}
-      {showAddItem && (
+      {showItemForm && (
         <OverlayWithCenteredInput>
           <div className="text-center text-lg font-semibold mb-4">
-            Add new item Text in the center
-            <Button onClick={() => setShowAddItem(false)} variant="outline">
-              close
-            </Button>
+            <OneListForm
+              mode={item ? "Edit" : "Add"}
+              item={
+                item ? item : { index: -1, text: "", link: "", done: false }
+              }
+              onDone={handleNewValues}
+              onClose={() => setShowItemForm(false)}
+            />
           </div>
         </OverlayWithCenteredInput>
       )}
