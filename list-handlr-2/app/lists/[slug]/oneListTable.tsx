@@ -8,14 +8,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { NamedListData } from "../../DTO/oneListData";
+import { NamedListData } from "../../../DTO/oneListData";
 import Link from "next/link";
 import {
   PlusCircleIcon,
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
-import cn from "@/app/Helpers/cn";
+import cn from "@/Helpers/cn";
+import { useResponsive } from "@/Helpers/useResponsive";
 
 export function OneListTable({
   list,
@@ -36,6 +37,8 @@ export function OneListTable({
   onUp: (index: number) => void;
   onDown: (index: number) => void;
 }) {
+  const { isMobile } = useResponsive();
+
   const handleAdd = () => {
     // Handle add button click here
     // For example, navigate to a new page or show a modal
@@ -51,7 +54,7 @@ export function OneListTable({
 
   return (
     <DataTable
-      columns={getColumns(pageParams, onEdit, onDelete, onDone, onUp, onDown)}
+      columns={getColumns(isMobile, onEdit, onDelete, onDone, onUp, onDown)}
       data={list}
       addButtonText={
         <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
@@ -61,7 +64,7 @@ export function OneListTable({
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}
-      pageSize={10}
+      pageSize={isMobile ? 7 : 13}
     />
   );
 }
@@ -136,10 +139,7 @@ function textLayout(row: NamedListData, onDone: (index: number) => void) {
 }
 
 function getColumns(
-  pageParams: {
-    pagePath: string;
-    params: URLSearchParams;
-  },
+  isMobile: boolean,
   onEdit: (index: number) => void,
   onDelete: (index: number) => void,
   onDone: (index: number) => void,
@@ -150,16 +150,18 @@ function getColumns(
     {
       accessorKey: "index",
       header: "Index",
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
         return (
-          <div className="flex justify-between">
+          <div className="flex">
             <ChevronUpIcon
-              className="h-6 cursor-pointer text-appBlue px-2"
+              className="h-6 cursor-pointer text-appBlue pr-1"
               onClick={() => onUp(row.original.index)}
             />
 
             <ChevronDownIcon
-              className="h-6 cursor-pointer text-appBlue px-2"
+              className="h-6 cursor-pointer text-appBlue"
               onClick={() => onDown(row.original.index)}
             />
           </div>
@@ -169,27 +171,15 @@ function getColumns(
     {
       accessorKey: "text",
       header: "Text",
+      size: isMobile ? 200 : 400,
       cell: ({ row }) => {
         return textLayout(row.original, onDone);
       },
     },
-    // {
-    //   accessorKey: "link",
-    //   header: "Link",
-    //   cell: ({ row }) => {
-    //     if (row.original.link === "") {
-    //       return <span className="text-muted-foreground">No link</span>;
-    //     } else {
-    //       return (
-    //         <Link href={row.original.link} target="_blank">
-    //           Go to resource
-    //         </Link>
-    //       );
-    //     }
-    //   },
-    // },
     {
       id: "actions",
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
         return ContextMenu({ row, onEdit, onDelete, onDone });
       },

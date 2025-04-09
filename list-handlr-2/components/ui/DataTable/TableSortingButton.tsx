@@ -1,7 +1,7 @@
 import { Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUpDown } from "lucide-react";
 import { useCallback } from "react";
-import cn from "../../../app/Helpers/cn";
+import cn from "../../../Helpers/cn";
 import { useRouter } from "next/navigation";
 
 interface TableSortingButtonProps<T> {

@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { ListData } from "../DTO/listsData";
+import { ListData } from "../../DTO/listsData";
 import { useRouter } from "next/navigation";
 
 export function ListsTable({

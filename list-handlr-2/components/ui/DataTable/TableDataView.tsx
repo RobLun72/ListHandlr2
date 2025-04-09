@@ -36,6 +36,10 @@ export function TableView<TData>({
               return (
                 <TableHead
                   key={header.id}
+                  style={{
+                    width: `${header.getSize()}px`,
+                    minWidth: `${header.getSize()}px`,
+                  }}
                   onClick={() => onColumnClick && onColumnClick(header.index)}
                 >
                   {header.isPlaceholder
@@ -62,7 +66,7 @@ export function TableView<TData>({
               } // Highlight active row
             >
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
+                <TableCell key={cell.id} style={{ width: `50px` }}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}

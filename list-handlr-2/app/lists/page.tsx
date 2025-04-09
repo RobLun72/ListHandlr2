@@ -1,8 +1,8 @@
 "use client";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ApiData } from "../DTO/apiData";
-import { ListData } from "../DTO/listsData";
-import { FixFirstPostIndex } from "../Helpers/fixFirstIndex";
+import { ApiData } from "../../DTO/apiData";
+import { ListData } from "../../DTO/listsData";
+import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
 import { Fragment, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";

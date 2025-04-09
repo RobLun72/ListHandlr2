@@ -19,7 +19,11 @@ export function TableTopView<TData>({
     <div className="flex py-4 justify-between ">
       {filterColumnName && (
         <Input
-          placeholder="Filter names..."
+          placeholder={
+            filterColumnName
+              ? "Filter " + filterColumnName + "..."
+              : "Filter by..."
+          }
           value={
             (table.getColumn(filterColumnName)?.getFilterValue() as string) ??
             ""

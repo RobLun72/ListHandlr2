@@ -1,98 +1,211 @@
 "use client";
 import { usePathname, useSearchParams, useParams } from "next/navigation";
-import { ApiData } from "../../DTO/apiData";
-import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
+import { ApiData, ApiResponse } from "../../../DTO/apiData";
+import { FixFirstPostIndex } from "../../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
 import { Fragment, useEffect, useState } from "react";
-import { NamedListData } from "@/app/DTO/oneListData";
+import { NamedListData, OneListPostData } from "@/DTO/oneListData";
 import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
-import { moveDown, moveUp } from "@/app/Helpers/collectionHelper";
-import { sortAscending } from "@/app/Helpers/sortAndFilter";
-import { formatDate } from "@/app/Helpers/formatDate";
-import Head from "next/head";
+import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
+import { sortAscending } from "@/Helpers/sortAndFilter";
+import { formatDate } from "@/Helpers/formatDate";
 import { OneListForm } from "./oneListForm";
+import {
+  ArrowLeftStartOnRectangleIcon,
+  ClipboardDocumentCheckIcon,
+} from "@heroicons/react/24/outline";
+import { LoadingSpinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+export interface OneListPageState {
+  load: boolean;
+  pendingSave: boolean;
+  message: string;
+  isDirty: boolean;
+  isEditing: boolean;
+  showItemForm: boolean;
+  lists: NamedListData[];
+  item: NamedListData | undefined;
+  timestamp: string;
+}
 
 export default function Page() {
   const params = useParams();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
-  const [showItemForm, setShowItemForm] = useState<boolean>(false);
-  const [lists, setLists] = useState<NamedListData[]>([]);
-  const [item, setItem] = useState<NamedListData>();
-  const [timestamp, setTimestamp] = useState<string>("");
+
+  const [pageState, setPageState] = useState<OneListPageState>({
+    load: false,
+    pendingSave: false,
+    message: "",
+    isDirty: false,
+    isEditing: true,
+    showItemForm: false,
+    lists: [],
+    item: undefined,
+    timestamp: "",
+  });
 
   const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
   const baseQuery = "?type=List&name=" + params.slug;
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(`https://${envVariable}${baseQuery}`, {
-        cache: "force-cache",
-      });
-      const lists: ApiData<NamedListData> = await data.json();
-      // Fix the first index if it is empty
-      FixFirstPostIndex(lists);
-      setTimestamp(lists.timeStamp);
-      setLists(lists.rows);
+      const data = await fetch(`https://${envVariable}${baseQuery}`);
+      try {
+        const lists: ApiData<NamedListData> = await data.json();
+
+        // Fix the first index if it is empty
+        FixFirstPostIndex(lists);
+        setPageState((prev) => ({
+          ...prev,
+          load: false,
+          lists: lists.rows,
+          timestamp: lists.timeStamp,
+        }));
+      } catch (error) {
+        setPageState((prev) => ({
+          ...prev,
+          load: false,
+        }));
+        toast.error("Error loading: " + error);
+      }
     };
+    setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
   }, [baseQuery, envVariable]);
 
+  const postLists = (dataToPost: OneListPostData) => {
+    async function doPost(dataToPost: OneListPostData) {
+      const data = await fetch(`https://${envVariable}`, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(dataToPost),
+      });
+      const result: ApiResponse<ApiData<NamedListData>> = await data.json();
+
+      if (result && result.data && result.message === "") {
+        FixFirstPostIndex(result.data);
+        setPageState((prev) => ({
+          ...prev,
+          load: false,
+          lists: result.data.rows,
+          timestamp: result.data.timeStamp,
+          pendingSave: false,
+          isDirty: false,
+        }));
+        toast.success("List saved successfully!");
+      } else {
+        setPageState({
+          ...pageState,
+          pendingSave: false,
+        });
+        toast.error("Error saving: " + result.message);
+      }
+    }
+    if (pageState.lists.length > 0) {
+      setPageState((prev) => ({
+        ...prev,
+        pendingSave: true,
+      }));
+
+      doPost(dataToPost);
+    }
+  };
+
   const handleAdd = () => {
-    setShowItemForm(true);
+    setPageState((prev) => ({
+      ...prev,
+      showItemForm: true,
+    }));
   };
 
   const handleEdit = (index: number) => {
-    const item = lists[index];
-    setItem(item);
-    setShowItemForm(true);
+    const item = pageState.lists[index];
+    setPageState((prev) => ({
+      ...prev,
+      item: item,
+      showItemForm: true,
+    }));
   };
 
   const handleDelete = (index: number) => {
-    const newLists = [...lists];
+    const newLists = [...pageState.lists];
     newLists.splice(index, 1);
-    setLists(newLists);
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
   };
 
   const handleNewValues = (item: NamedListData) => {
-    const newLists = [...lists];
+    const newLists = [...pageState.lists];
     if (item.index >= 0) {
       newLists[item.index] = item;
     } else {
-      item.index = lists.length;
-      newLists.push(item);
+      insertFirst(newLists, item);
     }
-    setLists(newLists);
-    setShowItemForm(false);
-    setItem(undefined);
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      showItemForm: false,
+      item: undefined,
+      isDirty: true,
+    }));
   };
 
   const handleDone = (index: number) => {
-    const newLists = [...lists];
+    const newLists = [...pageState.lists];
     newLists[index].done = !newLists[index].done;
-    setLists(newLists);
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
   };
+
   const handleUp = (index: number) => {
-    moveUp(lists, index - 1, index);
-    sortAscending(lists, "index");
-    setLists(new Array<NamedListData>(...lists));
+    const newLists = [...pageState.lists];
+    moveUp(newLists, index - 1, index);
+    sortAscending(newLists, "index");
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
   };
   const handleDown = (index: number) => {
-    moveDown(lists, index + 1, index);
-    sortAscending(lists, "index");
-    setLists(new Array<NamedListData>(...lists));
+    const newLists = [...pageState.lists];
+    moveDown(newLists, index + 1, index);
+    sortAscending(newLists, "index");
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
+  };
+
+  const handleSave = async () => {
+    if (pageState.isDirty) {
+      postLists({
+        saveType: "oneList",
+        listName: params.slug!.toString(),
+        item: { rows: pageState.lists, timeStamp: pageState.timestamp },
+      });
+    }
+  };
+
+  const handleBack = () => {
+    window.history.back();
   };
 
   return (
     <Fragment>
-      <Head>
-        <title>List</title>
-        <meta name="description" content="One named list" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      {lists.length === 0 && (
+      {pageState.lists.length === 0 && (
         <div>
           <div className="pt-8 px-3 pb-2 text-xl">
             {decodeURI(params.slug!.toString())}
@@ -102,16 +215,29 @@ export default function Page() {
           </div>
         </div>
       )}
-      {lists.length > 0 && (
+      {pageState.lists.length > 0 && (
         <div>
-          <div className="pt-8 px-3 pb-2 text-xl">
-            {`${decodeURI(params.slug!.toString())}  - last saved: ${formatDate(
-              timestamp
-            )}`}
+          <div className="flex flex-row justify-between items-center">
+            <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
+              {`${decodeURI(params.slug!.toString())}`}
+            </div>
+            <div className="pt-8 px-3 pb-2 flex flex-row items-center">
+              <div className="flex items-center mr-3" onClick={handleSave}>
+                <ClipboardDocumentCheckIcon
+                  className={cn(
+                    "h-8 text-appBlue cursor-pointer",
+                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
+                  )}
+                />
+              </div>
+              <div className="flex items-center mr-0.5" onClick={handleBack}>
+                <ArrowLeftStartOnRectangleIcon className="h-8 text-appBlue cursor-pointer" />
+              </div>
+            </div>
           </div>
-          <div className="py-2 px-3 mb-4">
+          <div className="py-2 px-3">
             <OneListTable
-              list={lists}
+              list={pageState.lists}
               pageParams={pageParam}
               onAdd={handleAdd}
               onEdit={handleEdit}
@@ -121,19 +247,40 @@ export default function Page() {
               onDown={handleDown}
             />
           </div>
+          <div className="pr-4 text-sm italic float-end">
+            {`Last saved: ${formatDate(pageState.timestamp)}`}
+          </div>
         </div>
       )}
-      {showItemForm && (
+      {pageState.showItemForm && (
         <OverlayWithCenteredInput>
-          <div className="text-center text-lg font-semibold mb-4">
+          <div className="w-full mx-4 text-center text-lg font-semibold mb-4">
             <OneListForm
-              mode={item ? "Edit" : "Add"}
+              mode={pageState.item ? "Edit" : "Add"}
               item={
-                item ? item : { index: -1, text: "", link: "", done: false }
+                pageState.item
+                  ? pageState.item
+                  : { index: -1, text: "", link: "", done: false }
               }
               onDone={handleNewValues}
-              onClose={() => setShowItemForm(false)}
+              onClose={() => {
+                setPageState((prev) => ({
+                  ...prev,
+                  showItemForm: false,
+                  list: undefined,
+                }));
+              }}
             />
+          </div>
+        </OverlayWithCenteredInput>
+      )}
+      {pageState.pendingSave && (
+        <OverlayWithCenteredInput className="md:h-1/12 h-2/12 p-2 md:w-4/12 w-10/12 flex items-center">
+          <div className="flex flex-col items-center justify-center w-full">
+            <LoadingSpinner className="h-12 w-12 text-appBlue animate-spin" />
+            <div className="text-center text-lg font-semibold mb-4">
+              Saving the {decodeURI(params.slug!.toString())} list...
+            </div>
           </div>
         </OverlayWithCenteredInput>
       )}

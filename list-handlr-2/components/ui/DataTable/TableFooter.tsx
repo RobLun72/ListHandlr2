@@ -1,7 +1,7 @@
 "use client";
 import type { Table } from "@tanstack/react-table";
 //import { useNavigate } from "react-router-dom";
-import cn from "../../../app/Helpers/cn";
+import cn from "../../../Helpers/cn";
 import { Button } from "../../ui/button";
 import { useRouter } from "next/navigation";
 

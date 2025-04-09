@@ -1,7 +1,8 @@
-import { NamedListData } from "@/app/DTO/oneListData";
+import { NamedListData } from "@/DTO/oneListData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 interface OneListFormValues {
@@ -40,41 +41,56 @@ export function OneListForm({ mode, item, onClose, onDone }: OneListFormProps) {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
+        <div className="w-full">
           <div className="text-xl text-neutral-700 p-2">{mode + " Item"}</div>
-          <Label htmlFor="itemName">Item</Label>
+          <Label htmlFor="itemName" className="text-neutral-700 py-2">
+            Item
+          </Label>
           <Input
             id="itemName"
             type="text"
+            className={cn(
+              "text-neutral-700 pt-2 mb-8",
+              errors.itemName && "mb-0"
+            )}
             defaultValue={formData.itemName}
             {...register("itemName", {
               required: "Item name is required",
             })}
             placeholder="itemName"
           />
-          {errors.itemName && <span>{errors.itemName.message}</span>}
+          {errors.itemName && (
+            <div className="text-red-700 text-sm italic pt-1 mb-2 text-left">
+              {errors.itemName.message}
+            </div>
+          )}
         </div>
-        <div>
-          <Label htmlFor="itemLink">Link</Label>
+        <div className="w-full">
+          <Label htmlFor="itemLink" className="text-neutral-700 py-2">
+            Link
+          </Label>
           <Input
             id="itemLink"
             type="text"
+            className="text-neutral-700 pt-2 mb-8"
             defaultValue={formData.itemLink}
             {...register("itemLink")}
             placeholder="itemLink"
           />
         </div>
-        <Button
-          className="bg-appBlue text-white"
-          type="submit"
-          disabled={errors.itemName !== undefined}
-          variant="outline"
-        >
-          {mode === "Edit" ? "Update" : "Create"} Item
-        </Button>
-        <Button onClick={onClose} variant="outline">
-          close
-        </Button>
+        <div className="w-full py-2 flex flex-row justify-between items-center">
+          <Button
+            className="bg-appBlue text-white"
+            type="submit"
+            disabled={errors.itemName !== undefined}
+            variant="outline"
+          >
+            {mode === "Edit" ? "Update" : "Create"} Item
+          </Button>
+          <Button onClick={onClose} variant="outline">
+            close
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -14,7 +14,7 @@ export default function ListsLayout({
   return (
     <section>
       <div className="flex flex-col justify-center items-center">
-        <div className="pl-2 pr-2 min-w-3xl">
+        <div className="pl-2 pr-2 md:min-w-3xl min-w-sm">
           <div
             className="flex"
             style={{

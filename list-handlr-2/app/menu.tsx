@@ -13,13 +13,9 @@ import {
   NavigationMenuTrigger,
   //navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { usePathname } from "next/navigation";
 
 const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "All Lists",
-    href: "/lists",
-    description: "The List of all todo lists.",
-  },
   {
     title: "About",
     href: "/about",
@@ -28,15 +24,23 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function AppMenu() {
+  const path = usePathname();
+  const pathParts = path.split("/");
+
+  console.log("path", path, pathParts);
   return (
-    <div className="flex min-w-3xl max-w-7xl items-center  border-b border-b-slate-200 bg-appBlue px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
+    <div className="flex md:min-w-3xl min-w-sm max-w-7xl items-center  border-b border-b-slate-200 bg-appBlue px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
       <Link href="/" className="text-xl font-bold text-white mr-4">
         List Handlr
       </Link>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+            <NavigationMenuTrigger
+              className={cn("", pathParts[1] === "lists" && "underline")}
+            >
+              Getting started
+            </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
@@ -54,17 +58,29 @@ export function AppMenu() {
                     </Link>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/lists" title="All Lists">
+                <ListItem
+                  href="/lists"
+                  title="All Lists"
+                  className={cn("", pathParts[1] === "lists" && "bg-accent")}
+                >
                   The lists.
                 </ListItem>
-                <ListItem href="/about" title="About">
+                {/* <ListItem
+                  href="/about"
+                  title="About"
+                  className={cn("", path === "/about" && "bg-accent")}
+                >
                   About the app.
-                </ListItem>
+                </ListItem> */}
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+            <NavigationMenuTrigger
+              className={cn("", pathParts[1] === "about" && "underline")}
+            >
+              Components
+            </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                 {components.map((component) => (
@@ -72,6 +88,7 @@ export function AppMenu() {
                     key={component.title}
                     title={component.title}
                     href={component.href}
+                    className={cn("", pathParts[1] === "about" && "bg-accent")}
                   >
                     {component.description}
                   </ListItem>

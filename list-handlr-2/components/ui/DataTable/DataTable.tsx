@@ -81,6 +81,9 @@ export function DataTable<TData, TValue>({
         pageIndex: pageIndex,
       },
     },
+    defaultColumn: {
+      size: 50, //starting column size
+    },
   });
 
   useEffect(() => table.setPageSize(pageSize), [pageSize, table]);
