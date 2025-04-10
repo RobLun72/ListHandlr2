@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { ListsForm } from "./listsForm";
+import { cn } from "@/lib/utils";
+import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 
 export interface ListsPageState {
   load: boolean;
@@ -193,6 +195,15 @@ export default function Page() {
     }));
   };
 
+  const handleSave = async () => {
+    if (pageState.isDirty) {
+      postLists({
+        saveType: "allLists",
+        item: { rows: pageState.lists, timeStamp: pageState.timestamp },
+      });
+    }
+  };
+
   return (
     <Fragment>
       {pageState.lists.length === 0 && (
@@ -207,6 +218,16 @@ export default function Page() {
         <div>
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">All lists</div>
+            <div className="pt-8 px-3 pb-2 flex flex-row items-center">
+              <div className="flex items-center mr-0.5" onClick={handleSave}>
+                <ClipboardDocumentCheckIcon
+                  className={cn(
+                    "h-8 text-appBlue cursor-pointer",
+                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
+                  )}
+                />
+              </div>
+            </div>
           </div>
           <div className="py-2 px-3">
             <ListsTable
