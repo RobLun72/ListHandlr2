@@ -40,8 +40,6 @@ export function OneListTable({
   const { isMobile } = useResponsive();
 
   const handleAdd = () => {
-    // Handle add button click here
-    // For example, navigate to a new page or show a modal
     onAdd();
   };
 

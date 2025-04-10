@@ -1,5 +1,10 @@
 "use client";
-import { usePathname, useSearchParams, useParams } from "next/navigation";
+import {
+  usePathname,
+  useSearchParams,
+  useParams,
+  useRouter,
+} from "next/navigation";
 import { ApiData, ApiResponse } from "../../../DTO/apiData";
 import { FixFirstPostIndex } from "../../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
@@ -36,6 +41,8 @@ export default function Page() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
+
+  const router = useRouter();
 
   const [pageState, setPageState] = useState<OneListPageState>({
     load: false,
@@ -200,7 +207,7 @@ export default function Page() {
   };
 
   const handleBack = () => {
-    window.history.back();
+    router.replace("/lists");
   };
 
   return (

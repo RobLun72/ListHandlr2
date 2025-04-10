@@ -1,7 +1,6 @@
 import { ColumnDef, Row, SortingState } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { DataTable } from "../../components/ui/DataTable/DataTable";
-import { TableSortingButton } from "../../components/ui/DataTable/TableSortingButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,20 +10,35 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { ListData } from "../../DTO/listsData";
 import { useRouter } from "next/navigation";
+import {
+  PlusCircleIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
+
+import { useResponsive } from "@/Helpers/useResponsive";
 
 export function ListsTable({
   lists,
   pageParams,
+  onAdd,
+  onEdit,
+  onDelete,
+  onUp,
+  onDown,
 }: {
   lists: ListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
+  onAdd: () => void;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
+  onUp: (index: number) => void;
+  onDown: (index: number) => void;
 }) {
-  const router = useRouter();
+  const { isMobile } = useResponsive();
 
   const handleAdd = () => {
-    // Handle add button click here
-    // For example, navigate to a new page or show a modal
-    router.push("/lists/-1");
+    onAdd();
   };
 
   const pageParam = pageParams.params.get("page");
@@ -36,20 +50,30 @@ export function ListsTable({
 
   return (
     <DataTable
-      columns={getColumns(pageParams)}
+      columns={getColumns(isMobile, onEdit, onDelete, onUp, onDown)}
       data={lists}
-      addButtonText="New List"
+      addButtonText={
+        <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
+      }
       filterColumnName="listName"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}
-      pageSize={10}
+      pageSize={isMobile ? 7 : 13}
     />
   );
 }
 
-function ContextMenu({ row }: { row: Row<ListData> }) {
+function ContextMenu({
+  row,
+  onEdit,
+  onDelete,
+}: {
+  row: Row<ListData>;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
+}) {
   const router = useRouter();
   return (
     <DropdownMenu>
@@ -62,57 +86,70 @@ function ContextMenu({ row }: { row: Row<ListData> }) {
       <DropdownMenuContent align="center">
         <DropdownMenuLabel>{row.original.listName}</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={() =>
-            // Handle edit action here
-            router.push("/lists/" + row.original.listName)
-          }
+          className="cursor-pointer"
+          onClick={() => onEdit(row.original.index)}
         >
-          View list
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => onDelete(row.original.index)}
+        >
+          Delete
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push("/lists/" + row.original.listName)}
+        >
+          View list items
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function getColumns(pageParams: {
-  pagePath: string;
-  params: URLSearchParams;
-}): ColumnDef<ListData>[] {
+function getColumns(
+  isMobile: boolean,
+  onEdit: (index: number) => void,
+  onDelete: (index: number) => void,
+  onUp: (index: number) => void,
+  onDown: (index: number) => void
+): ColumnDef<ListData>[] {
   return [
     {
       accessorKey: "index",
-      header: ({ column }) => {
-        return (
-          <TableSortingButton
-            text="Index"
-            column={column}
-            pageParams={pageParams}
-          />
-        );
-      },
+      header: "Index",
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
-        return row.original.index;
+        return (
+          <div className="flex">
+            <ChevronUpIcon
+              className="h-6 cursor-pointer text-appBlue pr-1"
+              onClick={() => onUp(row.original.index)}
+            />
+
+            <ChevronDownIcon
+              className="h-6 cursor-pointer text-appBlue"
+              onClick={() => onDown(row.original.index)}
+            />
+          </div>
+        );
       },
     },
     {
       accessorKey: "listName",
-      header: ({ column }) => {
-        return (
-          <TableSortingButton
-            text="Name"
-            column={column}
-            pageParams={pageParams}
-          />
-        );
-      },
+      header: "Name",
+      size: isMobile ? 200 : 400,
       cell: ({ row }) => {
         return row.original.listName;
       },
     },
     {
       id: "actions",
+      size: 50,
+      maxSize: 50,
       cell: ({ row }) => {
-        return ContextMenu({ row });
+        return ContextMenu({ row, onEdit, onDelete });
       },
     },
   ];

@@ -32,8 +32,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased  bg-appWhite`}
       >
+        <div className="bg-appBlue w-full">
+          <div className="flex flex-col justify-center items-center">
+            <AppMenu />
+          </div>
+        </div>
         <div className="flex flex-col justify-center items-center">
-          <AppMenu />
           {children}
           <Toaster />
         </div>

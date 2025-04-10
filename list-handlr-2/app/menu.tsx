@@ -27,9 +27,8 @@ export function AppMenu() {
   const path = usePathname();
   const pathParts = path.split("/");
 
-  console.log("path", path, pathParts);
   return (
-    <div className="flex md:min-w-3xl min-w-sm max-w-7xl items-center  border-b border-b-slate-200 bg-appBlue px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
+    <div className="flex md:min-w-3xl min-w-sm max-w-7xl items-center  bg-appBlue px-4 py-2">
       <Link href="/" className="text-xl font-bold text-white mr-4">
         List Handlr
       </Link>
