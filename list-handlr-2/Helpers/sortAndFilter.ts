@@ -22,7 +22,11 @@ export function sortDescending<T>(arr: T[], field: keyof T) {
   });
 }
 
-export function filter<T>(arr: T[], field: keyof T, value: string) {
+export function filter<T>(
+  arr: T[],
+  field: keyof T,
+  value: string | number | boolean
+) {
   if (field != null) {
     return arr.filter((item) => {
       return item[field] === value;

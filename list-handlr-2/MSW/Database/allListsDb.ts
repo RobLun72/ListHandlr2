@@ -4,7 +4,7 @@ import { allListsMockData } from "../MockedData/allLists";
 export const db = factory({
   // Create a "lists" model,
   allLists: {
-    timestamp: primaryKey(String),
+    timeStamp: primaryKey(String),
     rows: manyOf("todoList"), // A list can have many items
   },
 
@@ -27,7 +27,7 @@ export const setupListsDb = () => {
   });
 
   db.allLists.create({
-    timestamp: allListsMockData.timeStamp,
+    timeStamp: allListsMockData.timeStamp,
     rows: todoLists,
   });
 

@@ -1,8 +1,8 @@
 import { DefaultBodyType, HttpResponse, StrictRequest } from "msw";
 import {
   handleApiGetCallsSearchParams,
-  handleApiPostCallsSearchParams,
-} from "../RequestHelpers/searchParamhelper";
+  handleApiPostCallsBody,
+} from "../RequestHelpers/apiCallHelper";
 
 export const handleReq = async (
   baseUrl: string,
@@ -19,7 +19,7 @@ export const handleReq = async (
       if (request.method === "GET") {
         return handleApiGetCallsSearchParams(request);
       } else {
-        return handleApiPostCallsSearchParams(request);
+        return handleApiPostCallsBody(request);
       }
       break;
     default:

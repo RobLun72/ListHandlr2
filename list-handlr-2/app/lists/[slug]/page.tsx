@@ -14,7 +14,6 @@ import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
 import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
 import { sortAscending } from "@/Helpers/sortAndFilter";
-import { formatDate } from "@/Helpers/formatDate";
 import { OneListForm } from "./oneListForm";
 import {
   ArrowLeftStartOnRectangleIcon,
@@ -64,10 +63,9 @@ export default function Page() {
     const fetchData = async () => {
       await stableInit();
 
-      const data = await fetch(`https://${envVariable}${baseQuery}`);
       try {
+        const data = await fetch(`https://${envVariable}${baseQuery}`);
         const lists: ApiData<NamedListData> = await data.json();
-
         // Fix the first index if it is empty
         FixFirstPostIndex(lists);
         setPageState((prev) => ({
@@ -215,7 +213,7 @@ export default function Page() {
 
   return (
     <Fragment>
-      {pageState.lists.length === 0 && (
+      {pageState.load && (
         <div>
           <div className="pt-8 px-3 pb-2 text-xl">
             {decodeURI(params.slug!.toString())}
@@ -225,7 +223,7 @@ export default function Page() {
           </div>
         </div>
       )}
-      {pageState.lists.length > 0 && (
+      {!pageState.load && pageState.lists && (
         <div>
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
@@ -256,9 +254,6 @@ export default function Page() {
               onUp={handleUp}
               onDown={handleDown}
             />
-          </div>
-          <div className="pr-4 text-sm italic float-end">
-            {`Last saved: ${formatDate(pageState.timestamp)}`}
           </div>
         </div>
       )}

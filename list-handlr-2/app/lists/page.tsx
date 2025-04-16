@@ -53,9 +53,8 @@ export default function Page() {
     const fetchData = async () => {
       await stableInit();
 
-      const data = await fetch(`https://${envVariable}${baseQuery}`);
-      // Fix the first index if it is empty
       try {
+        const data = await fetch(`https://${envVariable}${baseQuery}`);
         const lists: ApiData<ListData> = await data.json();
 
         // Fix the first index if it is empty
