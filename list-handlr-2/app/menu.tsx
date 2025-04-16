@@ -8,18 +8,41 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
+  //NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
   //navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { usePathname } from "next/navigation";
 
-const components: { title: string; href: string; description: string }[] = [
+const components: {
+  topMenu: string;
+  paths: string[];
+  items: { title: string; path: string; href: string; description: string }[];
+}[] = [
   {
-    title: "About",
-    href: "/about",
-    description: "Description about how the app is built.",
+    topMenu: "Actions",
+    paths: ["start", "lists", "about"],
+    items: [
+      {
+        title: "Start",
+        href: "/",
+        path: "start",
+        description: "The landing page.",
+      },
+      {
+        title: "Lists",
+        href: "/lists",
+        path: "lists",
+        description: "The todo lists.",
+      },
+      {
+        title: "About",
+        href: "/about",
+        path: "about",
+        description: "Description about how the app is built.",
+      },
+    ],
   },
 ];
 
@@ -34,95 +57,66 @@ export function AppMenu() {
       </Link>
       <NavigationMenu>
         <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              className={cn("", pathParts[1] === "lists" && "underline")}
-            >
-              Getting started
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                      href="/"
+          {components.map((component) => (
+            <NavigationMenuItem key={"menu-" + component.topMenu}>
+              <NavigationMenuTrigger
+                className={cn(
+                  "",
+                  component.paths.includes(pathParts[1]) && "underline"
+                )}
+              >
+                {component.topMenu}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className="bg-appWhite">
+                <ul className="grid w-[200px] gap-3 p-4  grid-cols-1">
+                  {component.items.map((item) => (
+                    <ListItem
+                      key={item.title}
+                      title={item.title}
+                      href={item.href}
+                      className={cn(
+                        "",
+                        pathParts[1] === item.path && "bg-neutral-200"
+                      )}
                     >
-                      <div className="mb-2 mt-4 text-lg font-medium">
-                        ListHandlr2
-                      </div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        The todo app with a list of lists
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <ListItem
-                  href="/lists"
-                  title="All Lists"
-                  className={cn("", pathParts[1] === "lists" && "bg-accent")}
-                >
-                  The lists.
-                </ListItem>
-                {/* <ListItem
-                  href="/about"
-                  title="About"
-                  className={cn("", path === "/about" && "bg-accent")}
-                >
-                  About the app.
-                </ListItem> */}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              className={cn("", pathParts[1] === "about" && "underline")}
-            >
-              Components
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                {components.map((component) => (
-                  <ListItem
-                    key={component.title}
-                    title={component.title}
-                    href={component.href}
-                    className={cn("", pathParts[1] === "about" && "bg-accent")}
-                  >
-                    {component.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+                      {item.description}
+                    </ListItem>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
     </div>
   );
 }
 
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
+const ListItem = ({
+  className,
+  title,
+  href,
+  children,
+}: {
+  className: string;
+  title: string;
+  href: string;
+  children: React.ReactNode;
+}) => {
   return (
     <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
+      <Link
+        href={href}
+        className={cn(
+          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+          className
+        )}
+      >
+        <div className="text-sm font-medium leading-none">{title}</div>
+        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          {children}
+        </p>
+      </Link>
     </li>
   );
-});
-ListItem.displayName = "ListItem";
+};

@@ -127,7 +127,7 @@ function textLayout(row: NamedListData, onDone: (index: number) => void) {
         <Link
           href={row.link}
           target="_blank"
-          className="text-muted-foreground italic text-sm"
+          className="text-muted-foreground italic text-sm break-all"
         >
           {row.link}
         </Link>

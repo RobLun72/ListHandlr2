@@ -15,6 +15,7 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 import { ListsForm } from "./listsForm";
 import { cn } from "@/lib/utils";
 import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
+import { stableInit } from "@/Helpers/stableInit";
 
 export interface ListsPageState {
   load: boolean;
@@ -50,6 +51,8 @@ export default function Page() {
 
   useEffect(() => {
     const fetchData = async () => {
+      await stableInit();
+
       const data = await fetch(`https://${envVariable}${baseQuery}`);
       // Fix the first index if it is empty
       try {
@@ -71,6 +74,7 @@ export default function Page() {
         toast.error("Error loading: " + error);
       }
     };
+
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
   }, [envVariable]);

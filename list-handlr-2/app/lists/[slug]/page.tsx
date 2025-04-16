@@ -23,6 +23,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { stableInit } from "@/Helpers/stableInit";
 
 export interface OneListPageState {
   load: boolean;
@@ -61,6 +62,8 @@ export default function Page() {
 
   useEffect(() => {
     const fetchData = async () => {
+      await stableInit();
+
       const data = await fetch(`https://${envVariable}${baseQuery}`);
       try {
         const lists: ApiData<NamedListData> = await data.json();

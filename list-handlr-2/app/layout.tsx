@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppMenu } from "./menu";
 import { Toaster } from "@/components/ui/sonner";
+import { MSWInitializer } from "./mswInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased  bg-appWhite`}
       >
+        {/* Initialize MSW */}
+        <MSWInitializer />
         <div className="bg-appBlue w-full">
           <div className="flex flex-col justify-center items-center">
             <AppMenu />
