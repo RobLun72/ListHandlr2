@@ -96,7 +96,7 @@ const addList = (data: AllListsPostData) => {
     namedListsDb.allNamedLists.create({
       name: data.newListName,
       data: namedListsDb.namedList.create({
-        timestamp: data.item.timeStamp,
+        timeStamp: data.item.timeStamp,
         rows: [],
       }),
     });

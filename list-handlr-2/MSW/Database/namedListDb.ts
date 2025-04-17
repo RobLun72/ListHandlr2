@@ -8,7 +8,7 @@ export const db = factory({
     data: oneOf("namedList"), // A list can have many items
   },
   namedList: {
-    timestamp: primaryKey(String),
+    timeStamp: primaryKey(String),
     rows: manyOf("listItems"), // A list can have many items
   },
   listItems: {
@@ -26,7 +26,7 @@ export const setupNamedListsDb = () => {
 
   allNamedLists.forEach((item) => {
     const namedList = db.namedList.create({
-      timestamp: item.data.timeStamp,
+      timeStamp: item.data.timeStamp,
       rows: item.data.rows.map((item) => {
         return db.listItems.create({
           id: itemId++,
