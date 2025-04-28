@@ -230,12 +230,17 @@ export default function Page() {
               {`${decodeURI(params.slug!.toString())}`}
             </div>
             <div className="pt-8 px-3 pb-2 flex flex-row items-center">
-              <div className="flex items-center mr-3" onClick={handleSave}>
+              <div
+                className="flex items-center mr-3"
+                onClick={handleSave}
+                data-testid="save-list"
+              >
                 <ClipboardDocumentCheckIcon
                   className={cn(
                     "h-8 text-appBlue cursor-pointer",
                     !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
                   )}
+                  data-testid="save-list-icon"
                 />
               </div>
               <div className="flex items-center mr-0.5" onClick={handleBack}>

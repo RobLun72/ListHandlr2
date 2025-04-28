@@ -36,6 +36,8 @@ export const handleNamedListPost = async (data: OneListPostData) => {
   if (data.saveType === "oneList") {
     const responseLists: ApiResponse<ApiData<NamedListData>> = editList(data);
 
+    await new Promise((r) => setTimeout(r, 200));
+
     return HttpResponse.json(responseLists);
   }
 };

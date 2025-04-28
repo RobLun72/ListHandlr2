@@ -126,6 +126,17 @@ export const assertMissingCheckboxValue = async (name: string) => {
   expect(await screen.queryByRole("checkbox", { name: name })).toBe(null);
 };
 
+export const assertElementHasClassname = async (
+  testId: string,
+  className: string
+) => {
+  expect(
+    await (screen.getByTestId(testId) as HTMLElement).classList.contains(
+      className
+    )
+  ).toBe(true);
+};
+
 export const assertButtonHasClassname = async (
   buttonName: string,
   className: string

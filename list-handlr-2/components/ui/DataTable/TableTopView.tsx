@@ -36,7 +36,11 @@ export function TableTopView<TData>({
           className="max-w-sm"
         />
       )}
-      <div className="ml-auto flex items-center" onClick={onAdd}>
+      <div
+        className="ml-auto flex items-center"
+        onClick={onAdd}
+        data-testid="table-add-button"
+      >
         {addButtonText}
       </div>
     </div>
