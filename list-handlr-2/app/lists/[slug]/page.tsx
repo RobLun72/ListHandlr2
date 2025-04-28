@@ -114,7 +114,7 @@ export default function Page() {
         toast.error("Error saving: " + result.message);
       }
     }
-    if (pageState.lists.length > 0) {
+    if (pageState.timestamp !== "") {
       setPageState((prev) => ({
         ...prev,
         pendingSave: true,
@@ -142,7 +142,11 @@ export default function Page() {
 
   const handleDelete = (index: number) => {
     const newLists = [...pageState.lists];
-    newLists.splice(index, 1);
+    if (newLists.length === 1) {
+      newLists.pop();
+    } else {
+      newLists.splice(index, 1);
+    }
     setPageState((prev) => ({
       ...prev,
       lists: newLists,
@@ -198,6 +202,7 @@ export default function Page() {
   };
 
   const handleSave = async () => {
+    console.log("Saving list...", pageState.isDirty);
     if (pageState.isDirty) {
       postLists({
         saveType: "oneList",

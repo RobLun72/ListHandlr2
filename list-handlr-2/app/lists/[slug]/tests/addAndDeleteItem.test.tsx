@@ -7,13 +7,17 @@ import {
 import { handlers } from "../../../../MSW/handlers";
 import Page from "../page";
 import {
+  blurInput,
+  clickOnButton,
   clickOnButtonWithIndex,
   clickOnElementWithTestId,
   clickOnMenuItem,
+  typeInTextBox,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import {
+  assertButtonIsEnabled,
   assertElementHasClassname,
   assertMissingTextValue,
   assertMultiplesOfTextValue,
@@ -46,7 +50,7 @@ afterEach(() => {
   serverWithHandlers.close();
 });
 
-test("Delete item in testy list", async () => {
+test("Add one item and Delete another item in testy list", async () => {
   const user = userEvent.setup();
 
   await render(<Page />);
@@ -67,6 +71,18 @@ test("Delete item in testy list", async () => {
   //act edit
   await clickOnMenuItem(user, "Delete");
 
+  //act add
+  await clickOnElementWithTestId(user, "table-add-button");
+
+  await typeInTextBox(user, "Item", "Item added");
+
+  await blurInput(user, "textbox", "Item");
+
+  await assertButtonIsEnabled("Create Item");
+
+  //update client model
+  await clickOnButton(user, "Create Item");
+
   //update client model
 
   await assertElementHasClassname("save-list-icon", "cursor-pointer");
@@ -81,5 +97,6 @@ test("Delete item in testy list", async () => {
   await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
 
   await assertTextValueInDoc("testy");
+  await assertTextValueInDoc("Item added");
   await assertMissingTextValue("item1");
 });

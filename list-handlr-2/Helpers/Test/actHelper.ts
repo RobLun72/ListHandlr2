@@ -16,30 +16,12 @@ export const typeInTextBox = async (
   await user.type(screen.getByRole("textbox", { name: name }), value);
 };
 
-export const typeInEditor = async (
-  user: UserEvent,
-  className: string,
-  value: string
-) => {
-  const element = document.querySelector(className);
-  if (element) {
-    await user.type(element, value);
-  }
-};
-
 export const blurInput = async (
   user: UserEvent,
   inputType: string,
   inputName: string
 ) => {
   await user.type(screen.getByRole(inputType, { name: inputName }), "[Tab]");
-};
-
-export const blurEditor = async (user: UserEvent, className: string) => {
-  const element = document.querySelector(className);
-  if (element) {
-    await user.type(element, "[Tab]");
-  }
 };
 
 export const clickOnLink = async (user: UserEvent, linktext: string) => {
@@ -103,7 +85,7 @@ export const selectOptionInCombo = async (
   await user.selectOptions(selectElement, option);
 };
 
-export const selectOptionInSearchCombo = async (
+export const selectOptionInRadixCombo = async (
   user: UserEvent,
   comboName: string,
   option: string
@@ -114,13 +96,4 @@ export const selectOptionInSearchCombo = async (
   // Wait for the dropdown to appear and select the option
   const opt = screen.getByRole("option", { name: option });
   await user.click(opt);
-};
-
-export const addFileToFileInput = async (
-  user: UserEvent,
-  inputLabel: string,
-  testFile: File
-) => {
-  const fileInput = screen.getByLabelText(inputLabel);
-  await user.upload(fileInput, testFile);
 };

@@ -116,7 +116,7 @@ export const assertMissingTextValue = async (value: string) => {
 export const assertMissingAltTextValue = async (value: string) => {
   expect(await screen.queryByLabelText(`${value}`)).toBe(null);
 };
-export const assertMissingFileValue = async (name: string) => {
+export const assertMissingPlaceholderValue = async (name: string) => {
   expect(await screen.queryByPlaceholderText(`${name}`)).toBe(null);
 };
 export const assertMissingInputValue = async (type: string, name: string) => {

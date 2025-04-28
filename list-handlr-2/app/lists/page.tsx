@@ -105,7 +105,7 @@ export default function Page() {
         toast.error("Error saving: " + result.message);
       }
     }
-    if (pageState.lists.length > 0) {
+    if (pageState.timestamp !== "") {
       setPageState((prev) => ({
         ...prev,
         pendingSave: true,

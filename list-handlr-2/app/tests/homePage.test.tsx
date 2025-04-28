@@ -13,6 +13,8 @@ test("Home page load", async () => {
 
   await waitForRender();
 
-  await assertTextValueInDoc(/Get started by editing/);
-  await assertTextValueInDoc(/Go to nextjs.org/);
+  await assertTextValueInDoc(
+    /Create a list of items you want to keep track of./
+  );
+  await assertTextValueInDoc(/deployed on vercel hosting/);
 });
