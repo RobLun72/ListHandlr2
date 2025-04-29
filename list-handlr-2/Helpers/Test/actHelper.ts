@@ -8,6 +8,10 @@ export const waitForRender = async (timeout?: number) => {
   });
 };
 
+export const getValueByTestId = (testId: string) => {
+  return (screen.getByTestId(testId) as HTMLElement).innerText;
+};
+
 export const typeInTextBox = async (
   user: UserEvent,
   name: string,

@@ -7,8 +7,10 @@ import {
 import { handlers } from "../../../MSW/handlers";
 import Page from "../page";
 import {
+  clickOnButton,
   clickOnButtonWithIndex,
   clickOnMenuItem,
+  getValueByTestId,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
@@ -53,6 +55,7 @@ test("Delete testy list", async () => {
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("testy");
+  const loadedTimeStamp = getValueByTestId("current-timestamp");
 
   await clickOnButtonWithIndex(user, "Open menu", 0);
   await assertMultiplesOfTextValue("testy", 2);
@@ -60,10 +63,18 @@ test("Delete testy list", async () => {
   await assertTextValueInDoc("Delete");
   await assertTextValueInDoc("View list items");
 
-  //click on view region
   await clickOnMenuItem(user, "Delete");
+
+  await assertTextValueInDoc("Are you sure you want to delete this list?");
+  await clickOnButton(user, "Continue");
+
+  await assertTextValueInDoc(/Saving the list.../);
+  await waitForRender(300);
 
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");
   await assertMissingTextValue("testy");
+
+  const updTimeStamp = getValueByTestId("current-timestamp");
+  expect(loadedTimeStamp).not.toEqual(updTimeStamp);
 });

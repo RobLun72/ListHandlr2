@@ -11,6 +11,7 @@ import {
   clickOnButton,
   clickOnButtonWithIndex,
   clickOnMenuItem,
+  getValueByTestId,
   typeInTextBox,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
@@ -57,6 +58,8 @@ test("Edit name of handla list", async () => {
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("testy");
 
+  const loadedTimeStamp = getValueByTestId("current-timestamp");
+
   await clickOnButtonWithIndex(user, "Open menu", 2);
   await assertMultiplesOfTextValue("Handla", 2);
   await assertTextValueInDoc("Edit");
@@ -74,7 +77,13 @@ test("Edit name of handla list", async () => {
 
   await clickOnButton(user, "Update Item");
 
+  await assertTextValueInDoc(/Saving the list.../);
+  await waitForRender(300);
+
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla edited");
   await assertTextValueInDoc("testy");
+
+  const updTimeStamp = getValueByTestId("current-timestamp");
+  expect(loadedTimeStamp).not.toEqual(updTimeStamp);
 });

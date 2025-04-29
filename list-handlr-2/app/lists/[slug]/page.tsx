@@ -23,6 +23,7 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { stableInit } from "@/Helpers/stableInit";
+import { formatDate } from "@/Helpers/formatDate";
 
 export interface OneListPageState {
   load: boolean;
@@ -202,7 +203,6 @@ export default function Page() {
   };
 
   const handleSave = async () => {
-    console.log("Saving list...", pageState.isDirty);
     if (pageState.isDirty) {
       postLists({
         saveType: "oneList",
@@ -264,6 +264,9 @@ export default function Page() {
               onUp={handleUp}
               onDown={handleDown}
             />
+          </div>
+          <div className="pr-4 text-sm italic float-end">
+            {`Last saved: ${formatDate(pageState.timestamp)}`}
           </div>
         </div>
       )}

@@ -68,7 +68,7 @@ test("Add one item and Delete another item in testy list", async () => {
 
   await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
 
-  //act edit
+  //act delete
   await clickOnMenuItem(user, "Delete");
 
   //act add

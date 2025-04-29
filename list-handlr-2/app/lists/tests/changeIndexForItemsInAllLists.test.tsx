@@ -7,20 +7,18 @@ import {
 import { handlers } from "../../../MSW/handlers";
 import Page from "../page";
 import {
-  clickOnButtonWithIndex,
-  clickOnMenuItem,
+  clickOnElementWithTestId,
+  getValueByTestId,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import {
-  assertMockIsCalledWith,
-  assertMultiplesOfTextValue,
+  assertElementHasClassname,
   assertTextValueInDoc,
 } from "@/Helpers/Test/assertHelper";
 import userEvent from "@testing-library/user-event";
 
 // Mock next/navigation
-const navMock = vi.fn();
 vi.mock("next/navigation", async () => {
   const mod = await vi.importActual<typeof import("next/navigation")>(
     "next/navigation"
@@ -30,7 +28,7 @@ vi.mock("next/navigation", async () => {
     useSearchParams: () => new URLSearchParams("") as ReadonlyURLSearchParams,
     usePathname: () => "/Lists",
     useRouter: () => ({
-      push: navMock,
+      push: vi.fn(),
     }),
   };
 });
@@ -42,10 +40,9 @@ beforeEach(async () => {
 
 afterEach(() => {
   serverWithHandlers.close();
-  navMock.mockReset();
 });
 
-test("Open testy list", async () => {
+test("Change index for items in All list", async () => {
   const user = userEvent.setup();
 
   await render(<Page />);
@@ -56,13 +53,28 @@ test("Open testy list", async () => {
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("testy");
 
-  await clickOnButtonWithIndex(user, "Open menu", 0);
-  await assertMultiplesOfTextValue("testy", 2);
-  await assertTextValueInDoc("Edit");
-  await assertTextValueInDoc("Delete");
-  await assertTextValueInDoc("View list items");
+  const loadedTimeStamp = getValueByTestId("current-timestamp");
+  //check that the save button is disabled when not dirty
+  await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
 
-  await clickOnMenuItem(user, "View list items");
+  //move item
+  await clickOnElementWithTestId(user, "up-button-1");
 
-  await assertMockIsCalledWith(navMock, `/lists/testy`);
+  //check that the save button is enabled when dirty
+  await assertElementHasClassname("save-list-icon", "cursor-pointer");
+
+  await clickOnElementWithTestId(user, "save-list");
+
+  await assertTextValueInDoc(/Saving the list.../);
+  await waitForRender(300);
+
+  //check that the save button is disabled after saving
+  await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
+
+  await assertTextValueInDoc("Matlista");
+  await assertTextValueInDoc("Handla");
+  await assertTextValueInDoc("testy");
+
+  const updTimeStamp = getValueByTestId("current-timestamp");
+  expect(loadedTimeStamp).not.toEqual(updTimeStamp);
 });

@@ -16,6 +16,7 @@ import { ListsForm } from "./listsForm";
 import { cn } from "@/lib/utils";
 import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 import { stableInit } from "@/Helpers/stableInit";
+import { ConfirmDialog } from "@/components/ui/Dialog/ConfirmDialog";
 
 export interface ListsPageState {
   load: boolean;
@@ -24,6 +25,8 @@ export interface ListsPageState {
   isDirty: boolean;
   isEditing: boolean;
   showItemForm: boolean;
+  showDeleteConfirm: boolean;
+  deleteIndex: number;
   lists: ListData[];
   item: ListData | undefined;
   timestamp: string;
@@ -41,6 +44,8 @@ export default function Page() {
     isDirty: false,
     isEditing: true,
     showItemForm: false,
+    showDeleteConfirm: false,
+    deleteIndex: -1,
     lists: [],
     item: undefined,
     timestamp: "",
@@ -131,6 +136,21 @@ export default function Page() {
     }));
   };
 
+  const showDeleteConfirm = (index: number) => {
+    setPageState((prev) => ({
+      ...prev,
+      showDeleteConfirm: true,
+      deleteIndex: index,
+    }));
+  };
+
+  const setDeleteFlag = (flag: boolean) => {
+    setPageState((prev) => ({
+      ...prev,
+      showDeleteConfirm: flag,
+    }));
+  };
+
   const handleDelete = (index: number) => {
     const newLists = [...pageState.lists];
     newLists.splice(index, 1);
@@ -145,6 +165,7 @@ export default function Page() {
       ...prev,
       lists: newLists,
       isDirty: true,
+      deleteIndex: -1,
     }));
   };
 
@@ -221,12 +242,17 @@ export default function Page() {
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">All lists</div>
             <div className="pt-8 px-3 pb-2 flex flex-row items-center">
-              <div className="flex items-center mr-0.5" onClick={handleSave}>
+              <div
+                className="flex items-center mr-0.5"
+                onClick={handleSave}
+                data-testid="save-list"
+              >
                 <ClipboardDocumentCheckIcon
                   className={cn(
                     "h-8 text-appBlue cursor-pointer",
                     !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
                   )}
+                  data-testid="save-list-icon"
                 />
               </div>
             </div>
@@ -237,12 +263,15 @@ export default function Page() {
               pageParams={pageParam}
               onAdd={handleAdd}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={showDeleteConfirm}
               onUp={handleUp}
               onDown={handleDown}
             />
           </div>
-          <div className="pr-4 text-sm italic float-end">
+          <div
+            data-testid="current-timestamp"
+            className="pr-4 text-sm italic float-end"
+          >
             {`Last saved: ${formatDate(pageState.timestamp)}`}
           </div>
         </div>
@@ -277,6 +306,16 @@ export default function Page() {
           </div>
         </OverlayWithCenteredInput>
       )}
+      <ConfirmDialog
+        title={"Delete list"}
+        description={"Are you sure you want to delete this list?"}
+        isOpen={pageState.showDeleteConfirm}
+        onCancel={() => setDeleteFlag(false)}
+        onOk={() => {
+          setDeleteFlag(false);
+          handleDelete(pageState.deleteIndex);
+        }}
+      />
     </Fragment>
   );
 }

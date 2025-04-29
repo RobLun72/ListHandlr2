@@ -26,19 +26,27 @@ export const handleAllListsPost = async (data: AllListsPostData) => {
   if (data.saveType === "editList") {
     const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
 
+    await new Promise((r) => setTimeout(r, 200));
+
     return HttpResponse.json(responseLists);
   }
   if (data.saveType === "addList") {
     const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
 
     return HttpResponse.json(responseLists);
   }
   if (data.saveType === "deleteList") {
     const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
 
+    await new Promise((r) => setTimeout(r, 200));
+
     return HttpResponse.json(responseLists);
   } else {
     const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
 
     return HttpResponse.json(responseLists);
   }
@@ -73,6 +81,13 @@ const editList = (data: AllListsPostData) => {
           listName: updItem![0].listName,
         },
       });
+    });
+
+    allListsDb.allLists.update({
+      where: { timeStamp: { equals: lists[0].timeStamp } },
+      data: {
+        timeStamp: new Date(Date.now()).toISOString(),
+      },
     });
 
     const responseLists: ApiResponse<ApiData<ListData>> = {
@@ -136,7 +151,7 @@ const addList = (data: AllListsPostData) => {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "",
       data: {
-        timeStamp: updData.timeStamp,
+        timeStamp: new Date(Date.now()).toISOString(),
         rows: sortAscending(updData.rows, "index"),
       },
     };
@@ -191,7 +206,7 @@ const deleteList = (data: AllListsPostData) => {
     allListsDb.allLists.update({
       where: { timeStamp: { equals: lists[0].timeStamp } },
       data: {
-        timeStamp: data.item.timeStamp,
+        timeStamp: new Date(Date.now()).toISOString(),
         rows: allListsDb.todoList.getAll(),
       },
     });
@@ -238,7 +253,7 @@ const sortList = (data: AllListsPostData) => {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "",
       data: {
-        timeStamp: updData.timeStamp,
+        timeStamp: new Date(Date.now()).toISOString(),
         rows: sortAscending(updData.rows, "index"),
       },
     };

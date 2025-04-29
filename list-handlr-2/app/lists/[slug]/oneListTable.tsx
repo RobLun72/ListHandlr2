@@ -156,11 +156,13 @@ function getColumns(
             <ChevronUpIcon
               className="h-6 cursor-pointer text-appBlue pr-1"
               onClick={() => onUp(row.original.index)}
+              data-testid={"up-button" + row.original.index}
             />
 
             <ChevronDownIcon
               className="h-6 cursor-pointer text-appBlue"
               onClick={() => onDown(row.original.index)}
+              data-testid={"down-button" + row.original.index}
             />
           </div>
         );
