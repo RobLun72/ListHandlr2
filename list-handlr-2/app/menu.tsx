@@ -14,12 +14,16 @@ import {
   //navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { usePathname } from "next/navigation";
+import { LogoutLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
-const components: {
+interface MenuComponentProps {
   topMenu: string;
   paths: string[];
   items: { title: string; path: string; href: string; description: string }[];
-}[] = [
+}
+
+const components: MenuComponentProps[] = [
   {
     topMenu: "Actions",
     paths: ["start", "lists", "about"],
@@ -46,9 +50,39 @@ const components: {
   },
 ];
 
+const unAuthComponents: MenuComponentProps[] = [
+  {
+    topMenu: "Actions",
+    paths: ["start", "about"],
+    items: [
+      {
+        title: "Start",
+        href: "/",
+        path: "start",
+        description: "The landing page.",
+      },
+      {
+        title: "About",
+        href: "/about",
+        path: "about",
+        description: "Description about how the app is built.",
+      },
+    ],
+  },
+];
+
 export function AppMenu() {
   const path = usePathname();
   const pathParts = path.split("/");
+
+  const { isAuthenticated } = useKindeBrowserClient();
+
+  const mapComponents: MenuComponentProps[] =
+    process.env.NEXT_PUBLIC_AUTH_ACTIVE === "false"
+      ? components
+      : isAuthenticated
+      ? components
+      : unAuthComponents;
 
   return (
     <div className="flex md:min-w-3xl min-w-sm max-w-7xl items-center  bg-appBlue px-4 py-2">
@@ -57,7 +91,7 @@ export function AppMenu() {
       </Link>
       <NavigationMenu>
         <NavigationMenuList>
-          {components.map((component) => (
+          {mapComponents.map((component) => (
             <NavigationMenuItem key={"menu-" + component.topMenu}>
               <NavigationMenuTrigger
                 className={cn(
@@ -88,6 +122,20 @@ export function AppMenu() {
           ))}
         </NavigationMenuList>
       </NavigationMenu>
+      {process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true" && (
+        <div className="flex justify-end align-middle flex-grow">
+          {isAuthenticated && (
+            <LogoutLink>
+              <div className="text-white">Logout</div>
+            </LogoutLink>
+          )}
+          {!isAuthenticated && (
+            <LoginLink>
+              <div className="text-white">Login</div>
+            </LoginLink>
+          )}
+        </div>
+      )}
     </div>
   );
 }
