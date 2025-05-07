@@ -14,11 +14,9 @@ export const handleServerAction = async (
     );
   }
 
-  const response = `0:{"a":"$@1","f":"","b":"development"}
-1:{"message":"mocked serverAction resolved with message:${
+  const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:{"message":"mocked serverAction resolved with message:${
     (bodyContent as string[])[0]
-  } from: ${url.pathname}"}
-`;
+  } from: ${url.pathname}"}\r\n`;
 
   return HttpResponse.text(response, {
     headers: {
