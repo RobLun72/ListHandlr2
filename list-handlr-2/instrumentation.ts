@@ -1,6 +1,6 @@
-import { setupMocks } from "./MSW";
+//import { setupMocks } from "./MSW";
 
 export async function register() {
-  setupMocks();
-  console.log("MSW mocks registered.");
+  //setupMocks();
+  //console.log("MSW mocks registered.");
 }

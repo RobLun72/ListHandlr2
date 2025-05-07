@@ -3,8 +3,27 @@ import { httpHandler, passThroughHandler } from "./handlerHelper";
 
 const allListsHandlers = (responseDelay: number) => {
   return [
-    httpHandler("get", "", "", responseDelay),
-    httpHandler("post", "", "", responseDelay),
+    httpHandler(
+      "get",
+      process.env.NEXT_PUBLIC_BACK_END_URL,
+      "",
+      "",
+      responseDelay
+    ),
+    httpHandler(
+      "post",
+      process.env.NEXT_PUBLIC_BACK_END_URL,
+      "",
+      "",
+      responseDelay
+    ),
+    httpHandler(
+      "post",
+      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+      "/about",
+      "",
+      responseDelay
+    ),
   ];
 };
 

@@ -1,6 +1,19 @@
 "use client";
 
+import { runServerAction } from "@/actions/actions";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
 export default function Page() {
+  const [serverMsgs, setServerMsgs] = useState<string[]>([]);
+
+  const handleServerAction = async () => {
+    const result = await runServerAction("Hello from the about page!");
+    console.log("result", result);
+    serverMsgs.push(result.message);
+    setServerMsgs(Array.from(serverMsgs));
+  };
+
   return (
     <div>
       <div className="px-1 py-2 text-xl w-full text-center">About the app</div>
@@ -48,6 +61,19 @@ export default function Page() {
             <strong>React-testing-library:</strong> As testing framework
           </li>
         </ul>
+        <Button className="mt-8" onClick={handleServerAction}>
+          Run Server Action
+        </Button>
+        {serverMsgs.length > 0 && (
+          <div className="px-1 py-2 text-lg">
+            Server action messages:
+            <ul className="list-disc pl-6">
+              {serverMsgs.map((msg, index) => (
+                <li key={index}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

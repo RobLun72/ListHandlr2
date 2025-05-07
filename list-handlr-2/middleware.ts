@@ -1,14 +1,8 @@
-import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
+import { chainMiddleware } from "./Middleware/chainMiddleware";
+import { withXUrlHeader } from "./Middleware/withXUrlHeader";
+import { withKindeAuth } from "./Middleware/withAuth";
 
-export default function middleware(req: Request) {
-  return withAuth(req, {
-    // Middleware still runs on all routes, but doesn't protect the routes in the array}
-    publicPaths:
-      process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true"
-        ? ["/", "/about"]
-        : ["/", "/lists", "/about"],
-  });
-}
+export default chainMiddleware([withXUrlHeader, withKindeAuth]);
 
 export const config = {
   matcher: [

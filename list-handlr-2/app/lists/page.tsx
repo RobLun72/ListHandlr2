@@ -59,7 +59,7 @@ export default function Page() {
       await stableInit();
 
       try {
-        const data = await fetch(`https://${envVariable}${baseQuery}`);
+        const data = await fetch(`${envVariable}${baseQuery}`);
         const lists: ApiData<ListData> = await data.json();
         // Fix the first index if it is empty
         FixFirstPostIndex(lists);
@@ -84,7 +84,7 @@ export default function Page() {
 
   const postLists = (dataToPost: AllListsPostData) => {
     async function doPost(dataToPost: AllListsPostData) {
-      const data = await fetch(`https://${envVariable}`, {
+      const data = await fetch(`${envVariable}`, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(dataToPost),

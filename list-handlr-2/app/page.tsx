@@ -5,10 +5,21 @@ import {
   LoginLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { Button } from "@/components/ui/button";
+import { runServerAction } from "@/actions/actions";
+import { useState } from "react";
 
 export default function Home() {
+  const [serverMsgs, setServerMsgs] = useState<string[]>([]);
+
+  const handleServerAction = async () => {
+    const result = await runServerAction("StartPage calling");
+
+    serverMsgs.push(result.message);
+    setServerMsgs(Array.from(serverMsgs));
+  };
+
   return (
-    <div className="grid grid-rows-[20px_500px_20px] items-center justify-items-center min-h-screen p-4 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_700px_20px] items-center justify-items-center min-h-screen p-4 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <div className="w-full flex justify-center items-center">
           <h1 className="text-4xl font-bold text-center">List Handlr</h1>
@@ -33,6 +44,23 @@ export default function Home() {
             </RegisterLink>
           </div>
         )}
+        <div className="w-full flex justify-center items-center">
+          <Button className="mt-8 " onClick={handleServerAction}>
+            Run Server Action
+          </Button>
+        </div>
+        <div className="w-full flex justify-center items-center">
+          {serverMsgs.length > 0 && (
+            <div className="px-1 py-2 text-sm ">
+              Server action messages:
+              <ul className="list-disc pl-6 text-wrap">
+                {serverMsgs.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         deployed on vercel hosting

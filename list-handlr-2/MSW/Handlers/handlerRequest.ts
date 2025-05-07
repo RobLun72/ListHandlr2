@@ -3,6 +3,7 @@ import {
   handleApiGetCallsSearchParams,
   handleApiPostCallsBody,
 } from "../RequestHelpers/apiCallHelper";
+import { handleServerAction } from "../RequestHelpers/serverActionHelper";
 
 export const handleReq = async (
   baseUrl: string,
@@ -10,7 +11,7 @@ export const handleReq = async (
   request: StrictRequest<DefaultBodyType>
 ) => {
   const url = new URL(request.url);
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && url && url.href) {
     console.log(`got ${request.method} request for: ${url.href}`);
   }
 
@@ -22,6 +23,15 @@ export const handleReq = async (
         return handleApiPostCallsBody(request);
       }
       break;
+    case `/about`:
+      if (url && url.href) {
+        console.log(
+          "About page server action request",
+          request.method,
+          url.href
+        );
+      }
+      return handleServerAction(request);
     default:
       return HttpResponse.error();
       break;

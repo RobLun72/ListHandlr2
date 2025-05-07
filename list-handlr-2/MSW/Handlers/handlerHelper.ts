@@ -14,37 +14,37 @@ const handleReqDelayWrapper = async (
   return handleReq(baseUrl, paramsUrl, request);
 };
 
-const callHandler = (
+const getHandler = (
+  rootUrl: string,
   baseUrl: string,
   paramsUrl: string,
   responseDelay: number
 ) => {
-  const url =
-    "https://" + process.env.NEXT_PUBLIC_BACK_END_URL + baseUrl + paramsUrl;
+  const url = rootUrl + baseUrl + paramsUrl;
   return http.get(url, async ({ request }) => {
     return handleReqDelayWrapper(baseUrl, paramsUrl, request, responseDelay);
   });
 };
 
 const postHandler = (
+  rootUrl: string,
   baseUrl: string,
   paramsUrl: string,
   responseDelay: number
 ) => {
-  const url =
-    "https://" + process.env.NEXT_PUBLIC_BACK_END_URL + baseUrl + paramsUrl;
+  const url = rootUrl + baseUrl + paramsUrl;
   return http.post(url, async ({ request }) => {
     return handleReqDelayWrapper(baseUrl, paramsUrl, request, responseDelay);
   });
 };
 
 const putHandler = (
+  rootUrl: string,
   baseUrl: string,
   paramsUrl: string,
   responseDelay: number
 ) => {
-  const url =
-    "https://" + process.env.NEXT_PUBLIC_BACK_END_URL + baseUrl + paramsUrl;
+  const url = rootUrl + baseUrl + paramsUrl;
   return http.put(url, async ({ request }) => {
     return handleReqDelayWrapper(baseUrl, paramsUrl, request, responseDelay);
   });
@@ -52,19 +52,20 @@ const putHandler = (
 
 export const httpHandler = (
   type: "get" | "post" | "put",
+  rootUrl: string,
   baseUrl: string,
   paramsUrl: string,
   responseDelay: number
 ) => {
   switch (type) {
     case "get":
-      return callHandler(baseUrl, paramsUrl, responseDelay);
+      return getHandler(rootUrl, baseUrl, paramsUrl, responseDelay);
       break;
     case "post":
-      return postHandler(baseUrl, paramsUrl, responseDelay);
+      return postHandler(rootUrl, baseUrl, paramsUrl, responseDelay);
       break;
     case "put":
-      return putHandler(baseUrl, paramsUrl, responseDelay);
+      return putHandler(rootUrl, baseUrl, paramsUrl, responseDelay);
       break;
   }
 };
