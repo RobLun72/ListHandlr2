@@ -8,10 +8,14 @@ export default function Page() {
   const [serverMsgs, setServerMsgs] = useState<string[]>([]);
 
   const handleServerAction = async () => {
-    const result = await runServerAction("Hello from the about page!");
-    console.log("result", result);
-    serverMsgs.push(result.message);
-    setServerMsgs(Array.from(serverMsgs));
+    runServerAction("Hello from the about page!")
+      .then((result) => {
+        serverMsgs.push(result.message);
+        setServerMsgs(Array.from(serverMsgs));
+      })
+      .catch((error) => {
+        alert("Error: " + error.message);
+      });
   };
 
   return (
@@ -61,7 +65,7 @@ export default function Page() {
             <strong>React-testing-library:</strong> As testing framework
           </li>
         </ul>
-        <Button className="mt-8" onClick={handleServerAction}>
+        <Button className="ml-4 mt-8" onClick={handleServerAction}>
           Run Server Action
         </Button>
         {serverMsgs.length > 0 && (

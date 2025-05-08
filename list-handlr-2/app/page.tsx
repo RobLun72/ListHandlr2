@@ -12,10 +12,14 @@ export default function Home() {
   const [serverMsgs, setServerMsgs] = useState<string[]>([]);
 
   const handleServerAction = async () => {
-    const result = await runServerAction("StartPage calling");
-
-    serverMsgs.push(result.message);
-    setServerMsgs(Array.from(serverMsgs));
+    runServerAction("StartPage calling")
+      .then((result) => {
+        serverMsgs.push(result.message);
+        setServerMsgs(Array.from(serverMsgs));
+      })
+      .catch((error) => {
+        alert("Error: " + error.message);
+      });
   };
 
   return (
