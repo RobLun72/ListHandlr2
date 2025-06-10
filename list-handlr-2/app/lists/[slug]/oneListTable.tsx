@@ -27,6 +27,7 @@ export function OneListTable({
   onDone,
   onUp,
   onDown,
+  onRowDrop,
 }: {
   list: NamedListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
@@ -36,6 +37,7 @@ export function OneListTable({
   onDone: (index: number) => void;
   onUp: (index: number) => void;
   onDown: (index: number) => void;
+  onRowDrop: (fromIndex: number, toIndex: number) => void;
 }) {
   const { isMobile } = useResponsive();
 
@@ -63,6 +65,8 @@ export function OneListTable({
       pageParams={pageParams}
       onAdd={handleAdd}
       pageSize={isMobile ? 7 : 13}
+      dragDropEnabled={true}
+      onRowDrop={onRowDrop}
     />
   );
 }

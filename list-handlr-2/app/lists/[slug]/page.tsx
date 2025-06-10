@@ -202,6 +202,21 @@ export default function Page() {
     }));
   };
 
+  const handleDrop = (fromIndex: number, toIndex: number) => {
+    const newLists = [...pageState.lists];
+    if (fromIndex < toIndex) {
+      moveDown(newLists, toIndex, fromIndex);
+    } else {
+      moveUp(newLists, toIndex, fromIndex);
+    }
+    sortAscending(newLists, "index");
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
+  };
+
   const handleSave = async () => {
     if (pageState.isDirty) {
       postLists({
@@ -263,6 +278,7 @@ export default function Page() {
               onDone={handleDone}
               onUp={handleUp}
               onDown={handleDown}
+              onRowDrop={handleDrop}
             />
           </div>
           <div className="pr-4 text-sm italic float-end">

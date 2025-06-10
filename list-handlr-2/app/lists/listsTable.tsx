@@ -35,7 +35,7 @@ export function ListsTable({
   onDelete: (index: number) => void;
   onUp: (index: number) => void;
   onDown: (index: number) => void;
-  onRowDrop?: (fromIndex: number, toIndex: number) => void;
+  onRowDrop: (fromIndex: number, toIndex: number) => void;
 }) {
   const { isMobile } = useResponsive();
 
@@ -64,9 +64,7 @@ export function ListsTable({
       onAdd={handleAdd}
       pageSize={isMobile ? 7 : 13}
       dragDropEnabled={true}
-      onRowDrop={(fromIndex: number, toIndex: number) =>
-        onRowDrop && onRowDrop(fromIndex, toIndex)
-      }
+      onRowDrop={onRowDrop}
     />
   );
 }
