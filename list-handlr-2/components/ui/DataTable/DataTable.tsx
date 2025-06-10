@@ -36,6 +36,10 @@ interface DataTableProps<TData, TValue> {
   activeRowIndex?: number;
   noRowsText?: string;
   borderClasses?: string;
+  dragDropEnabled?: boolean;
+  dragDropFromClassName?: string;
+  dragDropToClassName?: string;
+  onRowDrop?: (fromIndex: number, toIndex: number) => void;
 }
 
 const rowModels = {
@@ -60,6 +64,10 @@ export function DataTable<TData, TValue>({
   activeRowIndex,
   noRowsText = "No results.",
   borderClasses = "rounded-sm border",
+  dragDropEnabled = false,
+  dragDropFromClassName = "bg-blue-300",
+  dragDropToClassName = "bg-blue-100",
+  onRowDrop,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(sortingState);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -103,6 +111,10 @@ export function DataTable<TData, TValue>({
           onColumnClick={onColumnClick}
           onRowClick={onRowClick}
           noRowsText={noRowsText}
+          dragDropEnabled={dragDropEnabled}
+          dragDropFromClassName={dragDropFromClassName}
+          dragDropToClassName={dragDropToClassName}
+          onRowDrop={onRowDrop}
         />
       </div>
       <TableFooter table={table} pageParams={pageParams!} />

@@ -11,6 +11,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.2",
     "@heroicons/react": "^2.2.0",
     "@kinde-oss/kinde-auth-nextjs": "^2.6.1",
     "@radix-ui/react-alert-dialog": "^1.1.11",

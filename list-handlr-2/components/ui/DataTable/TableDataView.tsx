@@ -16,16 +16,24 @@ interface TableViewProps<TData> {
   table: TableCore<TData>;
   activeRowIndex?: number;
   noRowsText?: string;
+  dragDropEnabled?: boolean;
+  dragDropFromClassName?: string;
+  dragDropToClassName?: string;
   onColumnClick?: (index: number) => void;
   onRowClick?: (index: number) => void;
+  onRowDrop?: (fromIndex: number, toIndex: number) => void;
 }
 
 export function TableView<TData>({
   table,
   activeRowIndex,
   noRowsText,
+  dragDropEnabled = false,
+  dragDropFromClassName,
+  dragDropToClassName,
   onColumnClick,
   onRowClick,
+  onRowDrop,
 }: TableViewProps<TData>) {
   return (
     <Table className="lg:text-sm text-xs">
@@ -64,6 +72,13 @@ export function TableView<TData>({
               className={
                 activeRowIndex === row.index ? "bg-neutral-100" : "bg-appWhite"
               } // Highlight active row
+              dragDropEnabled={dragDropEnabled}
+              dragDropId={row.index}
+              dragDropFromClassName={dragDropFromClassName}
+              dragDropToClassName={dragDropToClassName}
+              onRowDrop={(fromIndex: number, toIndex: number) =>
+                onRowDrop && onRowDrop(fromIndex, toIndex)
+              }
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id} style={{ width: `50px` }}>
