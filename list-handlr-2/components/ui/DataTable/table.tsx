@@ -6,6 +6,7 @@ import {
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
+import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element";
 
 import { cn } from "@/lib/utils";
 
@@ -107,6 +108,9 @@ function DragggableTableRow({
             );
           }
         },
+      }),
+      autoScrollForElements({
+        element: ref.current,
       })
     );
     return cleanup;
