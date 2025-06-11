@@ -62,7 +62,7 @@ export function TableView<TData>({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody>
+      <TableBody dragDropEnabled={dragDropEnabled}>
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow

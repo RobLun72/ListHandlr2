@@ -98,10 +98,18 @@ export const assertNumberOfElementsWithClassname = (
   expect(elements).toHaveLength(nrOfElements);
 };
 export const assertNumberOfElementsInList = (
-  list: HTMLCollection,
+  list: HTMLCollection | NodeListOf<Element>,
   nrOfElements: number
 ) => {
   expect(list).toHaveLength(nrOfElements);
+};
+
+export const assertElementsValueForListIndex = (
+  list: HTMLCollection | NodeListOf<Element> | NodeListOf<ChildNode>,
+  index: number,
+  value: string | RegExp
+) => {
+  expect(list[index].textContent).toEqual(value);
 };
 
 export const assertEditorWithClassname = (className: string, text: string) => {

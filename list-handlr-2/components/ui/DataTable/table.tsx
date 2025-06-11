@@ -35,7 +35,26 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   );
 }
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
+export interface TableBodyProps extends React.ComponentProps<"tbody"> {
+  dragDropEnabled?: boolean;
+}
+
+function TableBody({ className, dragDropEnabled, ...props }: TableBodyProps) {
+  const ref = React.useRef<HTMLTableElement | null>(null);
+  React.useEffect(() => {
+    if (!ref.current) return;
+    if (!dragDropEnabled) {
+      // If drag and drop is not enabled, we don't need to set up the auto-scroll
+      return;
+    }
+    const cleanup = combine(
+      autoScrollForElements({
+        element: ref.current,
+      })
+    );
+    return cleanup;
+  }, [dragDropEnabled]);
+
   return (
     <tbody
       data-slot="table-body"
@@ -108,9 +127,6 @@ function DragggableTableRow({
             );
           }
         },
-      }),
-      autoScrollForElements({
-        element: ref.current,
       })
     );
     return cleanup;

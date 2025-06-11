@@ -14,6 +14,7 @@ import {
   PlusCircleIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import cn from "@/Helpers/cn";
 import { useResponsive } from "@/Helpers/useResponsive";
@@ -152,21 +153,26 @@ function getColumns(
     {
       accessorKey: "index",
       header: "Index",
-      size: 50,
-      maxSize: 50,
+      size: 70,
+      maxSize: 70,
       cell: ({ row }) => {
         return (
           <div className="flex">
+            <Squares2X2Icon
+              className="h-5 cursor-grab text-appBlue pr-1 pt-1"
+              data-testid={"drag-button-" + row.original.index}
+            />
+
             <ChevronUpIcon
               className="h-6 cursor-pointer text-appBlue pr-1"
               onClick={() => onUp(row.original.index)}
-              data-testid={"up-button" + row.original.index}
+              data-testid={"up-button-" + row.original.index}
             />
 
             <ChevronDownIcon
               className="h-6 cursor-pointer text-appBlue"
               onClick={() => onDown(row.original.index)}
-              data-testid={"down-button" + row.original.index}
+              data-testid={"down-button-" + row.original.index}
             />
           </div>
         );
