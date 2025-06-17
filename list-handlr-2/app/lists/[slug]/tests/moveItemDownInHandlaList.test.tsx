@@ -3,17 +3,18 @@ import { render } from "@testing-library/react";
 import {
   serverWithHandlers,
   setupServerWithHandlers,
-} from "../../../MSW/server";
-import { handlers } from "../../../MSW/handlers";
+} from "../../../../MSW/server";
+import { handlers } from "../../../../MSW/handlers";
 import Page from "../page";
 import {
   clickOnElementWithTestId,
-  getValueByTestId,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import {
   assertElementHasClassname,
+  assertElementsValueForListIndex,
+  assertNumberOfElementsInList,
   assertTextValueInDoc,
 } from "@/Helpers/Test/assertHelper";
 import userEvent from "@testing-library/user-event";
@@ -27,6 +28,7 @@ vi.mock("next/navigation", async () => {
     ...mod,
     useSearchParams: () => new URLSearchParams("") as ReadonlyURLSearchParams,
     usePathname: () => "/Lists",
+    useParams: () => ({ slug: "Handla" }),
     useRouter: () => ({
       push: vi.fn(),
     }),
@@ -42,39 +44,45 @@ afterEach(() => {
   serverWithHandlers.close();
 });
 
-test("Change index for items in All list", async () => {
+test("Move item down in Handla list", async () => {
   const user = userEvent.setup();
 
   await render(<Page />);
 
   await waitForRender();
 
-  await assertTextValueInDoc("Matlista");
-  await assertTextValueInDoc("Handla");
-  await assertTextValueInDoc("testy");
+  await assertTextValueInDoc("Ris");
+  await assertTextValueInDoc("Tesil");
+  await assertTextValueInDoc("Tomat");
 
-  const loadedTimeStamp = getValueByTestId("current-timestamp");
+  const rows = document.querySelectorAll('[data-slot="table-row"]');
+
+  assertNumberOfElementsInList(rows, 9); // 8 items in the list + header row
+  assertElementsValueForListIndex(rows[1].childNodes, 1, "Ris");
+  assertElementsValueForListIndex(rows[2].childNodes, 1, "Tesil");
+  assertElementsValueForListIndex(rows[3].childNodes, 1, "Tomat");
+
   //check that the save button is disabled when not dirty
   await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
 
   //move item
-  await clickOnElementWithTestId(user, "up-button-1");
+  await clickOnElementWithTestId(user, "down-button-1");
 
   //check that the save button is enabled when dirty
   await assertElementHasClassname("save-list-icon", "cursor-pointer");
 
   await clickOnElementWithTestId(user, "save-list");
 
-  await assertTextValueInDoc(/Saving the list.../);
+  await assertTextValueInDoc(/Saving the Handla list.../);
   await waitForRender(300);
 
   //check that the save button is disabled after saving
   await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
 
-  await assertTextValueInDoc("Matlista");
-  await assertTextValueInDoc("Handla");
-  await assertTextValueInDoc("testy");
-
-  const updTimeStamp = getValueByTestId("current-timestamp");
-  expect(loadedTimeStamp).not.toEqual(updTimeStamp);
+  //check that the items are in the correct order after saving
+  const rows2 = document.querySelectorAll('[data-slot="table-row"]');
+  assertNumberOfElementsInList(rows2, 9); // 8 items in the list + header row
+  assertElementsValueForListIndex(rows2[1].childNodes, 1, "Ris");
+  assertElementsValueForListIndex(rows2[2].childNodes, 1, "Tomat");
+  assertElementsValueForListIndex(rows2[3].childNodes, 1, "Tesil");
 });

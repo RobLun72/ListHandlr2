@@ -217,6 +217,20 @@ export default function Page() {
       isDirty: true,
     }));
   };
+  const handleDrop = (fromIndex: number, toIndex: number) => {
+    const newLists = [...pageState.lists];
+    if (fromIndex < toIndex) {
+      moveDown(newLists, toIndex, fromIndex);
+    } else {
+      moveUp(newLists, toIndex, fromIndex);
+    }
+    sortAscending(newLists, "index");
+    setPageState((prev) => ({
+      ...prev,
+      lists: newLists,
+      isDirty: true,
+    }));
+  };
 
   const handleSave = async () => {
     if (pageState.isDirty) {
@@ -266,6 +280,7 @@ export default function Page() {
               onDelete={showDeleteConfirm}
               onUp={handleUp}
               onDown={handleDown}
+              onRowDrop={handleDrop}
             />
           </div>
           <div

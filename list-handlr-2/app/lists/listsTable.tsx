@@ -14,6 +14,7 @@ import {
   PlusCircleIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 
 import { useResponsive } from "@/Helpers/useResponsive";
@@ -26,6 +27,7 @@ export function ListsTable({
   onDelete,
   onUp,
   onDown,
+  onRowDrop,
 }: {
   lists: ListData[];
   pageParams: { pagePath: string; params: URLSearchParams };
@@ -34,6 +36,7 @@ export function ListsTable({
   onDelete: (index: number) => void;
   onUp: (index: number) => void;
   onDown: (index: number) => void;
+  onRowDrop: (fromIndex: number, toIndex: number) => void;
 }) {
   const { isMobile } = useResponsive();
 
@@ -61,6 +64,8 @@ export function ListsTable({
       pageParams={pageParams}
       onAdd={handleAdd}
       pageSize={isMobile ? 7 : 13}
+      dragDropEnabled={true}
+      onRowDrop={onRowDrop}
     />
   );
 }
@@ -118,11 +123,16 @@ function getColumns(
     {
       accessorKey: "index",
       header: "Index",
-      size: 50,
-      maxSize: 50,
+      size: 70,
+      maxSize: 70,
       cell: ({ row }) => {
         return (
           <div className="flex">
+            <Squares2X2Icon
+              className="h-5 cursor-grab text-appBlue pr-1 pt-1"
+              data-testid={"drag-button-" + row.original.index}
+            />
+
             <ChevronUpIcon
               className="h-6 cursor-pointer text-appBlue pr-1"
               onClick={() => onUp(row.original.index)}
@@ -132,7 +142,7 @@ function getColumns(
             <ChevronDownIcon
               className="h-6 cursor-pointer text-appBlue"
               onClick={() => onDown(row.original.index)}
-              data-testid={"down-button" + row.original.index}
+              data-testid={"down-button-" + row.original.index}
             />
           </div>
         );
