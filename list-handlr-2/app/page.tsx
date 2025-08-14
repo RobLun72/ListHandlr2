@@ -59,7 +59,9 @@ export default function Home() {
               Server action messages:
               <ul className="list-disc pl-6 text-wrap">
                 {serverMsgs.map((msg, index) => (
-                  <li key={index}>{msg}</li>
+                  <li key={index} className="text-wrap">
+                    <p className="wrap-anywhere max-w-xl">{msg}</p>
+                  </li>
                 ))}
               </ul>
             </div>

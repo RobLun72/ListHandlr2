@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 import { stableInit } from "@/Helpers/stableInit";
 import { ConfirmDialog } from "@/components/ui/Dialog/ConfirmDialog";
+import { editLists } from "@/actions/editLists";
 
 export interface ListsPageState {
   load: boolean;
@@ -84,12 +85,9 @@ export default function Page() {
 
   const postLists = (dataToPost: AllListsPostData) => {
     async function doPost(dataToPost: AllListsPostData) {
-      const data = await fetch(`${envVariable}`, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(dataToPost),
-      });
-      const result: ApiResponse<ApiData<ListData>> = await data.json();
+      const result: ApiResponse<ApiData<ListData>> = await editLists(
+        dataToPost
+      );
 
       if (result && result.data && result.message === "") {
         FixFirstPostIndex(result.data);

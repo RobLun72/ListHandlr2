@@ -42,6 +42,16 @@ export const handleNamedListPost = async (data: OneListPostData) => {
   }
 };
 
+export const handleNamedListServerPost = async (data: OneListPostData) => {
+  if (data.saveType === "oneList") {
+    const responseLists: ApiResponse<ApiData<NamedListData>> = editList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
+
+    return responseLists;
+  }
+};
+
 const editList = (data: OneListPostData) => {
   const listData = namedListsDb.allNamedLists.findFirst({
     where: { name: { equals: data.listName } },

@@ -26,12 +26,12 @@ interface MenuComponentProps {
 const components: MenuComponentProps[] = [
   {
     topMenu: "Actions",
-    paths: ["start", "lists", "about"],
+    paths: ["", "lists", "about"],
     items: [
       {
         title: "Start",
         href: "/",
-        path: "start",
+        path: "",
         description: "The landing page.",
       },
       {
@@ -53,12 +53,12 @@ const components: MenuComponentProps[] = [
 const unAuthComponents: MenuComponentProps[] = [
   {
     topMenu: "Actions",
-    paths: ["start", "about"],
+    paths: ["", "about"],
     items: [
       {
         title: "Start",
         href: "/",
-        path: "start",
+        path: "",
         description: "The landing page.",
       },
       {
@@ -110,10 +110,17 @@ export function AppMenu() {
                       href={item.href}
                       className={cn(
                         "",
-                        pathParts[1] === item.path && "bg-neutral-200"
+                        pathParts[1] === item.path && "bg-appBlue text-white"
                       )}
                     >
-                      {item.description}
+                      <ListItemDescription
+                        className={cn(
+                          "",
+                          pathParts[1] !== item.path && "text-gray-400"
+                        )}
+                      >
+                        {item.description}
+                      </ListItemDescription>
                     </ListItem>
                   ))}
                 </ul>
@@ -156,7 +163,7 @@ const ListItem = ({
       <Link
         href={href}
         className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+          "group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
           className
         )}
       >
@@ -166,5 +173,24 @@ const ListItem = ({
         </p>
       </Link>
     </li>
+  );
+};
+
+const ListItemDescription = ({
+  className,
+  children,
+}: {
+  className: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <p
+      className={cn(
+        "line-clamp-2 text-xs leading-snug text-gray-200 group-hover:text-accent-foreground",
+        className
+      )}
+    >
+      {children}
+    </p>
   );
 };

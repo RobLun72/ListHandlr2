@@ -52,6 +52,36 @@ export const handleAllListsPost = async (data: AllListsPostData) => {
   }
 };
 
+export const handleAllListsServerPost = async (data: AllListsPostData) => {
+  if (data.saveType === "editList") {
+    const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
+
+    return responseLists;
+  }
+  if (data.saveType === "addList") {
+    const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
+
+    return responseLists;
+  }
+  if (data.saveType === "deleteList") {
+    const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
+
+    return responseLists;
+  } else {
+    const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
+
+    await new Promise((r) => setTimeout(r, 200));
+
+    return responseLists;
+  }
+};
+
 const editList = (data: AllListsPostData) => {
   const lists = allListsDb.allLists.getAll();
   if (lists[0].timeStamp !== data.item.timeStamp) {

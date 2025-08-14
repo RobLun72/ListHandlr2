@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { stableInit } from "@/Helpers/stableInit";
 import { formatDate } from "@/Helpers/formatDate";
+import { editNamedList } from "@/actions/editNamedList";
 
 export interface OneListPageState {
   load: boolean;
@@ -89,12 +90,9 @@ export default function Page() {
 
   const postLists = (dataToPost: OneListPostData) => {
     async function doPost(dataToPost: OneListPostData) {
-      const data = await fetch(`${envVariable}`, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(dataToPost),
-      });
-      const result: ApiResponse<ApiData<NamedListData>> = await data.json();
+      const result: ApiResponse<ApiData<NamedListData>> = await editNamedList(
+        dataToPost
+      );
 
       if (result && result.data && result.message === "") {
         FixFirstPostIndex(result.data);
