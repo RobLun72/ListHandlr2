@@ -8,7 +8,7 @@ import {
 import { ApiData, ApiResponse } from "../../../DTO/apiData";
 import { FixFirstPostIndex } from "../../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, Suspense, useEffect, useState } from "react";
 import { NamedListData, OneListPostData } from "@/DTO/oneListData";
 import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
@@ -267,17 +267,19 @@ export default function Page() {
             </div>
           </div>
           <div className="py-2 px-3">
-            <OneListTable
-              list={pageState.lists}
-              pageParams={pageParam}
-              onAdd={handleAdd}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onDone={handleDone}
-              onUp={handleUp}
-              onDown={handleDown}
-              onRowDrop={handleDrop}
-            />
+            <Suspense>
+              <OneListTable
+                list={pageState.lists}
+                pageParams={pageParam}
+                onAdd={handleAdd}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onDone={handleDone}
+                onUp={handleUp}
+                onDown={handleDown}
+                onRowDrop={handleDrop}
+              />
+            </Suspense>
           </div>
           <div className="pr-4 text-sm italic float-end">
             {`Last saved: ${formatDate(pageState.timestamp)}`}
