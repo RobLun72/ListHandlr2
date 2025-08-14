@@ -181,7 +181,7 @@ function getColumns(
     {
       accessorKey: "text",
       header: "Text",
-      size: isMobile ? 200 : 400,
+      size: isMobile ? 180 : 400,
       cell: ({ row }) => {
         return textLayout(row.original, onDone);
       },
