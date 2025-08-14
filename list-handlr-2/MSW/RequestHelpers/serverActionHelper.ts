@@ -18,6 +18,10 @@ export const handleServerAction = async (
     (bodyContent as string[])[0]
   } from: ${url.pathname}"}\r\n`;
 
+  return formatServerActionResponse(response, url);
+};
+
+export const formatServerActionResponse = (response: string, url: URL) => {
   return HttpResponse.text(response, {
     headers: {
       "Cache-Control": "no-store, must-revalidate",
