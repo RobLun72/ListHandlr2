@@ -157,7 +157,7 @@ function getColumns(
     {
       accessorKey: "listName",
       header: "Name",
-      size: isMobile ? 200 : 400,
+      size: isMobile ? 180 : 400,
       cell: ({ row }) => {
         return row.original.listName;
       },
