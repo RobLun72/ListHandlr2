@@ -1,3 +1,6 @@
+"use client";
+import { usePathname, useSearchParams } from "next/navigation";
+
 import { ColumnDef, Row, SortingState } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { DataTable } from "../../components/ui/DataTable/DataTable";
@@ -21,7 +24,7 @@ import { useResponsive } from "@/Helpers/useResponsive";
 
 export function ListsTable({
   lists,
-  pageParams,
+  //pageParams,
   onAdd,
   onEdit,
   onDelete,
@@ -30,7 +33,7 @@ export function ListsTable({
   onRowDrop,
 }: {
   lists: ListData[];
-  pageParams: { pagePath: string; params: URLSearchParams };
+  //pageParams: { pagePath: string; params: URLSearchParams };
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
@@ -39,6 +42,9 @@ export function ListsTable({
   onRowDrop: (fromIndex: number, toIndex: number) => void;
 }) {
   const { isMobile } = useResponsive();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const pageParams = { pagePath: pathname, params: searchParams };
 
   const handleAdd = () => {
     onAdd();

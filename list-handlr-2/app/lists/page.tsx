@@ -1,10 +1,9 @@
 "use client";
-import { usePathname, useSearchParams } from "next/navigation";
 import { ApiData, ApiResponse } from "../../DTO/apiData";
 import { AllListsPostData, ListData } from "../../DTO/listsData";
 import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
 import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
 import { sortAscending } from "@/Helpers/sortAndFilter";
@@ -34,10 +33,6 @@ export interface ListsPageState {
 }
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const pageParam = { pagePath: pathname, params: searchParams };
-
   const [pageState, setPageState] = useState<ListsPageState>({
     load: false,
     pendingSave: false,
@@ -270,16 +265,17 @@ export default function Page() {
             </div>
           </div>
           <div className="py-2 px-3">
-            <ListsTable
-              lists={pageState.lists}
-              pageParams={pageParam}
-              onAdd={handleAdd}
-              onEdit={handleEdit}
-              onDelete={showDeleteConfirm}
-              onUp={handleUp}
-              onDown={handleDown}
-              onRowDrop={handleDrop}
-            />
+            <Suspense>
+              <ListsTable
+                lists={pageState.lists}
+                onAdd={handleAdd}
+                onEdit={handleEdit}
+                onDelete={showDeleteConfirm}
+                onUp={handleUp}
+                onDown={handleDown}
+                onRowDrop={handleDrop}
+              />
+            </Suspense>
           </div>
           <div
             data-testid="current-timestamp"
