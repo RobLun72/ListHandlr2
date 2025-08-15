@@ -12,7 +12,13 @@ import { Fragment, Suspense, useEffect, useState } from "react";
 import { NamedListData, OneListPostData } from "@/DTO/oneListData";
 import { OneListSkeleton } from "./oneListSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
-import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
+import {
+  insertFirst,
+  insertLast,
+  moveDown,
+  moveUp,
+  removeItem,
+} from "@/Helpers/collectionHelper";
 import { sortAscending } from "@/Helpers/sortAndFilter";
 import { OneListForm } from "./oneListForm";
 import {
@@ -172,6 +178,15 @@ export default function Page() {
   const handleDone = (index: number) => {
     const newLists = [...pageState.lists];
     newLists[index].done = !newLists[index].done;
+
+    if (newLists[index].done == true) {
+      const doneItem = removeItem<NamedListData>(newLists, index);
+      insertLast<NamedListData>(newLists, doneItem[0]);
+    } else {
+      const undoneItem = removeItem<NamedListData>(newLists, index);
+      insertFirst<NamedListData>(newLists, undoneItem[0]);
+    }
+
     setPageState((prev) => ({
       ...prev,
       lists: newLists,
