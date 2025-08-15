@@ -9,10 +9,7 @@ export const withCORS: MiddlewareFactory = (next) => {
     // Define allowed origins dynamically
     const allowedOrigins =
       process.env.NODE_ENV === "production"
-        ? [
-            "https://list-handlr2.vercel.app/*",
-            "https://listhandlr.kinde.com/*",
-          ]
+        ? ["https://list-handlr2.vercel.app", "https://listhandlr.kinde.com"]
         : ["http://localhost:3000", "http://localhost:3001"];
 
     const isAllowedOrigin = origin && allowedOrigins.includes(origin);
