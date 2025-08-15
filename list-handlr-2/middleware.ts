@@ -1,8 +1,9 @@
 import { chainMiddleware } from "./Middleware/chainMiddleware";
 import { withXUrlHeader } from "./Middleware/withXUrlHeader";
 import { withKindeAuth } from "./Middleware/withAuth";
+import { withCORS } from "./Middleware/withCORS";
 
-export default chainMiddleware([withXUrlHeader, withKindeAuth]);
+export default chainMiddleware([withCORS, withXUrlHeader, withKindeAuth]);
 
 export const config = {
   matcher: [
