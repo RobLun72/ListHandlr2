@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+//import { headers } from "next/headers";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { OneListPostData, NamedListData } from "@/DTO/oneListData";
@@ -15,9 +15,9 @@ export async function editNamedList(
     return Promise.reject(new Error("User is not authenticated."));
   }
 
-  const headerList = await headers();
-  const pathname = headerList.get("x-current-path");
-  console.log("Editing named list:", dataToPost, pathname);
+  // const headerList = await headers();
+  // const pathname = headerList.get("x-current-path");
+  // console.log("Editing named list:", dataToPost, pathname);
   const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
 
   const data = await fetch(`${envVariable}`, {

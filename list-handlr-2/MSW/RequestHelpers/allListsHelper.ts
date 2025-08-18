@@ -22,6 +22,15 @@ export const handleAllListsGet = async (
   }
 };
 
+export const handleAllListsServerGet = async () => {
+  const lists = allListsDb.allLists.getAll();
+
+  return {
+    timeStamp: lists[0].timeStamp,
+    rows: sortAscending(lists[0].rows, "index"),
+  };
+};
+
 export const handleAllListsPost = async (data: AllListsPostData) => {
   if (data.saveType === "editList") {
     const responseLists: ApiResponse<ApiData<ListData>> = editList(data);

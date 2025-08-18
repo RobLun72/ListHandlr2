@@ -2,12 +2,12 @@
 
 //import { headers } from "next/headers";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { AllListsPostData, ListData } from "@/DTO/listsData";
-import { ApiResponse, ApiData } from "@/DTO/apiData";
+import { ApiData } from "@/DTO/apiData";
+import { NamedListData } from "@/DTO/oneListData";
 
-export async function editLists(
-  dataToPost: AllListsPostData
-): Promise<ApiResponse<ApiData<ListData>>> {
+export async function getNamedList(listName: {
+  listName: string;
+}): Promise<ApiData<NamedListData>> {
   const { isAuthenticated } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();
 
@@ -17,15 +17,14 @@ export async function editLists(
 
   // const headerList = await headers();
   // const pathname = headerList.get("x-current-path");
-  // console.log("Editing list:", dataToPost, pathname);
-  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
 
-  const data = await fetch(`${envVariable}`, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify(dataToPost),
-  });
-  const result: ApiResponse<ApiData<ListData>> = await data.json();
+  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
+  const baseQuery = "?type=List&name=" + listName.listName;
+
+  //console.log("Getting list:", `${envVariable}${baseQuery}`, pathname);
+
+  const data = await fetch(`${envVariable}${baseQuery}`);
+  const result: ApiData<NamedListData> = await data.json();
 
   return new Promise((resolve) => {
     //setTimeout(() => {

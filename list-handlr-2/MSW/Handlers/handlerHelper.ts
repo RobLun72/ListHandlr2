@@ -72,6 +72,7 @@ export const httpHandler = (
 
 export const passThroughHandler = (url: string) => {
   return http.get(url, () => {
+    console.log(`Passing through request for: ${url}`);
     return passthrough();
   });
 };
