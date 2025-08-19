@@ -18,7 +18,7 @@ export async function editNamedList(
   // const headerList = await headers();
   // const pathname = headerList.get("x-current-path");
   // console.log("Editing named list:", dataToPost, pathname);
-  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
+  const envVariable = process.env.BACK_END_URL;
 
   const data = await fetch(`${envVariable}`, {
     method: "POST",

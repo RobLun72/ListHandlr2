@@ -17,7 +17,7 @@ export const handleServerPostListsAction = async (
   if (jsonData === undefined) {
     const result = await handleAllListsServerGet();
     const jsonResult = JSON.stringify(result);
-    console.log("mocked path for jsonResult:", jsonResult);
+
     const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:${jsonResult}\r\n`;
 
     return formatServerActionResponse(response, url);

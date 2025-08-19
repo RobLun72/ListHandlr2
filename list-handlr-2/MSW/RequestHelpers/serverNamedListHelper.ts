@@ -15,7 +15,6 @@ export const handleServerPostNamedListAction = async (
   const jsonData: string = (bodyContent as string[])[0];
   const jsonString = JSON.stringify(jsonData);
 
-  console.log("mocked path for jsonString:", jsonString);
   if (jsonString.startsWith('{"listName":')) {
     const postData: { listName: string } = jsonData as unknown as {
       listName: string;

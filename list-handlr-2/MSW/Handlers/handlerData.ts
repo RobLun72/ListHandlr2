@@ -4,20 +4,6 @@ import { httpHandler, passThroughHandler } from "./handlerHelper";
 const allListsHandlers = (responseDelay: number) => {
   return [
     httpHandler(
-      "get",
-      process.env.NEXT_PUBLIC_BACK_END_URL,
-      "",
-      "",
-      responseDelay
-    ),
-    httpHandler(
-      "post",
-      process.env.NEXT_PUBLIC_BACK_END_URL,
-      "",
-      "",
-      responseDelay
-    ),
-    httpHandler(
       "post",
       process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
       "/about",
@@ -41,8 +27,33 @@ const allListsHandlers = (responseDelay: number) => {
   ];
 };
 
-export const handlersWithDelay = (responseDelay: number) => {
-  const allListsHandlersList = allListsHandlers(responseDelay);
+const allTestHandlers = (responseDelay: number) => {
+  return [
+    httpHandler(
+      "get",
+      process.env.NEXT_PUBLIC_BACK_END_URL,
+      "",
+      "",
+      responseDelay
+    ),
+    httpHandler(
+      "post",
+      process.env.NEXT_PUBLIC_BACK_END_URL,
+      "",
+      "",
+      responseDelay
+    ),
+  ];
+};
+
+export const handlersWithDelay = (
+  responseDelay: number,
+  mode: "test" | "development"
+) => {
+  const allListsHandlersList =
+    mode === "test"
+      ? allTestHandlers(responseDelay)
+      : allListsHandlers(responseDelay);
 
   const handlers = [passThroughHandler("/*")];
 
@@ -50,5 +61,11 @@ export const handlersWithDelay = (responseDelay: number) => {
 };
 
 export const handlers = handlersWithDelay(
-  process.env.NEXT_PUBLIC_MSW_API_DELAY ?? 0
+  process.env.NEXT_PUBLIC_MSW_API_DELAY ?? 0,
+  "development"
+);
+
+export const testHandlers = handlersWithDelay(
+  process.env.NEXT_PUBLIC_MSW_API_DELAY ?? 0,
+  "test"
 );

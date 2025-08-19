@@ -16,7 +16,7 @@ export async function getLists(): Promise<ApiData<ListData>> {
   //const headerList = await headers();
   //const pathname = headerList.get("x-current-path");
 
-  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
+  const envVariable = process.env.BACK_END_URL;
   const baseQuery = "?type=Lists";
 
   //console.log("Getting list:", `${envVariable}${baseQuery}`, pathname);
