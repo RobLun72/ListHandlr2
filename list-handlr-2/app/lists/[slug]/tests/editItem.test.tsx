@@ -4,7 +4,7 @@ import {
   serverWithHandlers,
   setupServerWithHandlers,
 } from "../../../../MSW/server";
-import { handlers } from "../../../../MSW/handlers";
+import { testHandlers } from "../../../../MSW/handlers";
 import Page from "../page";
 import {
   blurInput,
@@ -41,7 +41,7 @@ vi.mock("next/navigation", async () => {
 });
 
 beforeEach(async () => {
-  setupServerWithHandlers([...handlers]);
+  setupServerWithHandlers([...testHandlers]);
   await serverWithHandlers.listen({ onUnhandledRequest: "error" });
 });
 

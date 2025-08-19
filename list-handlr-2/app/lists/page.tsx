@@ -17,6 +17,7 @@ import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 import { stableInit } from "@/Helpers/stableInit";
 import { ConfirmDialog } from "@/components/ui/Dialog/ConfirmDialog";
 import { editLists } from "@/actions/editLists";
+import { getLists } from "@/actions/getLists";
 
 export interface ListsPageState {
   load: boolean;
@@ -47,16 +48,13 @@ export default function Page() {
     timestamp: "",
   });
 
-  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
-  const baseQuery = "?type=Lists";
-
   useEffect(() => {
     const fetchData = async () => {
       await stableInit();
 
       try {
-        const data = await fetch(`${envVariable}${baseQuery}`);
-        const lists: ApiData<ListData> = await data.json();
+        const lists: ApiData<ListData> = await getLists();
+
         // Fix the first index if it is empty
         FixFirstPostIndex(lists);
         setPageState((prev) => ({
@@ -76,7 +74,7 @@ export default function Page() {
 
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
-  }, [envVariable]);
+  }, []);
 
   const postLists = (dataToPost: AllListsPostData) => {
     async function doPost(dataToPost: AllListsPostData) {

@@ -32,6 +32,19 @@ export const handleNamedListGet = async (
   }
 };
 
+export const handleNamedListServerGet = async (listName: string) => {
+  if (listName) {
+    const listData = namedListsDb.allNamedLists.findFirst({
+      where: { name: { equals: listName } },
+    });
+    if (listData) {
+      return listData.data;
+    } else {
+      return matLista;
+    }
+  }
+};
+
 export const handleNamedListPost = async (data: OneListPostData) => {
   if (data.saveType === "oneList") {
     const responseLists: ApiResponse<ApiData<NamedListData>> = editList(data);

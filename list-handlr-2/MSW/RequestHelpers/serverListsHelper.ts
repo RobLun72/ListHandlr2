@@ -1,6 +1,9 @@
 import { AllListsPostData } from "@/DTO/listsData";
 import { StrictRequest, DefaultBodyType } from "msw";
-import { handleAllListsServerPost } from "./allListsHelper";
+import {
+  handleAllListsServerGet,
+  handleAllListsServerPost,
+} from "./allListsHelper";
 import { formatServerActionResponse } from "./serverActionHelper";
 
 export const handleServerPostListsAction = async (
@@ -11,20 +14,20 @@ export const handleServerPostListsAction = async (
 
   const jsonData: string = (bodyContent as string[])[0];
 
-  const postData: AllListsPostData = jsonData as unknown as AllListsPostData;
+  if (jsonData === undefined) {
+    const result = await handleAllListsServerGet();
+    const jsonResult = JSON.stringify(result);
 
-  if (url && url.href) {
-    console.log(
-      "mocked serverAction called with message:",
-      postData,
-      "pathname:",
-      url.pathname
-    );
+    const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:${jsonResult}\r\n`;
+
+    return formatServerActionResponse(response, url);
+  } else {
+    const postData: AllListsPostData = jsonData as unknown as AllListsPostData;
+
+    const result = await handleAllListsServerPost(postData);
+    const jsonResult = JSON.stringify(result);
+    const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:${jsonResult}\r\n`;
+
+    return formatServerActionResponse(response, url);
   }
-
-  const result = await handleAllListsServerPost(postData);
-  const jsonResult = JSON.stringify(result);
-  const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:${jsonResult}\r\n`;
-
-  return formatServerActionResponse(response, url);
 };

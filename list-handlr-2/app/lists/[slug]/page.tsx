@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { stableInit } from "@/Helpers/stableInit";
 import { formatDate } from "@/Helpers/formatDate";
 import { editNamedList } from "@/actions/editNamedList";
+import { getNamedList } from "@/actions/getNamedList";
 
 export interface OneListPageState {
   load: boolean;
@@ -64,16 +65,15 @@ export default function Page() {
     timestamp: "",
   });
 
-  const envVariable = process.env.NEXT_PUBLIC_BACK_END_URL;
-  const baseQuery = "?type=List&name=" + params.slug;
-
   useEffect(() => {
     const fetchData = async () => {
       await stableInit();
 
       try {
-        const data = await fetch(`${envVariable}${baseQuery}`);
-        const lists: ApiData<NamedListData> = await data.json();
+        const lists: ApiData<NamedListData> = await getNamedList({
+          listName: params.slug!.toString(),
+        });
+
         // Fix the first index if it is empty
         FixFirstPostIndex(lists);
         setPageState((prev) => ({
@@ -92,7 +92,7 @@ export default function Page() {
     };
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
-  }, [baseQuery, envVariable]);
+  }, [params.slug]);
 
   const postLists = (dataToPost: OneListPostData) => {
     async function doPost(dataToPost: OneListPostData) {

@@ -6,5 +6,8 @@ declare namespace NodeJS {
     readonly NEXT_PUBLIC_MSW_API_DELAY: number;
     readonly NEXT_PUBLIC_MSW_WARN: string;
     readonly NEXT_PUBLIC_AUTH_ACTIVE: string;
+
+    readonly SERVER_ACTION_URL: string;
+    readonly BACK_END_URL: string;
   }
 }

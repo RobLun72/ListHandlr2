@@ -1,11 +1,11 @@
 import { DefaultBodyType, HttpResponse, StrictRequest } from "msw";
+import { handleServerAction } from "../RequestHelpers/serverActionHelper";
+import { handleServerPostListsAction } from "../RequestHelpers/serverListsHelper";
+import { handleServerPostNamedListAction } from "../RequestHelpers/serverNamedListHelper";
 import {
   handleApiGetCallsSearchParams,
   handleApiPostCallsBody,
 } from "../RequestHelpers/apiCallHelper";
-import { handleServerAction } from "../RequestHelpers/serverActionHelper";
-import { handleServerPostListsAction } from "../RequestHelpers/serverListsHelper";
-import { handleServerPostNamedListAction } from "../RequestHelpers/serverNamedListHelper";
 
 export const handleReq = async (
   baseUrl: string,
@@ -36,17 +36,15 @@ export const handleReq = async (
       return handleServerAction(request);
     case `/lists`:
       if (url && url.href) {
-        console.log(
-          "Lists page server action request",
-          request.method,
-          url.href
-        );
+        console.log("Lists page server action request", url.href, paramsUrl);
       }
+
       if (paramsUrl !== "") {
         return handleServerPostNamedListAction(request);
       } else {
         return handleServerPostListsAction(request);
       }
+
     default:
       return HttpResponse.error();
       break;
