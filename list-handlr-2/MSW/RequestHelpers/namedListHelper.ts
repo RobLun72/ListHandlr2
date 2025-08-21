@@ -107,14 +107,16 @@ const editList = (data: OneListPostData) => {
       "listItems"
     >[] = [];
     data.item.rows.forEach((item) => {
-      const newItem = namedListsDb.listItems.create({
-        id: currentNamedListId++,
-        index: item.index,
-        text: item.text,
-        link: item.link,
-        done: item.done,
-      });
-      newItems.push(newItem);
+      if (item.isDeleted !== true) {
+        const newItem = namedListsDb.listItems.create({
+          id: currentNamedListId++,
+          index: item.index,
+          text: item.text,
+          link: item.link,
+          done: item.done,
+        });
+        newItems.push(newItem);
+      }
     });
 
     //add new items to list

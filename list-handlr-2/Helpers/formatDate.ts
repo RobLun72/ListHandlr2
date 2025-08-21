@@ -1,4 +1,4 @@
-export function formatDate(isoDateString: unknown): string {
+export function formatDateFromString(isoDateString: unknown): string {
   if (!isoDateString) return "";
 
   if (typeof isoDateString === "string") {
@@ -29,4 +29,31 @@ export function formatDate(isoDateString: unknown): string {
   }
 
   return "";
+}
+
+export function formatDate(date: Date): string {
+  if (!date) return "";
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  return `${day} ${month} ${year} ${hours}:${minutes}`;
 }

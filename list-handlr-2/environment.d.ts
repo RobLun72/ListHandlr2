@@ -9,5 +9,6 @@ declare namespace NodeJS {
 
     readonly SERVER_ACTION_URL: string;
     readonly BACK_END_URL: string;
+    readonly DATABASE_URL: string;
   }
 }

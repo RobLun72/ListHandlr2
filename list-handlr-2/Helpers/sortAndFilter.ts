@@ -34,6 +34,18 @@ export function filter<T>(
   }
 }
 
+export function filterGetAllExcept<T>(
+  arr: T[],
+  field: keyof T,
+  value: string | number | boolean
+) {
+  if (field != null) {
+    return arr.filter((item) => {
+      return item[field] !== value;
+    });
+  }
+}
+
 export function groupBy<T>(arr: T[], field: keyof T) {
   return arr.reduce<{ [key: string]: T[] }>(
     (result, item) => ({
@@ -42,4 +54,12 @@ export function groupBy<T>(arr: T[], field: keyof T) {
     }),
     {}
   );
+}
+
+export function max<T>(arr: T[], field: keyof T) {
+  if (arr.length === 0) return undefined;
+
+  return arr.reduce((maxItem, currentItem) => {
+    return currentItem[field] > maxItem[field] ? currentItem : maxItem;
+  });
 }

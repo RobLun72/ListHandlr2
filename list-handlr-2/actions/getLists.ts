@@ -1,9 +1,12 @@
 "use server";
 
-//import { headers } from "next/headers";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ListData } from "@/DTO/listsData";
 import { ApiData } from "@/DTO/apiData";
+import { db } from "@/db/index";
+import { listsTable } from "@/db/schema";
+import { max } from "@/Helpers/sortAndFilter";
+import { formatDate } from "@/Helpers/formatDate";
 
 export async function getLists(): Promise<ApiData<ListData>> {
   const { isAuthenticated } = getKindeServerSession();
@@ -13,20 +16,18 @@ export async function getLists(): Promise<ApiData<ListData>> {
     return Promise.reject(new Error("User is not authenticated."));
   }
 
-  //const headerList = await headers();
-  //const pathname = headerList.get("x-current-path");
+  const allLists = await db.select().from(listsTable).orderBy(listsTable.index);
+  const maxStamp = formatDate(max(allLists, "last_update")!.last_update!) || "";
 
-  const envVariable = process.env.BACK_END_URL;
-  const baseQuery = "?type=Lists";
-
-  //console.log("Getting list:", `${envVariable}${baseQuery}`, pathname);
-
-  const data = await fetch(`${envVariable}${baseQuery}`);
-  const result: ApiData<ListData> = await data.json();
+  const result: ApiData<ListData> = {
+    timeStamp: maxStamp,
+    rows: allLists.map((list) => ({
+      index: list.index,
+      listName: list.list_name,
+    })),
+  };
 
   return new Promise((resolve) => {
-    //setTimeout(() => {
     resolve(result);
-    //}, 500);
   });
 }
