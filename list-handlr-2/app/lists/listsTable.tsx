@@ -69,7 +69,7 @@ export function ListsTable({
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}
-      pageSize={isMobile ? 7 : 13}
+      pageSize={30}
       dragDropEnabled={true}
       onRowDrop={onRowDrop}
     />

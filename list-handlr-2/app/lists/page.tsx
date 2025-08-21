@@ -7,7 +7,7 @@ import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
 import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
 import { sortAscending } from "@/Helpers/sortAndFilter";
-import { formatDate } from "@/Helpers/formatDate";
+import { formatDateFromString } from "@/Helpers/formatDate";
 import { toast } from "sonner";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
 import { LoadingSpinner } from "@/components/ui/spinner";
@@ -279,7 +279,7 @@ export default function Page() {
             data-testid="current-timestamp"
             className="pr-4 text-sm italic float-end"
           >
-            {`Last saved: ${formatDate(pageState.timestamp)}`}
+            {`Last saved: ${formatDateFromString(pageState.timestamp)}`}
           </div>
         </div>
       )}

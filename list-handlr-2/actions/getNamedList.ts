@@ -1,9 +1,12 @@
 "use server";
 
-//import { headers } from "next/headers";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
 import { NamedListData } from "@/DTO/oneListData";
+import { db } from "@/db/index";
+import { listItemsTable, listsTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { formatDate } from "@/Helpers/formatDate";
 
 export async function getNamedList(listName: {
   listName: string;
@@ -15,20 +18,33 @@ export async function getNamedList(listName: {
     return Promise.reject(new Error("User is not authenticated."));
   }
 
-  // const headerList = await headers();
-  // const pathname = headerList.get("x-current-path");
+  // URL decode the listName parameter
+  const decodedListName = decodeURIComponent(listName.listName);
 
-  const envVariable = process.env.BACK_END_URL;
-  const baseQuery = "?type=List&name=" + listName.listName;
+  const namedList = await db
+    .select()
+    .from(listsTable)
+    .where(eq(listsTable.list_name, decodedListName));
 
-  //console.log("Getting list:", `${envVariable}${baseQuery}`, pathname);
+  const listItems = await db
+    .select()
+    .from(listItemsTable)
+    .where(eq(listItemsTable.list_id, namedList[0]?.id))
+    .orderBy(listItemsTable.index);
 
-  const data = await fetch(`${envVariable}${baseQuery}`);
-  const result: ApiData<NamedListData> = await data.json();
+  const result: ApiData<NamedListData> = {
+    timeStamp: formatDate(namedList[0]?.last_item_update) || "",
+    rows: listItems.map((item) => ({
+      index: item.index,
+      text: item.text,
+      done: item.done === "true",
+      link: item.link,
+      id: item.id,
+      isDeleted: false,
+    })),
+  };
 
   return new Promise((resolve) => {
-    //setTimeout(() => {
     resolve(result);
-    //}, 500);
   });
 }

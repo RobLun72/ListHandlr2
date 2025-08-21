@@ -2,6 +2,16 @@ import "@testing-library/jest-dom";
 
 import matchMediaMock from "match-media-mock";
 import { loadEnvConfig } from "@next/env";
+import {
+  handleAllListsServerGet,
+  handleAllListsServerPost,
+} from "@/MSW/RequestHelpers/allListsHelper";
+import { AllListsPostData } from "@/DTO/listsData";
+import {
+  handleNamedListServerGet,
+  handleNamedListServerPost,
+} from "@/MSW/RequestHelpers/namedListHelper";
+import { OneListPostData } from "@/DTO/oneListData";
 
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
@@ -43,6 +53,44 @@ vi.mock("next/headers", () => ({
       return mockHeaders[key] || null;
     }),
   })),
+}));
+
+vi.mock("@/actions/getLists", () => ({
+  getLists: vi.fn().mockImplementation(async () => {
+    // This function runs each time getLists is called
+    const dynamicData = await handleAllListsServerGet();
+    return dynamicData;
+  }),
+}));
+
+vi.mock("@/actions/editLists", () => ({
+  editLists: vi
+    .fn()
+    .mockImplementation(async (dataToPost: AllListsPostData) => {
+      // This function runs each time getLists is called
+      const dynamicData = await handleAllListsServerPost(dataToPost);
+      return dynamicData;
+    }),
+}));
+
+vi.mock("@/actions/getNamedList", () => ({
+  getNamedList: vi
+    .fn()
+    .mockImplementation(async (params: { listName: string }) => {
+      // You could use a helper function similar to handleAllListsServerGet
+      const dynamicData = await handleNamedListServerGet(params.listName);
+      return dynamicData;
+    }),
+}));
+
+vi.mock("@/actions/editNamedList", () => ({
+  editNamedList: vi
+    .fn()
+    .mockImplementation(async (dataToPost: OneListPostData) => {
+      // This function runs each time getLists is called
+      const dynamicData = await handleNamedListServerPost(dataToPost);
+      return dynamicData;
+    }),
 }));
 
 window.ResizeObserver = ResizeObserver;

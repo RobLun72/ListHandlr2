@@ -19,7 +19,7 @@ import {
   moveUp,
   removeItem,
 } from "@/Helpers/collectionHelper";
-import { sortAscending } from "@/Helpers/sortAndFilter";
+import { filterGetAllExcept, sortAscending } from "@/Helpers/sortAndFilter";
 import { OneListForm } from "./oneListForm";
 import {
   ArrowLeftStartOnRectangleIcon,
@@ -29,7 +29,7 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { stableInit } from "@/Helpers/stableInit";
-import { formatDate } from "@/Helpers/formatDate";
+import { formatDateFromString } from "@/Helpers/formatDate";
 import { editNamedList } from "@/actions/editNamedList";
 import { getNamedList } from "@/actions/getNamedList";
 
@@ -147,10 +147,18 @@ export default function Page() {
 
   const handleDelete = (index: number) => {
     const newLists = [...pageState.lists];
-    if (newLists.length === 1) {
-      newLists.pop();
+    if (newLists[index].id === 0) {
+      // If the item is new and not saved, remove it from the list
+      if (newLists.length === 1) {
+        newLists.pop();
+      } else {
+        newLists.splice(index, 1);
+      }
     } else {
-      newLists.splice(index, 1);
+      newLists[index].isDeleted = true;
+
+      const delItem = removeItem<NamedListData>(newLists, index);
+      insertLast<NamedListData>(newLists, delItem[0], true);
     }
     setPageState((prev) => ({
       ...prev,
@@ -181,7 +189,7 @@ export default function Page() {
 
     if (newLists[index].done == true) {
       const doneItem = removeItem<NamedListData>(newLists, index);
-      insertLast<NamedListData>(newLists, doneItem[0]);
+      insertLast<NamedListData>(newLists, doneItem[0], true);
     } else {
       const undoneItem = removeItem<NamedListData>(newLists, index);
       insertFirst<NamedListData>(newLists, undoneItem[0]);
@@ -244,6 +252,14 @@ export default function Page() {
     router.replace("/lists");
   };
 
+  const getAllNonDeletedItems = () => {
+    return filterGetAllExcept(
+      pageState.lists,
+      "isDeleted",
+      true
+    ) as NamedListData[];
+  };
+
   return (
     <Fragment>
       {pageState.load && (
@@ -284,7 +300,7 @@ export default function Page() {
           <div className="py-2 px-3">
             <Suspense>
               <OneListTable
-                list={pageState.lists}
+                list={getAllNonDeletedItems()}
                 pageParams={pageParam}
                 onAdd={handleAdd}
                 onEdit={handleEdit}
@@ -297,7 +313,7 @@ export default function Page() {
             </Suspense>
           </div>
           <div className="pr-4 text-sm italic float-end">
-            {`Last saved: ${formatDate(pageState.timestamp)}`}
+            {`Last saved: ${formatDateFromString(pageState.timestamp)}`}
           </div>
         </div>
       )}
@@ -309,7 +325,14 @@ export default function Page() {
               item={
                 pageState.item
                   ? pageState.item
-                  : { index: -1, text: "", link: "", done: false }
+                  : {
+                      index: -1,
+                      text: "",
+                      link: "",
+                      done: false,
+                      id: 0,
+                      isDeleted: false,
+                    }
               }
               onDone={handleNewValues}
               onClose={() => {
