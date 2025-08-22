@@ -70,7 +70,6 @@ function checkValidTimestamp(
 ) {
   const maxStamp = formatDate(namedListData.list.last_item_update!) || "";
 
-  console.log("Max timestamp:", maxStamp, dataToPost.item.timeStamp);
   if (maxStamp !== dataToPost.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<NamedListData>> = {
       message: "Timestamp mismatch",

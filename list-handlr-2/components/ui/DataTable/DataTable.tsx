@@ -98,7 +98,6 @@ export function DataTable<TData, TValue>({
   });
 
   const onPageSizeChange = (size: string) => {
-    console.log("Page size changed to:", size);
     const newPageSize = parseInt(size, 10);
     setPagination({
       pageIndex: 0, // Reset to first page when changing page size
