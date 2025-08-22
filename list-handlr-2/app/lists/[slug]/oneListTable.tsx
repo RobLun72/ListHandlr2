@@ -65,7 +65,6 @@ export function OneListTable({
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}
-      pageSize={isMobile ? 7 : 13}
       dragDropEnabled={true}
       onRowDrop={onRowDrop}
     />
