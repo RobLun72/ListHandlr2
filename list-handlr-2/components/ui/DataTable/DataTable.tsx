@@ -7,11 +7,12 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Fragment, ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { TableFooter } from "./TableFooter";
 import { TableTopView } from "./TableTopView";
 import { TableView } from "./TableDataView";
@@ -54,7 +55,7 @@ export function DataTable<TData, TValue>({
   data,
   addButtonText,
   filterColumnName = "name",
-  pageSize = 5,
+  pageSize = 50,
   pageIndex = 0,
   sortingState = [],
   pageParams,
@@ -71,6 +72,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(sortingState);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+  });
 
   const table = useReactTable({
     data,
@@ -81,20 +86,25 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: rowModels.getSortedRowModel,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: rowModels.getFilteredRowModel,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
-      pagination: {
-        pageSize,
-        pageIndex: pageIndex,
-      },
+      pagination,
     },
     defaultColumn: {
       size: 50, //starting column size
     },
   });
 
-  useEffect(() => table.setPageSize(pageSize), [pageSize, table]);
+  const onPageSizeChange = (size: string) => {
+    console.log("Page size changed to:", size);
+    const newPageSize = parseInt(size, 10);
+    setPagination({
+      pageIndex: 0, // Reset to first page when changing page size
+      pageSize: newPageSize,
+    });
+  };
 
   return (
     <Fragment>
@@ -103,6 +113,7 @@ export function DataTable<TData, TValue>({
         filterColumnName={filterColumnName}
         addButtonText={addButtonText}
         onAdd={onAdd}
+        onPageSizeChange={onPageSizeChange}
       />
       <div className={borderClasses}>
         <TableView

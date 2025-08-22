@@ -1,12 +1,20 @@
 import { Table as TableCore } from "@tanstack/table-core";
 import { Input } from "../input";
 import { ReactNode } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../select";
 
 interface TableTopViewProps<TData> {
   table: TableCore<TData>;
   addButtonText: ReactNode;
   filterColumnName?: string;
   onAdd?: () => void;
+  onPageSizeChange?: (size: string) => void;
 }
 
 export function TableTopView<TData>({
@@ -14,9 +22,10 @@ export function TableTopView<TData>({
   addButtonText,
   filterColumnName,
   onAdd,
+  onPageSizeChange,
 }: TableTopViewProps<TData>) {
   return (
-    <div className="flex py-4 justify-between ">
+    <div className="flex py-4 gap-2 justify-between ">
       {filterColumnName && (
         <Input
           placeholder={
@@ -36,6 +45,20 @@ export function TableTopView<TData>({
           className="max-w-sm"
         />
       )}
+      <div className="flex flex-row-reverse w-full">
+        <Select defaultValue="50" onValueChange={onPageSizeChange}>
+          <SelectTrigger className="w-[65px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">5</SelectItem>
+            <SelectItem value="7">7</SelectItem>
+            <SelectItem value="15">15</SelectItem>
+            <SelectItem value="25">25</SelectItem>
+            <SelectItem value="50">50</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div
         className="ml-auto flex items-center"
         onClick={onAdd}

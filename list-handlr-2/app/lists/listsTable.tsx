@@ -69,7 +69,6 @@ export function ListsTable({
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}
-      pageSize={30}
       dragDropEnabled={true}
       onRowDrop={onRowDrop}
     />
