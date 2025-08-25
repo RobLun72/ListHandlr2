@@ -39,7 +39,8 @@ async function getNamedListItemsFromDB(name: string): Promise<NamedListDBData> {
   const listItems = await db
     .select()
     .from(listItemsTable)
-    .where(eq(listItemsTable.list_id, namedList[0]?.id));
+    .where(eq(listItemsTable.list_id, namedList[0]?.id))
+    .orderBy(listItemsTable.index);
 
   return {
     list: namedList[0],
