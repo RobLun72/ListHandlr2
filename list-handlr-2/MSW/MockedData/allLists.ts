@@ -7,14 +7,17 @@ export const allListsMockData: ApiData<ListData> = {
     {
       index: 0,
       listName: "testy",
+      id: 1,
     },
     {
       index: 1,
       listName: "Matlista",
+      id: 2,
     },
     {
       index: 2,
       listName: "Handla",
+      id: 3,
     },
   ],
 };

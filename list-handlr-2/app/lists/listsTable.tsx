@@ -24,6 +24,7 @@ import { useResponsive } from "@/Helpers/useResponsive";
 
 export function ListsTable({
   lists,
+  isListsDataDirty,
   //pageParams,
   onAdd,
   onEdit,
@@ -33,6 +34,7 @@ export function ListsTable({
   onRowDrop,
 }: {
   lists: ListData[];
+  isListsDataDirty: boolean;
   //pageParams: { pagePath: string; params: URLSearchParams };
   onAdd: () => void;
   onEdit: (index: number) => void;
@@ -59,7 +61,14 @@ export function ListsTable({
 
   return (
     <DataTable
-      columns={getColumns(isMobile, onEdit, onDelete, onUp, onDown)}
+      columns={getColumns(
+        isMobile,
+        onEdit,
+        onDelete,
+        onUp,
+        onDown,
+        isListsDataDirty
+      )}
       data={lists}
       addButtonText={
         <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
@@ -79,10 +88,12 @@ function ContextMenu({
   row,
   onEdit,
   onDelete,
+  isListsDataDirty,
 }: {
   row: Row<ListData>;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
+  isListsDataDirty: boolean;
 }) {
   const router = useRouter();
   return (
@@ -108,7 +119,11 @@ function ContextMenu({
           Delete
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => router.push("/lists/" + row.original.listName)}
+          onClick={() =>
+            isListsDataDirty
+              ? alert("You have unsaved changes, save first.")
+              : router.push("/lists/" + row.original.listName)
+          }
         >
           View list items
         </DropdownMenuItem>
@@ -122,7 +137,8 @@ function getColumns(
   onEdit: (index: number) => void,
   onDelete: (index: number) => void,
   onUp: (index: number) => void,
-  onDown: (index: number) => void
+  onDown: (index: number) => void,
+  isListsDataDirty: boolean
 ): ColumnDef<ListData>[] {
   return [
     {
@@ -166,7 +182,7 @@ function getColumns(
       size: 50,
       maxSize: 50,
       cell: ({ row }) => {
-        return ContextMenu({ row, onEdit, onDelete });
+        return ContextMenu({ row, onEdit, onDelete, isListsDataDirty });
       },
     },
   ];

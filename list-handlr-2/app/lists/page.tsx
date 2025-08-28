@@ -5,8 +5,14 @@ import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
-import { insertFirst, moveDown, moveUp } from "@/Helpers/collectionHelper";
-import { sortAscending } from "@/Helpers/sortAndFilter";
+import {
+  insertFirst,
+  insertLast,
+  moveDown,
+  moveUp,
+  removeItem,
+} from "@/Helpers/collectionHelper";
+import { filterGetAllExcept, sortAscending } from "@/Helpers/sortAndFilter";
 import { formatDateFromString } from "@/Helpers/formatDate";
 import { toast } from "sonner";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
@@ -18,6 +24,7 @@ import { stableInit } from "@/Helpers/stableInit";
 import { ConfirmDialog } from "@/components/ui/Dialog/ConfirmDialog";
 import { editLists } from "@/actions/editLists";
 import { getLists } from "@/actions/getLists";
+import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
 
 export interface ListsPageState {
   load: boolean;
@@ -46,6 +53,11 @@ export default function Page() {
     lists: [],
     item: undefined,
     timestamp: "",
+  });
+
+  useUnsavedChangesWarning({
+    isDirty: pageState.isDirty,
+    message: "You have unsaved changes. Are you sure you want to leave?",
   });
 
   useEffect(() => {
@@ -144,13 +156,24 @@ export default function Page() {
 
   const handleDelete = (index: number) => {
     const newLists = [...pageState.lists];
-    newLists.splice(index, 1);
+    if (newLists[index].id === 0) {
+      // If the item is new and not saved, remove it from the list
+      if (newLists.length === 1) {
+        newLists.pop();
+      } else {
+        newLists.splice(index, 1);
+      }
+    } else {
+      newLists[index].isDeleted = true;
 
-    postLists({
-      saveType: "deleteList",
-      listName: pageState.lists[index].listName,
-      item: { rows: newLists, timeStamp: pageState.timestamp },
-    });
+      const delItem = removeItem<ListData>(newLists, index);
+      insertLast<ListData>(newLists, delItem[0], true);
+    }
+    // postLists({
+    //   saveType: "deleteList",
+    //   listName: pageState.lists[index].listName,
+    //   item: { rows: newLists, timeStamp: pageState.timestamp },
+    // });
 
     setPageState((prev) => ({
       ...prev,
@@ -162,23 +185,28 @@ export default function Page() {
 
   const handleNewValues = (item: ListData) => {
     const newLists = [...pageState.lists];
-    newLists[item.index] = item;
+    //newLists[item.index] = item;
 
     if (item.index >= 0) {
-      postLists({
-        saveType: "editList",
-        listName: pageState.lists[item.index].listName,
-        newListName: item.listName,
-        item: { rows: newLists, timeStamp: pageState.timestamp },
-      });
+      newLists[item.index] = item;
     } else {
       insertFirst(newLists, item);
-      postLists({
-        saveType: "addList",
-        newListName: item.listName,
-        item: { rows: newLists, timeStamp: pageState.timestamp },
-      });
     }
+    // if (item.index >= 0) {
+    //   postLists({
+    //     saveType: "editList",
+    //     listName: pageState.lists[item.index].listName,
+    //     newListName: item.listName,
+    //     item: { rows: newLists, timeStamp: pageState.timestamp },
+    //   });
+    // } else {
+    //   insertFirst(newLists, item);
+    //   postLists({
+    //     saveType: "addList",
+    //     newListName: item.listName,
+    //     item: { rows: newLists, timeStamp: pageState.timestamp },
+    //   });
+    // }
     setPageState((prev) => ({
       ...prev,
       lists: newLists,
@@ -231,6 +259,9 @@ export default function Page() {
       });
     }
   };
+  const getAllNonDeletedItems = () => {
+    return filterGetAllExcept(pageState.lists, "isDeleted", true) as ListData[];
+  };
 
   return (
     <Fragment>
@@ -265,7 +296,8 @@ export default function Page() {
           <div className="py-2 px-3">
             <Suspense>
               <ListsTable
-                lists={pageState.lists}
+                lists={getAllNonDeletedItems()}
+                isListsDataDirty={pageState.isDirty}
                 onAdd={handleAdd}
                 onEdit={handleEdit}
                 onDelete={showDeleteConfirm}
@@ -289,7 +321,9 @@ export default function Page() {
             <ListsForm
               mode={pageState.item ? "Edit" : "Add"}
               item={
-                pageState.item ? pageState.item : { index: -1, listName: "" }
+                pageState.item
+                  ? pageState.item
+                  : { index: -1, listName: "", id: 0 }
               }
               onDone={handleNewValues}
               onClose={() => {
