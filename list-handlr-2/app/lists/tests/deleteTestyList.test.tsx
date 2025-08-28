@@ -9,12 +9,14 @@ import Page from "../page";
 import {
   clickOnButton,
   clickOnButtonWithIndex,
+  clickOnElementWithTestId,
   clickOnMenuItem,
   getValueByTestId,
   waitForRender,
 } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import {
+  assertElementHasClassname,
   assertMissingTextValue,
   assertMultiplesOfTextValue,
   assertTextValueInDoc,
@@ -63,10 +65,18 @@ test("Delete testy list", async () => {
   await assertTextValueInDoc("Delete");
   await assertTextValueInDoc("View list items");
 
+  await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
+
   await clickOnMenuItem(user, "Delete");
 
   await assertTextValueInDoc("Are you sure you want to delete this list?");
   await clickOnButton(user, "Continue");
+
+  await assertElementHasClassname("save-list-icon", "cursor-pointer");
+  await assertMissingTextValue("testy");
+
+  //save to server
+  await clickOnElementWithTestId(user, "save-list");
 
   await assertTextValueInDoc(/Saving the list.../);
   await waitForRender(300);

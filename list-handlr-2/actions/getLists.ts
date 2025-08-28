@@ -24,6 +24,7 @@ export async function getLists(): Promise<ApiData<ListData>> {
     rows: allLists.map((list) => ({
       index: list.index,
       listName: list.list_name,
+      id: list.id,
     })),
   };
 

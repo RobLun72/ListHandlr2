@@ -32,6 +32,7 @@ import { stableInit } from "@/Helpers/stableInit";
 import { formatDateFromString } from "@/Helpers/formatDate";
 import { editNamedList } from "@/actions/editNamedList";
 import { getNamedList } from "@/actions/getNamedList";
+import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
 
 export interface OneListPageState {
   load: boolean;
@@ -63,6 +64,11 @@ export default function Page() {
     lists: [],
     item: undefined,
     timestamp: "",
+  });
+
+  useUnsavedChangesWarning({
+    isDirty: pageState.isDirty,
+    message: "You have unsaved changes. Are you sure you want to leave?",
   });
 
   useEffect(() => {
@@ -249,7 +255,16 @@ export default function Page() {
   };
 
   const handleBack = () => {
-    router.replace("/lists");
+    if (pageState.isDirty) {
+      const action = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave?"
+      );
+      if (action) {
+        router.replace("/lists");
+      }
+    } else {
+      router.replace("/lists");
+    }
   };
 
   const getAllNonDeletedItems = () => {

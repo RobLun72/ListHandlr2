@@ -31,6 +31,7 @@ function formatAllLists(
     rows: data.map((list) => ({
       index: list.index,
       listName: list.list_name,
+      id: list.id,
     })),
   };
 }
@@ -64,59 +65,35 @@ function checkValidTimestamp(
   return undefined;
 }
 
-async function saveIndexes(rows: ListData[]) {
-  for (const item of rows) {
+async function editList(item: ListData, allLists: AllListRecord[]) {
+  const row = allLists.find((list) => list.id === item.id);
+  if (!row) throw new Error("List not found");
+
+  if (item.index !== row.index || item.listName !== row.list_name) {
     await db
       .update(listsTable)
       .set({
         index: item.index,
+        list_name: item.listName,
         last_update: new Date(),
       })
-      .where(eq(listsTable.list_name, item.listName));
+      .where(eq(listsTable.id, item.id));
   }
 }
 
-async function sortList(item: { rows: ListData[] }) {
-  await saveIndexes(item.rows);
-
-  return await formatAllListsResponse();
-}
-
-async function editList(item: { listName: string; newListName: string }) {
-  await db
-    .update(listsTable)
-    .set({ list_name: item.newListName, last_update: new Date() })
-    .where(eq(listsTable.list_name, item.listName));
-
-  return await formatAllListsResponse();
-}
-async function addList(item: {
-  newListName: string;
-  allLists: AllListRecord[];
-}) {
-  const maxIndex = max(item.allLists, "index")!.index!;
+async function addList(item: ListData) {
   await db.insert(listsTable).values({
-    index: maxIndex + 1,
-    list_name: item.newListName!,
+    index: item.index,
+    list_name: item.listName!,
     last_update: new Date(),
     last_item_update: new Date(),
   });
-
-  return await formatAllListsResponse();
 }
 
-async function deleteList(item: { listName: string; rows: ListData[] }) {
-  const namedList = await db
-    .select()
-    .from(listsTable)
-    .where(eq(listsTable.list_name, item.listName));
+async function deleteList(item: ListData) {
+  await db.delete(listItemsTable).where(eq(listItemsTable.list_id, item.id));
 
-  await db
-    .delete(listItemsTable)
-    .where(eq(listItemsTable.list_id, namedList[0]?.id));
-  await db.delete(listsTable).where(eq(listsTable.id, namedList[0]?.id));
-
-  return await sortList({ rows: item.rows });
+  await db.delete(listsTable).where(eq(listsTable.id, item.id));
 }
 
 export async function editLists(
@@ -137,26 +114,22 @@ export async function editLists(
   if (invalidTimestamp !== undefined) {
     result = invalidTimestamp;
   } else {
-    if (dataToPost.saveType === "editList") {
-      result = await editList({
-        listName: dataToPost.listName!,
-        newListName: dataToPost.newListName!,
-      });
-    }
-    if (dataToPost.saveType === "addList") {
-      result = await addList({
-        newListName: dataToPost.newListName!,
-        allLists,
-      });
-    }
-    if (dataToPost.saveType === "deleteList") {
-      result = await deleteList({
-        listName: dataToPost.listName!,
-        rows: dataToPost.item.rows,
-      });
-    } else {
-      result = await sortList({ rows: dataToPost.item.rows });
-    }
+    dataToPost.item.rows.forEach(async (item) => {
+      if (item.isDeleted) {
+        // delete item
+        await deleteList(item);
+      }
+      if (item.id === 0) {
+        // add item
+        await addList(item);
+      }
+      if (item.id > 0) {
+        // edit item
+        await editList(item, allLists);
+      }
+    });
+
+    result = await formatAllListsResponse();
   }
 
   return new Promise((resolve) => {

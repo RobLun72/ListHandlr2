@@ -3,6 +3,7 @@ import { DraggableItem } from "./draggableItem";
 
 export interface ListData extends DraggableItem {
   listName: string;
+  id: number;
 }
 
 export interface AllListsPostData {

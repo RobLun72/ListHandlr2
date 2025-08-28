@@ -10,6 +10,7 @@ import {
   blurInput,
   clickOnButton,
   clickOnButtonWithIndex,
+  clickOnElementWithTestId,
   clickOnMenuItem,
   getValueByTestId,
   typeInTextBox,
@@ -18,6 +19,7 @@ import {
 import { ReadonlyURLSearchParams } from "next/navigation";
 import {
   assertButtonIsEnabled,
+  assertElementHasClassname,
   assertMultiplesOfTextValue,
   assertTextValueInDoc,
 } from "@/Helpers/Test/assertHelper";
@@ -66,7 +68,8 @@ test("Edit name of handla list", async () => {
   await assertTextValueInDoc("Delete");
   await assertTextValueInDoc("View list items");
 
-  //click on view region
+  await assertElementHasClassname("save-list-icon", "cursor-not-allowed");
+
   await clickOnMenuItem(user, "Edit");
 
   await typeInTextBox(user, "List", " edited");
@@ -76,6 +79,13 @@ test("Edit name of handla list", async () => {
   await assertButtonIsEnabled("Update Item");
 
   await clickOnButton(user, "Update Item");
+
+  await assertElementHasClassname("save-list-icon", "cursor-pointer");
+
+  await assertTextValueInDoc("Handla edited");
+
+  //save to server
+  await clickOnElementWithTestId(user, "save-list");
 
   await assertTextValueInDoc(/Saving the list.../);
   await waitForRender(300);
