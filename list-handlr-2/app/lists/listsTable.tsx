@@ -61,7 +61,7 @@ export function ListsTable({
 
   return (
     <DataTable
-      columns={getColumns(
+      columns={GetColumns(
         isMobile,
         onEdit,
         onDelete,
@@ -96,6 +96,15 @@ function ContextMenu({
   isListsDataDirty: boolean;
 }) {
   const router = useRouter();
+
+  const handleViewItems = (row: ListData) => {
+    if (isListsDataDirty) {
+      alert("You have unsaved changes, save first.");
+    } else {
+      router.push("/lists/" + row.listName);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -118,13 +127,7 @@ function ContextMenu({
         >
           Delete
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() =>
-            isListsDataDirty
-              ? alert("You have unsaved changes, save first.")
-              : router.push("/lists/" + row.original.listName)
-          }
-        >
+        <DropdownMenuItem onClick={() => handleViewItems(row.original)}>
           View list items
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -132,7 +135,7 @@ function ContextMenu({
   );
 }
 
-function getColumns(
+function GetColumns(
   isMobile: boolean,
   onEdit: (index: number) => void,
   onDelete: (index: number) => void,
@@ -140,6 +143,22 @@ function getColumns(
   onDown: (index: number) => void,
   isListsDataDirty: boolean
 ): ColumnDef<ListData>[] {
+  const router = useRouter();
+
+  const textLayout = (row: ListData) => {
+    return (
+      <div
+        className="cursor-pointer hover:underline"
+        onClick={() =>
+          isListsDataDirty
+            ? alert("You have unsaved changes, save first.")
+            : router.push("/lists/" + row.listName)
+        }
+      >
+        {row.listName}
+      </div>
+    );
+  };
   return [
     {
       accessorKey: "index",
@@ -174,7 +193,7 @@ function getColumns(
       header: "Name",
       size: isMobile ? 180 : 400,
       cell: ({ row }) => {
-        return row.original.listName;
+        return textLayout(row.original);
       },
     },
     {
