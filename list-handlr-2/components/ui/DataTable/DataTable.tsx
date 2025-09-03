@@ -27,7 +27,7 @@ interface DataTableProps<TData, TValue> {
    *
    * @default 5
    */
-  pageSize?: number;
+  pageSize?: 5 | 7 | 15 | 25 | 50;
   pageIndex?: number;
   sortingState?: SortingState;
   pageParams?: { pagePath: string; params: URLSearchParams };
@@ -109,6 +109,7 @@ export function DataTable<TData, TValue>({
     <Fragment>
       <TableTopView
         table={table}
+        pageSize={pageSize.toString()}
         filterColumnName={filterColumnName}
         addButtonText={addButtonText}
         onAdd={onAdd}

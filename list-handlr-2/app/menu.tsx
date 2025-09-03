@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { usePathname } from "next/navigation";
 import { LogoutLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { useIsAuthenticated } from "@/contexts/UserContext";
 
 interface MenuComponentProps {
   topMenu: string;
@@ -75,7 +75,7 @@ export function AppMenu() {
   const path = usePathname();
   const pathParts = path.split("/");
 
-  const { isAuthenticated } = useKindeBrowserClient();
+  const isAuthenticated = useIsAuthenticated();
 
   const mapComponents: MenuComponentProps[] =
     process.env.NEXT_PUBLIC_AUTH_ACTIVE === "false"
