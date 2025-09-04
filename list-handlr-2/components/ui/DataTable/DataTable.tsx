@@ -18,6 +18,7 @@ import { TableTopView } from "./TableTopView";
 import { TableView } from "./TableDataView";
 
 interface DataTableProps<TData, TValue> {
+  showHeaderAndFooter?: boolean;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   addButtonText: ReactNode;
@@ -51,6 +52,7 @@ const rowModels = {
 };
 
 export function DataTable<TData, TValue>({
+  showHeaderAndFooter = true,
   columns,
   data,
   addButtonText,
@@ -107,14 +109,16 @@ export function DataTable<TData, TValue>({
 
   return (
     <Fragment>
-      <TableTopView
-        table={table}
-        pageSize={pageSize.toString()}
-        filterColumnName={filterColumnName}
-        addButtonText={addButtonText}
-        onAdd={onAdd}
-        onPageSizeChange={onPageSizeChange}
-      />
+      {showHeaderAndFooter && (
+        <TableTopView
+          table={table}
+          pageSize={pageSize.toString()}
+          filterColumnName={filterColumnName}
+          addButtonText={addButtonText}
+          onAdd={onAdd}
+          onPageSizeChange={onPageSizeChange}
+        />
+      )}
       <div className={borderClasses}>
         <TableView
           table={table}
@@ -128,7 +132,9 @@ export function DataTable<TData, TValue>({
           onRowDrop={onRowDrop}
         />
       </div>
-      <TableFooter table={table} pageParams={pageParams!} />
+      {showHeaderAndFooter && (
+        <TableFooter table={table} pageParams={pageParams!} />
+      )}
     </Fragment>
   );
 }

@@ -228,6 +228,7 @@ export default function Page() {
           </div>
           <div className="py-2 px-3">
             <CollabTable
+              showHeaderAndFooter={false}
               list={pageState.collabUsers}
               heading="Collaborating users"
               pageSize={50}
