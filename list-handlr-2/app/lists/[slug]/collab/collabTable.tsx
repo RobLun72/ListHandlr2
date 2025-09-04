@@ -18,12 +18,14 @@ export function CollabTable({
   pageParams,
   heading,
   pageSize,
+  showHeaderAndFooter = true,
   onSelect,
 }: {
   list: User[];
   pageParams: { pagePath: string; params: URLSearchParams };
   heading: string;
   pageSize?: 5 | 7 | 15 | 25 | 50;
+  showHeaderAndFooter?: boolean;
   onSelect: (user: User) => void;
 }) {
   const { isMobile } = useResponsive();
@@ -35,7 +37,7 @@ export function CollabTable({
     ? [{ id: sortingParam, desc: directionParam === "desc" }]
     : [{ id: "email", desc: false }];
 
-  return (
+  return showHeaderAndFooter === true ? (
     <DataTable
       pageSize={pageSize}
       columns={getColumns(isMobile, heading, onSelect)}
@@ -47,6 +49,19 @@ export function CollabTable({
       pageIndex={pageParam ? parseInt(pageParam) : 0}
       sortingState={sorting}
       pageParams={pageParams}
+      dragDropEnabled={false}
+    />
+  ) : (
+    <DataTable
+      showHeaderAndFooter={false}
+      pageSize={undefined}
+      columns={getColumns(isMobile, heading, onSelect)}
+      data={list}
+      addButtonText=""
+      filterColumnName=""
+      pageIndex={pageParam ? parseInt(pageParam) : 0}
+      sortingState={sorting}
+      pageParams={undefined}
       dragDropEnabled={false}
     />
   );
