@@ -22,6 +22,7 @@ import {
   assertTextValueInDoc,
 } from "@/Helpers/Test/assertHelper";
 import userEvent from "@testing-library/user-event";
+import { UserProvider } from "@/contexts/UserContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -50,7 +51,11 @@ afterEach(() => {
 test("Delete testy list", async () => {
   const user = userEvent.setup();
 
-  await render(<Page />);
+  await render(
+    <UserProvider>
+      <Page />
+    </UserProvider>
+  );
 
   await waitForRender();
 

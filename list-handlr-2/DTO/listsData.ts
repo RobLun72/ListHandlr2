@@ -8,6 +8,7 @@ export interface ListData extends DraggableItem {
 
 export interface AllListsPostData {
   saveType: string;
+  user_id: string;
   listName?: string;
   newListName?: string;
   item: ApiData<ListData>;

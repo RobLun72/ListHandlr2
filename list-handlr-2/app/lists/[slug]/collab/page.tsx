@@ -19,6 +19,10 @@ import {
   ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useCurrentUser } from "@/contexts/UserContext";
+import { getNamedListCollab } from "@/actions/getNamedListCollab";
+import { CollabData, CollabPostData } from "@/DTO/collabData";
+import { ApiData, ApiResponse } from "@/DTO/apiData";
+import { editNamedListCollab } from "@/actions/editNamedListCollab";
 
 export interface CollabPageState {
   load: boolean;
@@ -29,6 +33,7 @@ export interface CollabPageState {
   showItemForm: boolean;
   users: User[];
   collabUsers: User[];
+  timestamp: string;
 }
 
 export default function Page() {
@@ -49,6 +54,7 @@ export default function Page() {
     showItemForm: false,
     users: [],
     collabUsers: [],
+    timestamp: "",
   });
 
   useEffect(() => {
@@ -60,14 +66,28 @@ export default function Page() {
         const lists: { success: boolean; users: User[]; error?: string } =
           await fetchAllUsers();
 
+        const collabs = await getNamedListCollab({
+          listName: params.slug!.toString(),
+        });
+        let collabUsers: User[] = [];
+        if (collabs.rows && collabs.rows.length > 0) {
+          collabUsers = lists.users.filter((u) =>
+            collabs.rows.some((c) => c.user_id === u.id)
+          );
+        }
         const users = user
           ? lists.users.filter((u) => u.id !== user!.id)
           : lists.users;
+        const filteredUsers = users.filter(
+          (u) => !collabUsers.some((c) => c.id === u.id)
+        );
 
         setPageState((prev) => ({
           ...prev,
           load: false,
-          users: users,
+          users: filteredUsers,
+          collabUsers: collabUsers,
+          timestamp: collabs.timeStamp,
         }));
       } catch (error) {
         setPageState((prev) => ({
@@ -79,7 +99,39 @@ export default function Page() {
     };
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
-  }, [user]);
+  }, [params.slug, user]);
+
+  const postLists = (dataToPost: CollabPostData) => {
+    async function doPost(dataToPost: CollabPostData) {
+      const result: ApiResponse<ApiData<CollabData>> =
+        await editNamedListCollab(dataToPost);
+
+      if (result && result.data && result.message === "") {
+        setPageState((prev) => ({
+          ...prev,
+          load: false,
+          timestamp: result.data.timeStamp,
+          pendingSave: false,
+          isDirty: false,
+        }));
+        toast.success("Collaboration saved successfully!");
+      } else {
+        setPageState({
+          ...pageState,
+          pendingSave: false,
+        });
+        toast.error("Error saving: " + result.message);
+      }
+    }
+    if (pageState.timestamp !== "") {
+      setPageState((prev) => ({
+        ...prev,
+        pendingSave: true,
+      }));
+
+      doPost(dataToPost);
+    }
+  };
 
   const handleSelect = (user: User) => {
     setPageState((prev) => ({
@@ -114,11 +166,15 @@ export default function Page() {
 
   const handleSave = async () => {
     if (pageState.isDirty) {
-      // postLists({
-      //   saveType: "oneList",
-      //   listName: params.slug!.toString(),
-      //   item: { rows: pageState.lists, timeStamp: pageState.timestamp },
-      // });
+      const user_ids =
+        pageState.collabUsers.length > 0
+          ? pageState.collabUsers.map((user) => user.id!)
+          : [];
+
+      postLists({
+        listName: params.slug!.toString(),
+        item: { rows: user_ids, timeStamp: pageState.timestamp },
+      });
     }
   };
 
@@ -181,7 +237,13 @@ export default function Page() {
           </div>
         </div>
       )}
-      <div className="px-3">{user && <p>Current user: {user.email}</p>}</div>
+      <div className="px-3">
+        {user && (
+          <p>
+            Current user: {user.email} - {user.id}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

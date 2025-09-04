@@ -3,12 +3,13 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ListData } from "@/DTO/listsData";
 import { ApiData } from "@/DTO/apiData";
-import { db } from "@/db/index";
-import { listsTable } from "@/db/schema";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
+import { getAllListsForUser } from "./baseDbQueries";
 
-export async function getLists(): Promise<ApiData<ListData>> {
+export async function getLists(user: {
+  user_id: string;
+}): Promise<ApiData<ListData>> {
   const { isAuthenticated } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();
 
@@ -16,7 +17,8 @@ export async function getLists(): Promise<ApiData<ListData>> {
     return Promise.reject(new Error("User is not authenticated."));
   }
 
-  const allLists = await db.select().from(listsTable).orderBy(listsTable.index);
+  const allLists = await getAllListsForUser(user.user_id);
+
   const maxStamp = formatDate(max(allLists, "last_update")!.last_update!) || "";
 
   const result: ApiData<ListData> = {

@@ -22,13 +22,23 @@ export const handleAllListsGet = async (
   }
 };
 
-export const handleAllListsServerGet = async () => {
-  const lists = allListsDb.allLists.getAll();
+export const handleAllListsServerGet = async (user: string) => {
+  if (user == "userWithFeverLists") {
+    const allLists = allListsDb.allLists.getAll();
+    const lists = allLists[0].rows.filter((l) => l.listName !== "Matlista");
 
-  return {
-    timeStamp: lists[0].timeStamp,
-    rows: sortAscending(lists[0].rows, "index"),
-  };
+    return {
+      timeStamp: allLists[0].timeStamp,
+      rows: sortAscending(lists, "index"),
+    };
+  } else {
+    const lists = allListsDb.allLists.getAll();
+
+    return {
+      timeStamp: lists[0].timeStamp,
+      rows: sortAscending(lists[0].rows, "index"),
+    };
+  }
 };
 
 export const handleAllListsPost = async (data: AllListsPostData) => {

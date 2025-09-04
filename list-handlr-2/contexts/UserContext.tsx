@@ -61,6 +61,19 @@ export function UserProvider({ children }: UserProviderProps) {
   // Use a ref to track if we've already loaded to prevent infinite loops
   const [hasInitialized, setHasInitialized] = useState(false);
 
+  const setNoAuthUser = () => {
+    setUser({
+      id: "no-auth-user-id",
+      email: "test@example.com",
+      given_name: "Test",
+      family_name: "User",
+      picture: "https://example.com/avatar.jpg",
+      organizations: ["test-org-1", "test-org-2"],
+      permissions: [],
+      roles: [],
+    });
+  };
+
   useEffect(() => {
     if (kindeLoading) return; // Wait for Kinde to finish loading
 
@@ -115,17 +128,25 @@ export function UserProvider({ children }: UserProviderProps) {
 
     // Only run once when authentication state stabilizes
     if (!hasInitialized) {
-      setHasInitialized(true);
-      loadUserData();
+      if (process.env.NEXT_PUBLIC_AUTH_ACTIVE === "false") {
+        setHasInitialized(true);
+        setNoAuthUser();
+      } else {
+        setHasInitialized(true);
+        loadUserData();
+      }
+
       return;
     }
 
-    // Only refresh if authentication state actually changes
-    if (isAuthenticated && kindeUser && !user) {
-      loadUserData();
-    } else if (!isAuthenticated && user) {
-      setUser(null);
-      setIsLoading(false);
+    if (process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true") {
+      // Only refresh if authentication state actually changes
+      if (isAuthenticated && kindeUser && !user) {
+        loadUserData();
+      } else if (!isAuthenticated && user) {
+        setUser(null);
+        setIsLoading(false);
+      }
     }
   }, [
     isAuthenticated,

@@ -2,13 +2,13 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
-import { NamedListData } from "@/DTO/oneListData";
 import { formatDate } from "@/Helpers/formatDate";
-import { getListDataForNamedList } from "./baseDbQueries";
+import { CollabData } from "@/DTO/collabData";
+import { getCollabDataForNamedList } from "./baseDbQueries";
 
-export async function getNamedList(listName: {
+export async function getNamedListCollab(listName: {
   listName: string;
-}): Promise<ApiData<NamedListData>> {
+}): Promise<ApiData<CollabData>> {
   const { isAuthenticated } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();
 
@@ -19,17 +19,15 @@ export async function getNamedList(listName: {
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(listName.listName);
 
-  const namedListData = await getListDataForNamedList(decodedListName);
+  const namedListCollabData = await getCollabDataForNamedList(decodedListName);
 
-  const result: ApiData<NamedListData> = {
-    timeStamp: formatDate(namedListData.namedList?.last_item_update) || "",
-    rows: namedListData.listItems.map((item) => ({
-      index: item.index,
-      text: item.text,
-      done: item.done === "true",
-      link: item.link,
+  const result: ApiData<CollabData> = {
+    timeStamp:
+      formatDate(namedListCollabData.namedList?.last_item_update) || "",
+    rows: namedListCollabData.listItems.map((item) => ({
+      user_id: item.user_id,
       id: item.id,
-      isDeleted: false,
+      list_id: item.list_id,
     })),
   };
 

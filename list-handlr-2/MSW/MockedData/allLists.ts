@@ -21,3 +21,19 @@ export const allListsMockData: ApiData<ListData> = {
     },
   ],
 };
+
+export const userOneListsMockData: ApiData<ListData> = {
+  timeStamp: "2024-04-03T12:36:01.046Z",
+  rows: [
+    {
+      index: 0,
+      listName: "testy",
+      id: 1,
+    },
+    {
+      index: 1,
+      listName: "Handla",
+      id: 3,
+    },
+  ],
+};

@@ -13,6 +13,7 @@ export const listsTable = pgTable("lists", {
   list_name: varchar({ length: 255 }).notNull(),
   last_update: timestamp("last_update").notNull().defaultNow(),
   last_item_update: timestamp("last_item_update").notNull().defaultNow(),
+  user_id: text(),
 });
 
 export const listItemsTable = pgTable("list_items", {
@@ -31,8 +32,7 @@ export const listsCollaborationsTable = pgTable("lists_collaborations", {
   list_id: integer()
     .notNull()
     .references(() => listsTable.id),
-  user_id: integer().notNull(),
-  role: varchar({ length: 255 }).notNull(),
+  user_id: text().notNull(),
 });
 
 export const listRelations = relations(listItemsTable, ({ one }) => ({

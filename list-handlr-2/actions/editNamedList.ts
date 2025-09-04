@@ -7,50 +7,15 @@ import { listItemsTable, listsTable } from "@/db/schema";
 import { formatDate } from "@/Helpers/formatDate";
 import { db } from "@/db/index";
 import { eq } from "drizzle-orm";
-
-interface ListRecord {
-  id: number;
-  index: number;
-  list_name: string;
-  last_update: Date;
-  last_item_update: Date;
-}
-
-interface NamedListRecord {
-  id: number;
-  list_id: number;
-  index: number;
-  text: string;
-  done: string;
-  link: string;
-}
-
-interface NamedListDBData {
-  list: ListRecord;
-  listItems: NamedListRecord[];
-}
-
-async function getNamedListItemsFromDB(name: string): Promise<NamedListDBData> {
-  const namedList = await db
-    .select()
-    .from(listsTable)
-    .where(eq(listsTable.list_name, name));
-
-  const listItems = await db
-    .select()
-    .from(listItemsTable)
-    .where(eq(listItemsTable.list_id, namedList[0]?.id))
-    .orderBy(listItemsTable.index);
-
-  return {
-    list: namedList[0],
-    listItems: listItems,
-  };
-}
+import {
+  getListDataForNamedList,
+  NamedListItem,
+  NamedListResponse,
+} from "./baseDbQueries";
 
 function formatAllLists(
   timestamp: string,
-  data: NamedListRecord[]
+  data: NamedListItem[]
 ): ApiData<NamedListData> {
   return {
     timeStamp: timestamp,
@@ -66,10 +31,10 @@ function formatAllLists(
 }
 
 function checkValidTimestamp(
-  namedListData: NamedListDBData,
+  namedListData: NamedListResponse,
   dataToPost: OneListPostData
 ) {
-  const maxStamp = formatDate(namedListData.list.last_item_update!) || "";
+  const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
   if (maxStamp !== dataToPost.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<NamedListData>> = {
@@ -85,8 +50,8 @@ function checkValidTimestamp(
 async function formatNamedListResponse(
   name: string
 ): Promise<ApiResponse<ApiData<NamedListData>>> {
-  const namedListData = await getNamedListItemsFromDB(name);
-  const maxStamp = formatDate(namedListData.list.last_item_update!) || "";
+  const namedListData = await getListDataForNamedList(name);
+  const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
   return {
     message: "",
@@ -108,7 +73,7 @@ async function addListItem(row: NamedListData, listId: number) {
 }
 async function editListItem(
   row: NamedListData,
-  namedListData: NamedListDBData
+  namedListData: NamedListResponse
 ) {
   const existingItem = namedListData.listItems.find(
     (item) => item.id === row.id
@@ -123,7 +88,7 @@ async function editListItem(
     await db
       .update(listItemsTable)
       .set({
-        list_id: namedListData.list.id,
+        list_id: namedListData.namedList.id,
         index: row.index,
         text: row.text,
         done: row.done ? "true" : "false",
@@ -151,7 +116,7 @@ export async function editNamedList(
   }
 
   let result: ApiResponse<ApiData<NamedListData>>;
-  const namedListData = await getNamedListItemsFromDB(dataToPost.listName);
+  const namedListData = await getListDataForNamedList(dataToPost.listName);
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
 
   const invalidTimestamp = allItemsAreNew
@@ -160,23 +125,23 @@ export async function editNamedList(
   if (invalidTimestamp !== undefined) {
     result = invalidTimestamp;
   } else {
-    dataToPost.item.rows.forEach(async (item) => {
+    for (const item of dataToPost.item.rows) {
       if (item.isDeleted) {
         // delete item
         await deleteListItem(item);
       }
       if (item.id === 0) {
         // add item
-        await addListItem(item, namedListData.list.id);
+        await addListItem(item, namedListData.namedList.id);
       }
       if (item.id > 0) {
         // edit item
 
         await editListItem(item, namedListData);
       }
-    });
+    }
 
-    await editListLastUpdated(namedListData.list.id);
+    await editListLastUpdated(namedListData.namedList.id);
 
     result = await formatNamedListResponse(dataToPost.listName);
   }
