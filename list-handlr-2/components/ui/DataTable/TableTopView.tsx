@@ -13,6 +13,7 @@ interface TableTopViewProps<TData> {
   table: TableCore<TData>;
   addButtonText: ReactNode;
   filterColumnName?: string;
+  pageSize?: string;
   onAdd?: () => void;
   onPageSizeChange?: (size: string) => void;
 }
@@ -21,6 +22,7 @@ export function TableTopView<TData>({
   table,
   addButtonText,
   filterColumnName,
+  pageSize = "50",
   onAdd,
   onPageSizeChange,
 }: TableTopViewProps<TData>) {
@@ -46,7 +48,7 @@ export function TableTopView<TData>({
         />
       )}
       <div className="flex flex-row-reverse w-full">
-        <Select defaultValue="50" onValueChange={onPageSizeChange}>
+        <Select defaultValue={pageSize} onValueChange={onPageSizeChange}>
           <SelectTrigger className="w-[65px]">
             <SelectValue />
           </SelectTrigger>

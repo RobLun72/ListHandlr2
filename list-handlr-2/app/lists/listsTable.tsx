@@ -105,6 +105,14 @@ function ContextMenu({
     }
   };
 
+  const handleCollab = (row: ListData) => {
+    if (isListsDataDirty) {
+      alert("You have unsaved changes, save first.");
+    } else {
+      router.push("/lists/" + row.listName + "/collab");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -129,6 +137,9 @@ function ContextMenu({
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleViewItems(row.original)}>
           View list items
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleCollab(row.original)}>
+          Setup collaborations
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

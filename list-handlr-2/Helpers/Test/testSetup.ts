@@ -39,6 +39,38 @@ vi.mock("@kinde-oss/kinde-auth-nextjs/server", () => ({
   }),
 }));
 
+// Mock Kinde browser client
+vi.mock("@kinde-oss/kinde-auth-nextjs", () => ({
+  useKindeBrowserClient: vi.fn(() => ({
+    user: {
+      id: "test-user-id",
+      email: "test@example.com",
+      given_name: "Test",
+      family_name: "User",
+      picture: "https://example.com/avatar.jpg",
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    userOrganizations: {
+      orgCodes: ["test-org-1", "test-org-2"],
+    },
+    getPermissions: vi.fn().mockResolvedValue({
+      permissions: ["read:lists", "write:lists", "delete:lists"],
+    }),
+    getClaim: vi.fn().mockImplementation((claimName: string) => {
+      if (claimName === "roles") {
+        return [
+          { name: "admin", value: "admin" },
+          { name: "user", value: "user" },
+        ];
+      }
+      return null;
+    }),
+  })),
+  LoginLink: vi.fn(({ children }) => children),
+  LogoutLink: vi.fn(({ children }) => children),
+}));
+
 // Mock next/headers
 vi.mock("next/headers", () => ({
   headers: vi.fn(() => ({
@@ -56,9 +88,9 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/actions/getLists", () => ({
-  getLists: vi.fn().mockImplementation(async () => {
+  getLists: vi.fn().mockImplementation(async (user: { user_id: string }) => {
     // This function runs each time getLists is called
-    const dynamicData = await handleAllListsServerGet();
+    const dynamicData = await handleAllListsServerGet(user.user_id);
     return dynamicData;
   }),
 }));

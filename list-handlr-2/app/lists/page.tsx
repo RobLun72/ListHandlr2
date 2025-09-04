@@ -25,6 +25,7 @@ import { ConfirmDialog } from "@/components/ui/Dialog/ConfirmDialog";
 import { editLists } from "@/actions/editLists";
 import { getLists } from "@/actions/getLists";
 import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
+import { useCurrentUser } from "@/contexts/UserContext";
 
 export interface ListsPageState {
   load: boolean;
@@ -60,33 +61,39 @@ export default function Page() {
     message: "You have unsaved changes. Are you sure you want to leave?",
   });
 
+  const user = useCurrentUser();
+
   useEffect(() => {
     const fetchData = async () => {
       await stableInit();
 
-      try {
-        const lists: ApiData<ListData> = await getLists();
+      if (user) {
+        try {
+          const lists: ApiData<ListData> = await getLists({
+            user_id: user!.id,
+          });
 
-        // Fix the first index if it is empty
-        FixFirstPostIndex(lists);
-        setPageState((prev) => ({
-          ...prev,
-          load: false,
-          lists: lists.rows,
-          timestamp: lists.timeStamp,
-        }));
-      } catch (error) {
-        setPageState((prev) => ({
-          ...prev,
-          load: false,
-        }));
-        toast.error("Error loading: " + error);
+          // Fix the first index if it is empty
+          FixFirstPostIndex(lists);
+          setPageState((prev) => ({
+            ...prev,
+            load: false,
+            lists: lists.rows,
+            timestamp: lists.timeStamp,
+          }));
+        } catch (error) {
+          setPageState((prev) => ({
+            ...prev,
+            load: false,
+          }));
+          toast.error("Error loading: " + error);
+        }
       }
     };
 
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
-  }, []);
+  }, [user]);
 
   const postLists = (dataToPost: AllListsPostData) => {
     async function doPost(dataToPost: AllListsPostData) {
@@ -255,6 +262,7 @@ export default function Page() {
     if (pageState.isDirty) {
       postLists({
         saveType: "allLists",
+        user_id: user!.id,
         item: { rows: pageState.lists, timeStamp: pageState.timestamp },
       });
     }
