@@ -113,6 +113,14 @@ function ContextMenu({
     }
   };
 
+  const handleFormat = (row: ListData) => {
+    if (isListsDataDirty) {
+      alert("You have unsaved changes, save first.");
+    } else {
+      router.push("/lists/" + row.listName + "/format");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -140,6 +148,9 @@ function ContextMenu({
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleCollab(row.original)}>
           Setup collaborations
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleFormat(row.original)}>
+          Format items as text
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -7,6 +7,7 @@ import { sortAscending } from "@/Helpers/sortAndFilter";
 import { Entity } from "@mswjs/data/lib/glossary";
 import { PrimaryKey } from "@mswjs/data/lib/primaryKey";
 import { OneOf, ManyOf } from "@mswjs/data/lib/relations/Relation";
+import { CollabData } from "@/DTO/collabData";
 
 let currentNamedListId = 1000;
 
@@ -43,6 +44,14 @@ export const handleNamedListServerGet = async (listName: string) => {
       return matLista;
     }
   }
+};
+
+export const handleNamedListCollabServerGet = async (listName: string) => {
+  const result: ApiData<CollabData> = {
+    timeStamp: "",
+    rows: listName !== "" ? [] : [],
+  };
+  return result;
 };
 
 export const handleNamedListPost = async (data: OneListPostData) => {

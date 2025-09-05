@@ -293,7 +293,7 @@ export default function Page() {
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
               {`${decodeURI(params.slug!.toString())}`}
             </div>
-            <div className="pt-8 px-3 pb-2 flex flex-row items-center">
+            <div className="pt-8 px-1.5 pb-2 flex flex-row items-center">
               <div
                 className="flex items-center mr-3"
                 onClick={handleSave}
