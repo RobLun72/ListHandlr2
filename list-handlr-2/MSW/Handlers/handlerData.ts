@@ -24,6 +24,20 @@ const allListsHandlers = (responseDelay: number) => {
       "/:listId",
       responseDelay
     ),
+    httpHandler(
+      "post",
+      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+      "/lists",
+      "/:listId/format",
+      responseDelay
+    ),
+    httpHandler(
+      "post",
+      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+      "/lists",
+      "/:listId/collab",
+      responseDelay
+    ),
   ];
 };
 

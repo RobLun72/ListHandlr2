@@ -1,7 +1,10 @@
 import { DefaultBodyType, HttpResponse, StrictRequest } from "msw";
 import { handleServerAction } from "../RequestHelpers/serverActionHelper";
 import { handleServerPostListsAction } from "../RequestHelpers/serverListsHelper";
-import { handleServerPostNamedListAction } from "../RequestHelpers/serverNamedListHelper";
+import {
+  handleServerPostNamedListAction,
+  handleServerPostNamedListCollabAction,
+} from "../RequestHelpers/serverNamedListHelper";
 import {
   handleApiGetCallsSearchParams,
   handleApiPostCallsBody,
@@ -39,12 +42,13 @@ export const handleReq = async (
         console.log("Lists page server action request", url.href, paramsUrl);
       }
 
-      if (paramsUrl !== "") {
+      if (paramsUrl !== "" && paramsUrl.endsWith("/collab")) {
+        return handleServerPostNamedListCollabAction(request);
+      } else if (paramsUrl !== "") {
         return handleServerPostNamedListAction(request);
       } else {
         return handleServerPostListsAction(request);
       }
-
     default:
       return HttpResponse.error();
       break;

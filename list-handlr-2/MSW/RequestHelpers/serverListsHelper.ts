@@ -15,10 +15,11 @@ export const handleServerPostListsAction = async (
   const jsonData: string = (bodyContent as string[])[0];
   const jsonString = JSON.stringify(jsonData);
 
-  console.log("jsonString", jsonString);
-
-  if (jsonData === undefined) {
-    const result = await handleAllListsServerGet("testUser");
+  if (jsonString.startsWith('{"user_id":')) {
+    const postData: { user_id: string } = jsonData as unknown as {
+      user_id: string;
+    };
+    const result = await handleAllListsServerGet(postData.user_id);
     const jsonResult = JSON.stringify(result);
 
     const response = `0:{"a":"$@1","f":"","b":"development"}\r\n1:${jsonResult}\r\n`;

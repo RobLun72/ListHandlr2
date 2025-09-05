@@ -65,22 +65,27 @@ export default function Page() {
       try {
         const lists: { success: boolean; users: User[]; error?: string } =
           await fetchAllUsers();
+        console.log("lists data:", lists);
 
         const collabs = await getNamedListCollab({
           listName: params.slug!.toString(),
         });
+
+        console.log("Collabs data:", collabs);
         let collabUsers: User[] = [];
-        if (collabs.rows && collabs.rows.length > 0) {
+        if (collabs.rows && collabs.rows.length > 0 && lists.users) {
           collabUsers = lists.users.filter((u) =>
             collabs.rows.some((c) => c.user_id === u.id)
           );
         }
-        const users = user
-          ? lists.users.filter((u) => u.id !== user!.id)
-          : lists.users;
-        const filteredUsers = users.filter(
-          (u) => !collabUsers.some((c) => c.id === u.id)
-        );
+        const users =
+          user && lists.users
+            ? lists.users.filter((u) => u.id !== user!.id)
+            : lists.users;
+        const filteredUsers =
+          users.length > 0
+            ? users.filter((u) => !collabUsers.some((c) => c.id === u.id))
+            : [];
 
         setPageState((prev) => ({
           ...prev,
@@ -196,7 +201,7 @@ export default function Page() {
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
               Collaborations for {`${decodeURI(params.slug!.toString())}`}
             </div>
-            <div className="pt-8 px-3 pb-2 flex flex-row items-center">
+            <div className="pt-8 px-1.5 pb-2 flex flex-row items-center">
               <div
                 className="flex items-center mr-3"
                 onClick={handleSave}

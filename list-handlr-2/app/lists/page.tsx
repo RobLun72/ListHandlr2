@@ -285,7 +285,7 @@ export default function Page() {
         <div>
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">All lists</div>
-            <div className="pt-8 px-3 pb-2 flex flex-row items-center">
+            <div className="pt-8 px-1.5 pb-2 flex flex-row items-center">
               <div
                 className="flex items-center mr-0.5"
                 onClick={handleSave}
