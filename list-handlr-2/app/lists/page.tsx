@@ -1,7 +1,6 @@
 "use client";
 import { ApiData, ApiResponse } from "../../DTO/apiData";
 import { AllListsPostData, ListData } from "../../DTO/listsData";
-import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
@@ -73,8 +72,6 @@ export default function Page() {
             user_id: user!.id,
           });
 
-          // Fix the first index if it is empty
-          FixFirstPostIndex(lists);
           setPageState((prev) => ({
             ...prev,
             load: false,
@@ -102,7 +99,6 @@ export default function Page() {
       );
 
       if (result && result.data && result.message === "") {
-        FixFirstPostIndex(result.data);
         setPageState((prev) => ({
           ...prev,
           load: false,

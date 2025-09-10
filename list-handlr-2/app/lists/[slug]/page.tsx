@@ -6,7 +6,6 @@ import {
   useRouter,
 } from "next/navigation";
 import { ApiData, ApiResponse } from "../../../DTO/apiData";
-import { FixFirstPostIndex } from "../../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { NamedListData, OneListPostData } from "@/DTO/oneListData";
@@ -80,8 +79,6 @@ export default function Page() {
           listName: params.slug!.toString(),
         });
 
-        // Fix the first index if it is empty
-        FixFirstPostIndex(lists);
         setPageState((prev) => ({
           ...prev,
           load: false,
@@ -107,7 +104,6 @@ export default function Page() {
       );
 
       if (result && result.data && result.message === "") {
-        FixFirstPostIndex(result.data);
         setPageState((prev) => ({
           ...prev,
           load: false,
