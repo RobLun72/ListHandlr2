@@ -6,7 +6,6 @@ import {
   useRouter,
 } from "next/navigation";
 import { ApiData, ApiResponse } from "../../../DTO/apiData";
-import { FixFirstPostIndex } from "../../../Helpers/fixFirstIndex";
 import { OneListTable } from "./oneListTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { NamedListData, OneListPostData } from "@/DTO/oneListData";
@@ -33,6 +32,7 @@ import { formatDateFromString } from "@/Helpers/formatDate";
 import { editNamedList } from "@/actions/editNamedList";
 import { getNamedList } from "@/actions/getNamedList";
 import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export interface OneListPageState {
   load: boolean;
@@ -52,6 +52,7 @@ export default function Page() {
   const pathname = usePathname();
   const pageParam = { pagePath: pathname, params: searchParams };
 
+  const { theme } = useTheme();
   const router = useRouter();
 
   const [pageState, setPageState] = useState<OneListPageState>({
@@ -80,8 +81,6 @@ export default function Page() {
           listName: params.slug!.toString(),
         });
 
-        // Fix the first index if it is empty
-        FixFirstPostIndex(lists);
         setPageState((prev) => ({
           ...prev,
           load: false,
@@ -107,7 +106,6 @@ export default function Page() {
       );
 
       if (result && result.data && result.message === "") {
-        FixFirstPostIndex(result.data);
         setPageState((prev) => ({
           ...prev,
           load: false,
@@ -301,14 +299,20 @@ export default function Page() {
               >
                 <ClipboardDocumentCheckIcon
                   className={cn(
-                    "h-8 text-appBlue cursor-pointer",
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen",
                     !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
                   )}
                   data-testid="save-list-icon"
                 />
               </div>
               <div className="flex items-center mr-0.5" onClick={handleBack}>
-                <ArrowLeftStartOnRectangleIcon className="h-8 text-appBlue cursor-pointer" />
+                <ArrowLeftStartOnRectangleIcon
+                  className={cn(
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -364,7 +368,12 @@ export default function Page() {
       {pageState.pendingSave && (
         <OverlayWithCenteredInput className="md:h-1/12 h-2/12 p-2 md:w-4/12 w-10/12 flex items-center">
           <div className="flex flex-col items-center justify-center w-full">
-            <LoadingSpinner className="h-12 w-12 text-appBlue animate-spin" />
+            <LoadingSpinner
+              className={cn(
+                `h-12 w-12 animate-spin`,
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+              )}
+            />
             <div className="text-center text-lg font-semibold mb-4">
               Saving the {decodeURI(params.slug!.toString())} list...
             </div>

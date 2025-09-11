@@ -16,6 +16,7 @@ import {
 import { usePathname } from "next/navigation";
 import { LogoutLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useIsAuthenticated } from "@/contexts/UserContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MenuComponentProps {
   topMenu: string;
@@ -26,7 +27,7 @@ interface MenuComponentProps {
 const components: MenuComponentProps[] = [
   {
     topMenu: "Actions",
-    paths: ["", "lists", "about"],
+    paths: ["", "lists", "settings", "about"],
     items: [
       {
         title: "Start",
@@ -39,6 +40,12 @@ const components: MenuComponentProps[] = [
         href: "/lists",
         path: "lists",
         description: "The todo lists.",
+      },
+      {
+        title: "Settings",
+        href: "/settings",
+        path: "settings",
+        description: "The app theme setting.",
       },
       {
         title: "About",
@@ -76,6 +83,7 @@ export function AppMenu() {
   const pathParts = path.split("/");
 
   const isAuthenticated = useIsAuthenticated();
+  const { theme } = useTheme();
 
   const mapComponents: MenuComponentProps[] =
     process.env.NEXT_PUBLIC_AUTH_ACTIVE === "false"
@@ -85,7 +93,12 @@ export function AppMenu() {
       : unAuthComponents;
 
   return (
-    <div className="flex md:min-w-3xl min-w-[370] max-w-7xl items-center  bg-appBlue px-4 py-2">
+    <div
+      className={cn(
+        `flex md:min-w-3xl min-w-[370] max-w-7xl items-center px-4 py-2`,
+        theme === "appBlue" ? "bg-appBlue" : "bg-appGreen"
+      )}
+    >
       <Link href="/" className="text-xl font-bold text-white mr-4">
         List Handlr
       </Link>
@@ -110,7 +123,11 @@ export function AppMenu() {
                       href={item.href}
                       className={cn(
                         "",
-                        pathParts[1] === item.path && "bg-appBlue text-white"
+                        pathParts[1] === item.path &&
+                          cn(
+                            `text-white`,
+                            theme === "appBlue" ? "bg-appBlue" : "bg-appGreen"
+                          )
                       )}
                     >
                       <ListItemDescription

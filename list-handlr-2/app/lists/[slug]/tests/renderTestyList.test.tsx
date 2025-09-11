@@ -9,6 +9,7 @@ import Page from "../page";
 import { waitForRender } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { assertTextValueInDoc } from "@/Helpers/Test/assertHelper";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -36,7 +37,11 @@ afterEach(() => {
 });
 
 test("Testy list page load", async () => {
-  await render(<Page />);
+  await render(
+    <ThemeProvider>
+      <Page />
+    </ThemeProvider>
+  );
 
   await waitForRender();
 

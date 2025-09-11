@@ -6,6 +6,7 @@
 @theme {
   --color-appWhite: oklch(98.45% 0.007 17.28);
   --color-appBlue: oklch(60.72% 0.059 237.53);
+  --color-appGreen: oklch(56.85% 0.1145 159.19);
 }
 
 @theme inline {

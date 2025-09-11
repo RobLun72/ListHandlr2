@@ -18,6 +18,7 @@ import {
   assertTextValueInDoc,
 } from "@/Helpers/Test/assertHelper";
 import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -47,7 +48,11 @@ afterEach(() => {
 test("Move item up in Handla list", async () => {
   const user = userEvent.setup();
 
-  await render(<Page />);
+  await render(
+    <ThemeProvider>
+      <Page />
+    </ThemeProvider>
+  );
 
   await waitForRender();
 

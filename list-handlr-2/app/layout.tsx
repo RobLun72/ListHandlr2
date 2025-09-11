@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppMenu } from "./menu";
-import { Toaster } from "@/components/ui/sonner";
-import { MSWInitializer } from "./mswInitializer";
 import { UserProvider } from "@/contexts/UserContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemedLayout } from "./ThemedLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,17 +34,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased  bg-appWhite min-w-[370px] md:min-w-6xl max-w-full`}
       >
         <UserProvider>
-          {/* Initialize MSW */}
-          <MSWInitializer />
-          <div className="bg-appBlue w-full">
-            <div className="flex flex-col justify-center items-center">
-              <AppMenu />
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-center px-1 w-full">
-            {children}
-            <Toaster />
-          </div>
+          <ThemeProvider>
+            <ThemedLayout>{children}</ThemedLayout>
+          </ThemeProvider>
         </UserProvider>
       </body>
     </html>

@@ -2,6 +2,7 @@ import { ListData } from "@/DTO/listsData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -22,6 +23,8 @@ export function ListsForm({ mode, item, onClose, onDone }: ListsFormProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<ListsFormValues>();
+
+  const { theme } = useTheme();
 
   const onSubmit: SubmitHandler<ListsFormValues> = ({ itemName }) => {
     if (onDone) {
@@ -62,7 +65,10 @@ export function ListsForm({ mode, item, onClose, onDone }: ListsFormProps) {
         </div>
         <div className="w-full py-2 flex flex-row justify-between items-center">
           <Button
-            className="bg-appBlue text-white"
+            className={cn(
+              `text-white`,
+              theme === "appBlue" ? "bg-appBlue" : "bg-appGreen"
+            )}
             type="submit"
             disabled={errors.itemName !== undefined}
             variant="outline"

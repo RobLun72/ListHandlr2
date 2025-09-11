@@ -45,14 +45,14 @@ const allTestHandlers = (responseDelay: number) => {
   return [
     httpHandler(
       "get",
-      process.env.NEXT_PUBLIC_BACK_END_URL,
+      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
       "",
       "",
       responseDelay
     ),
     httpHandler(
       "post",
-      process.env.NEXT_PUBLIC_BACK_END_URL,
+      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
       "",
       "",
       responseDelay

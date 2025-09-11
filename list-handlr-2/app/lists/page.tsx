@@ -1,7 +1,6 @@
 "use client";
 import { ApiData, ApiResponse } from "../../DTO/apiData";
 import { AllListsPostData, ListData } from "../../DTO/listsData";
-import { FixFirstPostIndex } from "../../Helpers/fixFirstIndex";
 import { ListsTable } from "./listsTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
@@ -26,6 +25,7 @@ import { editLists } from "@/actions/editLists";
 import { getLists } from "@/actions/getLists";
 import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
 import { useCurrentUser } from "@/contexts/UserContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export interface ListsPageState {
   load: boolean;
@@ -62,6 +62,7 @@ export default function Page() {
   });
 
   const user = useCurrentUser();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,8 +74,6 @@ export default function Page() {
             user_id: user!.id,
           });
 
-          // Fix the first index if it is empty
-          FixFirstPostIndex(lists);
           setPageState((prev) => ({
             ...prev,
             load: false,
@@ -102,7 +101,6 @@ export default function Page() {
       );
 
       if (result && result.data && result.message === "") {
-        FixFirstPostIndex(result.data);
         setPageState((prev) => ({
           ...prev,
           load: false,
@@ -293,7 +291,8 @@ export default function Page() {
               >
                 <ClipboardDocumentCheckIcon
                   className={cn(
-                    "h-8 text-appBlue cursor-pointer",
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen",
                     !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
                   )}
                   data-testid="save-list-icon"
@@ -348,7 +347,12 @@ export default function Page() {
       {pageState.pendingSave && (
         <OverlayWithCenteredInput className="md:h-1/12 h-2/12 p-2 md:w-4/12 w-10/12 flex items-center">
           <div className="flex flex-col items-center justify-center w-full">
-            <LoadingSpinner className="h-12 w-12 text-appBlue animate-spin" />
+            <LoadingSpinner
+              className={cn(
+                `h-12 w-12 animate-spin`,
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+              )}
+            />
             <div className="text-center text-lg font-semibold mb-4">
               Saving the {pageState.item?.listName} list...
             </div>

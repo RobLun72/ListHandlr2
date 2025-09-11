@@ -21,6 +21,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useResponsive } from "@/Helpers/useResponsive";
+import { useTheme } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/utils";
 
 export function ListsTable({
   lists,
@@ -47,6 +49,7 @@ export function ListsTable({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const pageParams = { pagePath: pathname, params: searchParams };
+  const { theme } = useTheme();
 
   const handleAdd = () => {
     onAdd();
@@ -62,6 +65,7 @@ export function ListsTable({
   return (
     <DataTable
       columns={GetColumns(
+        theme,
         isMobile,
         onEdit,
         onDelete,
@@ -71,7 +75,12 @@ export function ListsTable({
       )}
       data={lists}
       addButtonText={
-        <PlusCircleIcon className="h-8 text-appBlue cursor-pointer" />
+        <PlusCircleIcon
+          className={cn(
+            `h-8 cursor-pointer`,
+            theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+          )}
+        />
       }
       filterColumnName="listName"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
@@ -158,6 +167,7 @@ function ContextMenu({
 }
 
 function GetColumns(
+  theme: string,
   isMobile: boolean,
   onEdit: (index: number) => void,
   onDelete: (index: number) => void,
@@ -191,18 +201,27 @@ function GetColumns(
         return (
           <div className="flex">
             <Squares2X2Icon
-              className="h-5 cursor-grab text-appBlue pr-1 pt-1"
+              className={cn(
+                `h-5 cursor-grab pr-1 pt-1`,
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+              )}
               data-testid={"drag-button-" + row.original.index}
             />
 
             <ChevronUpIcon
-              className="h-6 cursor-pointer text-appBlue pr-1"
+              className={cn(
+                `h-6 cursor-pointer pr-1`,
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+              )}
               onClick={() => onUp(row.original.index)}
               data-testid={"up-button-" + row.original.index}
             />
 
             <ChevronDownIcon
-              className="h-6 cursor-pointer text-appBlue"
+              className={cn(
+                `h-6 cursor-pointer`,
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+              )}
               onClick={() => onDown(row.original.index)}
               data-testid={"down-button-" + row.original.index}
             />
