@@ -86,8 +86,11 @@ export async function editNamedListCollab(
     return Promise.reject(new Error("User is not authenticated."));
   }
 
+  // URL decode the listName parameter
+  const decodedListName = decodeURIComponent(dataToPost.listName);
+
   let result: ApiResponse<ApiData<CollabData>>;
-  const namedListData = await getCollabDataForNamedList(dataToPost.listName);
+  const namedListData = await getCollabDataForNamedList(decodedListName);
 
   const invalidTimestamp = checkValidTimestamp(namedListData, dataToPost);
   if (invalidTimestamp !== undefined) {
@@ -101,7 +104,7 @@ export async function editNamedListCollab(
 
     await editListLastUpdated(namedListData.namedList.id);
 
-    result = await formatNamedListResponse(dataToPost.listName);
+    result = await formatNamedListResponse(decodedListName);
   }
 
   return new Promise((resolve) => {

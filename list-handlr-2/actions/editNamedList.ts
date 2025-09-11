@@ -114,10 +114,13 @@ export async function editNamedList(
   if (!isUserAuthenticated && process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true") {
     return Promise.reject(new Error("User is not authenticated."));
   }
+  // URL decode the listName parameter
+  const decodedListName = decodeURIComponent(dataToPost.listName);
 
   let result: ApiResponse<ApiData<NamedListData>>;
-  const namedListData = await getListDataForNamedList(dataToPost.listName);
+  const namedListData = await getListDataForNamedList(decodedListName);
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
+  console.log("namedListData:", namedListData);
 
   const invalidTimestamp = allItemsAreNew
     ? undefined
@@ -143,7 +146,7 @@ export async function editNamedList(
 
     await editListLastUpdated(namedListData.namedList.id);
 
-    result = await formatNamedListResponse(dataToPost.listName);
+    result = await formatNamedListResponse(decodedListName);
   }
 
   return new Promise((resolve) => {
