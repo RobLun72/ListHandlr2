@@ -25,6 +25,7 @@ import {
 } from "@/Helpers/Test/assertHelper";
 import userEvent from "@testing-library/user-event";
 import { UserProvider } from "@/contexts/UserContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -55,7 +56,9 @@ test("Edit name of handla list", async () => {
 
   await render(
     <UserProvider>
-      <Page />
+      <ThemeProvider>
+        <Page />
+      </ThemeProvider>
     </UserProvider>
   );
 

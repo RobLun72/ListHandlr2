@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "./alert-dialog";
 import cn from "@/Helpers/cn";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export interface ConfirmDialogProps extends AlertDialogProps {
   className?: string;
@@ -37,6 +38,8 @@ export function ConfirmDialog({
   ...otherProps
 }: ConfirmDialogProps) {
   const id = useId();
+  const { theme } = useTheme();
+
   return (
     <AlertDialog open={isOpen}>
       <AlertDialogContent id={id} className={cn("", className)} {...otherProps}>
@@ -53,7 +56,13 @@ export function ConfirmDialog({
             </AlertDialogCancel>
           )}
           {onOk && !noOkButton && (
-            <AlertDialogAction className="bg-appBlue" onClick={onOk}>
+            <AlertDialogAction
+              className={cn(
+                ``,
+                theme === "appBlue" ? "bg-appBlue" : "bg-appGreen"
+              )}
+              onClick={onOk}
+            >
               {okText}
             </AlertDialogAction>
           )}

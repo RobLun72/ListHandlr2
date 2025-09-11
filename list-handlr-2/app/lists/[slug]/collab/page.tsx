@@ -23,6 +23,7 @@ import { getNamedListCollab } from "@/actions/getNamedListCollab";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { editNamedListCollab } from "@/actions/editNamedListCollab";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export interface CollabPageState {
   load: boolean;
@@ -44,6 +45,7 @@ export default function Page() {
   const router = useRouter();
 
   const user = useCurrentUser();
+  const { theme } = useTheme();
 
   const [pageState, setPageState] = useState<CollabPageState>({
     load: false,
@@ -209,14 +211,20 @@ export default function Page() {
               >
                 <ClipboardDocumentCheckIcon
                   className={cn(
-                    "h-8 text-appBlue cursor-pointer",
-                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
+                    `h-8 cursor-pointer`,
+                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed",
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen"
                   )}
                   data-testid="save-list-icon"
                 />
               </div>
               <div className="flex items-center mr-0.5" onClick={handleBack}>
-                <ArrowLeftStartOnRectangleIcon className="h-8 text-appBlue cursor-pointer" />
+                <ArrowLeftStartOnRectangleIcon
+                  className={cn(
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                  )}
+                />
               </div>
             </div>
           </div>

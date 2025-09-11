@@ -10,6 +10,7 @@ import { waitForRender } from "@/Helpers/Test/actHelper";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { assertTextValueInDoc } from "@/Helpers/Test/assertHelper";
 import { UserProvider } from "@/contexts/UserContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -38,7 +39,9 @@ afterEach(() => {
 test("Lists page load", async () => {
   await render(
     <UserProvider>
-      <Page />
+      <ThemeProvider>
+        <Page />
+      </ThemeProvider>
     </UserProvider>
   );
 

@@ -10,6 +10,7 @@ import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { ApiData } from "@/DTO/apiData";
 import { NamedListData } from "@/DTO/oneListData";
 import { getNamedList } from "@/actions/getNamedList";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export interface FormatPageState {
   load: boolean;
@@ -23,6 +24,7 @@ export default function Page() {
   const params = useParams();
 
   const router = useRouter();
+  const { theme } = useTheme();
 
   const [pageState, setPageState] = useState<FormatPageState>({
     load: false,
@@ -83,7 +85,12 @@ export default function Page() {
             </div>
             <div className="pt-8 px-1.5 pb-2 flex flex-row items-center">
               <div className="flex items-center mr-0.5" onClick={handleBack}>
-                <ArrowLeftStartOnRectangleIcon className="h-8 text-appBlue cursor-pointer" />
+                <ArrowLeftStartOnRectangleIcon
+                  className={cn(
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                  )}
+                />
               </div>
             </div>
           </div>

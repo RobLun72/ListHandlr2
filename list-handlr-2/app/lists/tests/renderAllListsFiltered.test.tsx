@@ -11,6 +11,7 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 import { assertTextValueInDoc } from "@/Helpers/Test/assertHelper";
 import { UserProvider } from "@/contexts/UserContext";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", async () => {
@@ -68,7 +69,9 @@ test("Lists page load", async () => {
 
   await render(
     <UserProvider>
-      <Page />
+      <ThemeProvider>
+        <Page />
+      </ThemeProvider>
     </UserProvider>
   );
 

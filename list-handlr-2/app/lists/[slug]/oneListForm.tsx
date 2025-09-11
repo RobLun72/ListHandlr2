@@ -2,6 +2,7 @@ import { NamedListData } from "@/DTO/oneListData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -32,6 +33,8 @@ export function OneListForm({ mode, item, onClose, onDone }: OneListFormProps) {
       onDone({ ...item, text: itemName, link: itemLink });
     }
   };
+
+  const { theme } = useTheme();
 
   const formData: OneListFormValues = {
     itemName: item.text || "",
@@ -80,7 +83,10 @@ export function OneListForm({ mode, item, onClose, onDone }: OneListFormProps) {
         </div>
         <div className="w-full py-2 flex flex-row justify-between items-center">
           <Button
-            className="bg-appBlue text-white"
+            className={cn(
+              ` text-white`,
+              theme === "appBlue" ? "bg-appBlue" : "bg-appGreen"
+            )}
             type="submit"
             disabled={errors.itemName !== undefined}
             variant="outline"
