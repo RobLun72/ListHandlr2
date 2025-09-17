@@ -8,6 +8,7 @@ import { Entity } from "@mswjs/data/lib/glossary";
 import { PrimaryKey } from "@mswjs/data/lib/primaryKey";
 import { OneOf, ManyOf } from "@mswjs/data/lib/relations/Relation";
 import { CollabData } from "@/DTO/collabData";
+import { NamedListResponse } from "@/actions/baseDbQueries";
 
 let currentNamedListId = 1000;
 
@@ -40,10 +41,159 @@ export const handleNamedListServerGet = async (listName: string) => {
     });
     if (listData) {
       return listData.data;
+    } else if (listName === "empty") {
+      return { timeStamp: "", rows: [] };
     } else {
       return matLista;
     }
   }
+};
+
+export const handleNamedListServerDBGet = async (listName: string) => {
+  const listData = namedListsDb.allNamedLists.findFirst({
+    where: { name: { equals: listName } },
+  });
+  if (listData) {
+    return new Promise<NamedListResponse>((resolve) => {
+      resolve({
+        namedList: {
+          id: listData.id,
+          index: 0,
+          list_name: listName,
+          user_id: "",
+          last_update: new Date(),
+          last_item_update: listData.data
+            ? new Date(listData.data!.timeStamp)
+            : new Date(),
+        },
+        listItems: [
+          ...listData.data!.rows.map((item) => ({
+            id: item.id,
+            list_id: listData.id,
+            index: item.index,
+            text: item.text,
+            done: item.done.toString(),
+            link: item.link,
+          })),
+        ],
+      });
+    });
+  } else if (listName === "empty") {
+    return new Promise<NamedListResponse>((resolve) => {
+      resolve({
+        namedList: {
+          id: 0,
+          index: 0,
+          list_name: "",
+          last_update: new Date(),
+          last_item_update: new Date(),
+          user_id: null,
+        },
+        listItems: [],
+      });
+    });
+  } else {
+    return new Promise<NamedListResponse>((resolve) => {
+      resolve({
+        namedList: {
+          id: 1,
+          index: 0,
+          list_name: listName,
+          user_id: "",
+          last_update: new Date(),
+          last_item_update: new Date(matLista.timeStamp),
+        },
+        listItems: [
+          ...matLista.rows.map((item) => ({
+            id: item.id,
+            list_id: 1,
+            index: item.index,
+            text: item.text,
+            done: item.done.toString(),
+            link: item.link,
+          })),
+        ],
+      });
+    });
+  }
+};
+
+export const handleDBAddListItem = async (
+  row: NamedListData,
+  listId: number
+) => {
+  const listData = namedListsDb.allNamedLists.findFirst({
+    where: { id: { equals: listId } },
+  });
+
+  const newItem = namedListsDb.listItems.create({
+    id: currentNamedListId++,
+    index: row.index,
+    text: row.text,
+    link: row.link,
+    done: row.done,
+  });
+
+  namedListsDb.namedList.update({
+    where: { timeStamp: { equals: listData!.data!.timeStamp } },
+    data: {
+      rows: [...(listData?.data?.rows ?? []), newItem],
+      timeStamp: listData!.data!.timeStamp,
+    },
+  });
+
+  //return newItem;
+};
+
+export const handleDBEditListItem = async (
+  row: NamedListData,
+  listId: number
+) => {
+  const listData = namedListsDb.allNamedLists.findFirst({
+    where: { id: { equals: listId } },
+  });
+  if (!listData) {
+    throw new Error("List not found");
+  }
+
+  namedListsDb.listItems.update({
+    where: { id: { equals: row.id } },
+    data: {
+      index: row.index,
+      text: row.text,
+      link: row.link,
+      done: row.done,
+    },
+  });
+};
+
+export const handleDBDeleteListItem = async (row: NamedListData) => {
+  namedListsDb.listItems.delete({
+    where: { id: { equals: row.id } },
+  });
+};
+
+export const handleDBEditListLastUpdated = async (listId: number) => {
+  const listData = namedListsDb.allNamedLists.findFirst({
+    where: { id: { equals: listId } },
+  });
+  if (!listData) {
+    throw new Error("List not found");
+  }
+  //   const newTime = new Date().toLocaleDateString();
+
+  //   // namedListsDb.namedList.update({
+  //   //   where: { timeStamp: { equals: listData!.data!.timeStamp } },
+  //   //   data: { timeStamp: newTime, rows: listData!.data!.rows },
+  //   // });
+  //   // const list = namedListsDb.namedList.findFirst({
+  //   //   where: { timeStamp: { equals: newTime } },
+  //   // });
+  //   // namedListsDb.allNamedLists.update({
+  //   //   where: { id: { equals: listId } },
+  //   //   data: { data: list! },
+  //   // });
+  //   return newTime;
 };
 
 export const handleNamedListCollabServerGet = async (listName: string) => {

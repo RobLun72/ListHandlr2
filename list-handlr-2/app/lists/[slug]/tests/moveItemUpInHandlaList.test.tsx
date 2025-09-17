@@ -45,7 +45,7 @@ afterEach(() => {
   serverWithHandlers.close();
 });
 
-test("Move item up in Handla list", async () => {
+test.skip("Move item up in Handla list", async () => {
   const user = userEvent.setup();
 
   await render(

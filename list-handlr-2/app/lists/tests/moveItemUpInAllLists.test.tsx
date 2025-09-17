@@ -62,13 +62,15 @@ test("Move item up in All list", async () => {
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("testy");
+  await assertTextValueInDoc("testy da besty");
 
   const rows = document.querySelectorAll('[data-slot="table-row"]');
 
-  assertNumberOfElementsInList(rows, 4); // 3 items in the list + header row
+  assertNumberOfElementsInList(rows, 5); // 3 items in the list + header row
   assertElementsValueForListIndex(rows[1].childNodes, 1, "testy");
   assertElementsValueForListIndex(rows[2].childNodes, 1, "Matlista");
   assertElementsValueForListIndex(rows[3].childNodes, 1, "Handla");
+  assertElementsValueForListIndex(rows[4].childNodes, 1, "testy da besty");
 
   const loadedTimeStamp = getValueByTestId("current-timestamp");
   //check that the save button is disabled when not dirty
@@ -91,13 +93,15 @@ test("Move item up in All list", async () => {
   await assertTextValueInDoc("testy");
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("Matlista");
+  await assertTextValueInDoc("testy da besty");
   const rows2 = document.querySelectorAll('[data-slot="table-row"]');
 
   //check that the items are in the correct order after saving
-  assertNumberOfElementsInList(rows2, 4);
+  assertNumberOfElementsInList(rows2, 5);
   assertElementsValueForListIndex(rows2[1].childNodes, 1, "Matlista");
   assertElementsValueForListIndex(rows2[2].childNodes, 1, "testy");
   assertElementsValueForListIndex(rows2[3].childNodes, 1, "Handla");
+  assertElementsValueForListIndex(rows[4].childNodes, 1, "testy da besty");
 
   const updTimeStamp = getValueByTestId("current-timestamp");
   expect(loadedTimeStamp).not.toEqual(updTimeStamp);

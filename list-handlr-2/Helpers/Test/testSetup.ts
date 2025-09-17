@@ -3,15 +3,26 @@ import "@testing-library/jest-dom";
 import matchMediaMock from "match-media-mock";
 import { loadEnvConfig } from "@next/env";
 import {
-  handleAllListsServerGet,
-  handleAllListsServerPost,
+  handleAllListsServerDBGet,
+  //handleAllListsServerGet,
+  //handleAllListsServerPost,
+  handleDBAddList,
+  handleDBDeleteList,
+  handleDBEditList,
 } from "@/MSW/RequestHelpers/allListsHelper";
-import { AllListsPostData } from "@/DTO/listsData";
+import { ListData } from "@/DTO/listsData";
 import {
-  handleNamedListServerGet,
-  handleNamedListServerPost,
+  handleDBAddListItem,
+  handleDBDeleteListItem,
+  handleDBEditListItem,
+  handleDBEditListLastUpdated,
+  handleNamedListServerDBGet,
+  //handleNamedListServerPost,
 } from "@/MSW/RequestHelpers/namedListHelper";
-import { OneListPostData } from "@/DTO/oneListData";
+import {
+  NamedListData,
+  //OneListPostData
+} from "@/DTO/oneListData";
 
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
@@ -87,42 +98,98 @@ vi.mock("next/headers", () => ({
   })),
 }));
 
-vi.mock("@/actions/getLists", () => ({
-  getLists: vi.fn().mockImplementation(async (user: { user_id: string }) => {
+vi.mock("@/actions/baseDbQueries", () => ({
+  getAllListsForUser: vi.fn().mockImplementation(async (user_id: string) => {
     // This function runs each time getLists is called
-    const dynamicData = await handleAllListsServerGet(user.user_id);
+    const dynamicData = await handleAllListsServerDBGet(user_id);
     return dynamicData;
   }),
-}));
-
-vi.mock("@/actions/editLists", () => ({
-  editLists: vi
+  addListToDb: vi
     .fn()
-    .mockImplementation(async (dataToPost: AllListsPostData) => {
-      // This function runs each time getLists is called
-      const dynamicData = await handleAllListsServerPost(dataToPost);
+    .mockImplementation(async (item: ListData, user_id: string) => {
+      const dynamicData = await handleDBAddList(item, user_id);
       return dynamicData;
+    }),
+  editListToDb: vi.fn().mockImplementation(async (item: ListData) => {
+    await new Promise((r) => setTimeout(r, 100));
+    const dynamicData = await handleDBEditList(item);
+    return dynamicData;
+  }),
+  deleteListToDb: vi.fn().mockImplementation(async (item: ListData) => {
+    const dynamicData = await handleDBDeleteList(item);
+    return dynamicData;
+  }),
+  getListDataForNamedList: vi
+    .fn()
+    .mockImplementation(async (listName: string) => {
+      const dynamicData = await handleNamedListServerDBGet(listName);
+      return dynamicData;
+    }),
+  getCollabDataForNamedList: vi.fn(),
+  addListItemToDb: vi
+    .fn()
+    .mockImplementation(async (row: NamedListData, listId: number) => {
+      const dynamicData = await handleDBAddListItem(row, listId);
+      return dynamicData;
+    }),
+  editListItemToDb: vi
+    .fn()
+    .mockImplementation(async (row: NamedListData, listId: number) => {
+      const dynamicData = await handleDBEditListItem(row, listId);
+      return dynamicData;
+    }),
+  deleteListItemToDb: vi.fn().mockImplementation(async (row: NamedListData) => {
+    const dynamicData = await handleDBDeleteListItem(row);
+    return dynamicData;
+  }),
+  editListLastUpdatedToDb: vi
+    .fn()
+    .mockImplementation(async (listId: number) => {
+      await new Promise((r) => setTimeout(r, 100)); //make sure it takes some time
+      await handleDBEditListLastUpdated(listId);
     }),
 }));
 
-vi.mock("@/actions/getNamedList", () => ({
-  getNamedList: vi
-    .fn()
-    .mockImplementation(async (params: { listName: string }) => {
-      // You could use a helper function similar to handleAllListsServerGet
-      const dynamicData = await handleNamedListServerGet(params.listName);
-      return dynamicData;
-    }),
-}));
+// vi.mock("@/actions/getLists", () => ({
+//   getLists: vi.fn().mockImplementation(async (user: { user_id: string }) => {
+//     // This function runs each time getLists is called
+//     const dynamicData = await handleAllListsServerGet(user.user_id);
+//     return dynamicData;
+//   }),
+// }));
 
-vi.mock("@/actions/editNamedList", () => ({
-  editNamedList: vi
-    .fn()
-    .mockImplementation(async (dataToPost: OneListPostData) => {
-      // This function runs each time getLists is called
-      const dynamicData = await handleNamedListServerPost(dataToPost);
-      return dynamicData;
-    }),
-}));
+// vi.mock("@/actions/editLists", () => ({
+//   editLists: vi
+//     .fn()
+//     .mockImplementation(async (dataToPost: AllListsPostData) => {
+//       // This function runs each time getLists is called
+//       const dynamicData = await handleAllListsServerPost(dataToPost);
+//       return dynamicData;
+//     }),
+// }));
+
+// vi.mock("@/actions/getNamedList", () => ({
+//   getNamedList: vi
+//     .fn()
+//     .mockImplementation(async (params: { listName: string }) => {
+//       // URL decode the listName parameter
+//       console.log("received list name:", params.listName);
+//       const decodedListName = decodeURIComponent(params.listName);
+//       console.log("Decoded list name:", decodedListName);
+//       // You could use a helper function similar to handleAllListsServerGet
+//       const dynamicData = await handleNamedListServerGet(decodedListName);
+//       return dynamicData;
+//     }),
+// }));
+
+// vi.mock("@/actions/editNamedList", () => ({
+//   editNamedList: vi
+//     .fn()
+//     .mockImplementation(async (dataToPost: OneListPostData) => {
+//       // This function runs each time getLists is called
+//       const dynamicData = await handleNamedListServerPost(dataToPost);
+//       return dynamicData;
+//     }),
+// }));
 
 window.ResizeObserver = ResizeObserver;

@@ -312,6 +312,7 @@ export default function Page() {
                     `h-8 cursor-pointer`,
                     theme === "appBlue" ? "text-appBlue" : "text-appGreen"
                   )}
+                  data-testid="back-button-icon"
                 />
               </div>
             </div>

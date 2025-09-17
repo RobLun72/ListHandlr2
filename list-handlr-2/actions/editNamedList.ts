@@ -3,11 +3,15 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { OneListPostData, NamedListData } from "@/DTO/oneListData";
-import { listItemsTable, listsTable } from "@/db/schema";
+//import { listItemsTable, listsTable } from "@/db/schema";
 import { formatDate } from "@/Helpers/formatDate";
-import { db } from "@/db/index";
-import { eq } from "drizzle-orm";
+//import { db } from "@/db/index";
+//import { eq } from "drizzle-orm";
 import {
+  addListItemToDb,
+  deleteListItemToDb,
+  editListItemToDb,
+  editListLastUpdatedToDb,
   getListDataForNamedList,
   NamedListItem,
   NamedListResponse,
@@ -60,16 +64,18 @@ async function formatNamedListResponse(
 }
 
 async function deleteListItem(row: NamedListData) {
-  await db.delete(listItemsTable).where(eq(listItemsTable.id, row.id));
+  await deleteListItemToDb(row);
+  //await db.delete(listItemsTable).where(eq(listItemsTable.id, row.id));
 }
 async function addListItem(row: NamedListData, listId: number) {
-  await db.insert(listItemsTable).values({
-    list_id: listId,
-    index: row.index,
-    text: row.text,
-    done: row.done ? "true" : "false",
-    link: row.link,
-  });
+  await addListItemToDb(row, listId);
+  // await db.insert(listItemsTable).values({
+  //   list_id: listId,
+  //   index: row.index,
+  //   text: row.text,
+  //   done: row.done ? "true" : "false",
+  //   link: row.link,
+  // });
 }
 async function editListItem(
   row: NamedListData,
@@ -85,24 +91,26 @@ async function editListItem(
     existingItem.done !== rowDone ||
     existingItem.link !== row.link
   ) {
-    await db
-      .update(listItemsTable)
-      .set({
-        list_id: namedListData.namedList.id,
-        index: row.index,
-        text: row.text,
-        done: row.done ? "true" : "false",
-        link: row.link,
-      })
-      .where(eq(listItemsTable.id, row.id));
+    await editListItemToDb(row, namedListData.namedList.id);
+    // await db
+    //   .update(listItemsTable)
+    //   .set({
+    //     list_id: namedListData.namedList.id,
+    //     index: row.index,
+    //     text: row.text,
+    //     done: row.done ? "true" : "false",
+    //     link: row.link,
+    //   })
+    //   .where(eq(listItemsTable.id, row.id));
   }
 }
 
 async function editListLastUpdated(listId: number) {
-  await db
-    .update(listsTable)
-    .set({ last_item_update: new Date() })
-    .where(eq(listsTable.id, listId));
+  await editListLastUpdatedToDb(listId);
+  // await db
+  //   .update(listsTable)
+  //   .set({ last_item_update: new Date() })
+  //   .where(eq(listsTable.id, listId));
 }
 
 export async function editNamedList(
@@ -120,7 +128,6 @@ export async function editNamedList(
   let result: ApiResponse<ApiData<NamedListData>>;
   const namedListData = await getListDataForNamedList(decodedListName);
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
-  console.log("namedListData:", namedListData);
 
   const invalidTimestamp = allItemsAreNew
     ? undefined

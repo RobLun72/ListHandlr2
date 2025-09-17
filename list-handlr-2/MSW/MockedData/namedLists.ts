@@ -180,13 +180,35 @@ export const testyLista: ApiData<NamedListData> = {
   ],
 };
 
+export const testyDaBestyLista: ApiData<NamedListData> = {
+  timeStamp: "2024-04-04T12:56:11.563Z",
+  rows: [
+    {
+      index: 0,
+      text: "best item",
+      done: false,
+      link: "",
+      id: 24,
+    },
+    {
+      index: 1,
+      text: "zest item",
+      done: false,
+      link: "",
+      id: 25,
+    },
+  ],
+};
+
 export interface MockedNamedList {
   name: string;
+  id: number;
   data: ApiData<NamedListData>;
 }
 
 export const allNamedLists: MockedNamedList[] = [
-  { name: "Matlista", data: matLista },
-  { name: "Handla", data: handlaLista },
-  { name: "testy", data: testyLista },
+  { name: "Matlista", id: 1, data: matLista },
+  { name: "Handla", id: 2, data: handlaLista },
+  { name: "testy", id: 3, data: testyLista },
+  { name: "testy da besty", id: 4, data: testyDaBestyLista },
 ];
