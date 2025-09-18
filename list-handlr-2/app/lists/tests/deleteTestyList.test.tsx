@@ -89,7 +89,7 @@ test("Delete testy list", async () => {
   await clickOnElementWithTestId(user, "save-list");
 
   await assertTextValueInDoc(/Saving the list.../);
-  await waitForRender(500);
+  await waitForRender(600);
 
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");

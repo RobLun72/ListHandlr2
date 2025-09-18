@@ -27,7 +27,6 @@ import { cn } from "@/lib/utils";
 export function ListsTable({
   lists,
   isListsDataDirty,
-  //pageParams,
   onAdd,
   onEdit,
   onDelete,
@@ -37,7 +36,6 @@ export function ListsTable({
 }: {
   lists: ListData[];
   isListsDataDirty: boolean;
-  //pageParams: { pagePath: string; params: URLSearchParams };
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;

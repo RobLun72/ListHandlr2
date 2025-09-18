@@ -1,4 +1,4 @@
-import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
+//import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
 import { AllListsPostData, ListData } from "@/DTO/listsData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { filter, sortAscending } from "@/Helpers/sortAndFilter";
@@ -6,21 +6,21 @@ import { allListsDb, namedListsDb } from "./apiCallHelper";
 
 let currentAllListId = 100;
 
-export const handleAllListsGet = async (
-  request: StrictRequest<DefaultBodyType>
-) => {
-  const url = new URL(request.url);
-  const type = url.searchParams.get("type");
+// export const handleAllListsGet = async (
+//   request: StrictRequest<DefaultBodyType>
+// ) => {
+//   const url = new URL(request.url);
+//   const type = url.searchParams.get("type");
 
-  if (type === "Lists") {
-    const lists = allListsDb.allLists.getAll();
+//   if (type === "Lists") {
+//     const lists = allListsDb.allLists.getAll();
 
-    return HttpResponse.json({
-      timeStamp: lists[0].timeStamp,
-      rows: sortAscending(lists[0].rows, "index"),
-    });
-  }
-};
+//     return HttpResponse.json({
+//       timeStamp: lists[0].timeStamp,
+//       rows: sortAscending(lists[0].rows, "index"),
+//     });
+//   }
+// };
 
 export const handleAllListsServerGet = async (user: string) => {
   if (user == "userWithFeverLists") {
@@ -118,35 +118,35 @@ export const handleDBDeleteList = async (item: ListData) => {
   });
 };
 
-export const handleAllListsPost = async (data: AllListsPostData) => {
-  if (data.saveType === "editList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
+// export const handleAllListsPost = async (data: AllListsPostData) => {
+//   if (data.saveType === "editList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
+//     await new Promise((r) => setTimeout(r, 200));
 
-    return HttpResponse.json(responseLists);
-  }
-  if (data.saveType === "addList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
+//     return HttpResponse.json(responseLists);
+//   }
+//   if (data.saveType === "addList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
+//     await new Promise((r) => setTimeout(r, 200));
 
-    return HttpResponse.json(responseLists);
-  }
-  if (data.saveType === "deleteList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
+//     return HttpResponse.json(responseLists);
+//   }
+//   if (data.saveType === "deleteList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
+//     await new Promise((r) => setTimeout(r, 200));
 
-    return HttpResponse.json(responseLists);
-  } else {
-    const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
+//     return HttpResponse.json(responseLists);
+//   } else {
+//     const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
+//     await new Promise((r) => setTimeout(r, 200));
 
-    return HttpResponse.json(responseLists);
-  }
-};
+//     return HttpResponse.json(responseLists);
+//   }
+// };
 
 export const handleAllListsServerPost = async (data: AllListsPostData) => {
   await new Promise((r) => setTimeout(r, 200));

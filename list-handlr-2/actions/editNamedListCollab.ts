@@ -2,16 +2,13 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
-import { listsCollaborationsTable, listsTable } from "@/db/schema";
 import { formatDate } from "@/Helpers/formatDate";
-import { db } from "@/db/index";
-import { eq } from "drizzle-orm";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
 import {
-  getCollabDataForNamedList,
   NamedListCollab,
   NamedListCollabResponse,
-} from "./baseDbQueries";
+} from "./dbHandling/baseDbInterfaces";
+import { DbFactory } from "./dbHandling/baseDbFactory";
 
 function formatAllLists(
   timestamp: string,
@@ -47,7 +44,8 @@ function checkValidTimestamp(
 async function formatNamedListResponse(
   name: string
 ): Promise<ApiResponse<ApiData<CollabData>>> {
-  const namedListData = await getCollabDataForNamedList(name);
+  const db = DbFactory.createDbQueries();
+  const namedListData = await db.getCollabDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
   return {
@@ -57,23 +55,18 @@ async function formatNamedListResponse(
 }
 
 async function deleteCollabs(list_id: number) {
-  await db
-    .delete(listsCollaborationsTable)
-    .where(eq(listsCollaborationsTable.list_id, list_id));
+  const db = DbFactory.createDbQueries();
+  await db.deleteCollabsToDb(list_id);
 }
 
 async function addCollabItem(userId: string, listId: number) {
-  await db.insert(listsCollaborationsTable).values({
-    list_id: listId,
-    user_id: userId,
-  });
+  const db = DbFactory.createDbQueries();
+  await db.addCollabItemToDb(userId, listId);
 }
 
-async function editListLastUpdated(listId: number) {
-  await db
-    .update(listsTable)
-    .set({ last_item_update: new Date() })
-    .where(eq(listsTable.id, listId));
+async function editCollabListLastUpdated(listId: number) {
+  const db = DbFactory.createDbQueries();
+  await db.editCollabListLastUpdatedToDb(listId);
 }
 
 export async function editNamedListCollab(
@@ -90,7 +83,8 @@ export async function editNamedListCollab(
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
   let result: ApiResponse<ApiData<CollabData>>;
-  const namedListData = await getCollabDataForNamedList(decodedListName);
+  const db = DbFactory.createDbQueries();
+  const namedListData = await db.getCollabDataForNamedList(decodedListName);
 
   const invalidTimestamp = checkValidTimestamp(namedListData, dataToPost);
   if (invalidTimestamp !== undefined) {
@@ -102,7 +96,7 @@ export async function editNamedListCollab(
       await addCollabItem(item, namedListData.namedList.id);
     }
 
-    await editListLastUpdated(namedListData.namedList.id);
+    await editCollabListLastUpdated(namedListData.namedList.id);
 
     result = await formatNamedListResponse(decodedListName);
   }

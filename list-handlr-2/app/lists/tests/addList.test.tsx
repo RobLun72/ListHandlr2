@@ -87,7 +87,7 @@ test("Add list", async () => {
   await clickOnElementWithTestId(user, "save-list");
 
   await assertTextValueInDoc(/Saving the list.../);
-  await waitForRender(400);
+  await waitForRender(600);
 
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");

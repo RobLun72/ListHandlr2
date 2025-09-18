@@ -78,7 +78,7 @@ test("Format page shows loading skeleton initially", async () => {
   await waitForRender();
 });
 
-test.skip("Back button navigates to lists page", async () => {
+test("Back button navigates to lists page", async () => {
   const user = userEvent.setup();
 
   await render(
@@ -134,32 +134,4 @@ test("Format page applies correct theme styling", async () => {
     const classes = arrowIcon.className;
     expect(classes).toMatch(/text-app(Blue|Green)/);
   }
-});
-
-test.skip("Format page handles URL decoded list names correctly", async () => {
-  // Mock params with encoded characters
-  vi.mocked(vi.importActual).mockImplementation(async () => {
-    const mod = await vi.importActual<typeof import("next/navigation")>(
-      "next/navigation"
-    );
-    return {
-      ...mod,
-      useParams: () => ({ slug: "test%20list%20with%20spaces" }),
-      useRouter: () => ({
-        push: mockPush,
-        replace: mockReplace,
-      }),
-    };
-  });
-
-  await render(
-    <ThemeProvider>
-      <Page />
-    </ThemeProvider>
-  );
-
-  await waitForRender();
-
-  // Should decode URL and display correctly
-  await assertTextValueInDoc("Items for test list with spaces");
 });

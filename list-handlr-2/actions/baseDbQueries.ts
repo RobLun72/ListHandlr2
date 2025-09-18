@@ -52,7 +52,6 @@ export interface AllListRecord {
 }
 
 export const getAllListsForUser = async (userId: string) => {
-  // Implementation for fetching all lists for a specific user
   const myLists = await db
     .select()
     .from(listsTable)

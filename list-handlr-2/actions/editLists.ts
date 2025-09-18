@@ -5,13 +5,8 @@ import { AllListsPostData, ListData } from "@/DTO/listsData";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
-import {
-  addListToDb,
-  AllListRecord,
-  deleteListToDb,
-  editListToDb,
-  getAllListsForUser,
-} from "./baseDbQueries";
+import { AllListRecord } from "./dbHandling/baseDbInterfaces";
+import { DbFactory } from "./dbHandling/baseDbFactory";
 
 function formatAllLists(
   timestamp: string,
@@ -30,7 +25,8 @@ function formatAllLists(
 async function formatAllListsResponse(
   user_id: string
 ): Promise<ApiResponse<ApiData<ListData>>> {
-  const allLists = await getAllListsForUser(user_id);
+  const db = DbFactory.createDbQueries();
+  const allLists = await db.getAllListsForUser(user_id);
 
   const maxStamp = formatDate(max(allLists, "last_update")!.last_update!) || "";
 
@@ -62,16 +58,19 @@ async function editList(item: ListData, allLists: AllListRecord[]) {
   if (!row) throw new Error("List not found");
 
   if (item.index !== row.index || item.listName !== row.list_name) {
-    await editListToDb(item);
+    const db = DbFactory.createDbQueries();
+    await db.editListToDb(item);
   }
 }
 
 async function addList(item: ListData, user_id: string) {
-  await addListToDb(item, user_id);
+  const db = DbFactory.createDbQueries();
+  await db.addListToDb(item, user_id);
 }
 
 async function deleteList(item: ListData) {
-  await deleteListToDb(item);
+  const db = DbFactory.createDbQueries();
+  await db.deleteListToDb(item);
 }
 
 export async function editLists(
@@ -85,7 +84,8 @@ export async function editLists(
   }
 
   let result: ApiResponse<ApiData<ListData>>;
-  const allLists = await getAllListsForUser(dataToPost.user_id);
+  const db = DbFactory.createDbQueries();
+  const allLists = await db.getAllListsForUser(dataToPost.user_id);
 
   const invalidTimestamp = checkValidTimestamp(allLists, dataToPost);
 

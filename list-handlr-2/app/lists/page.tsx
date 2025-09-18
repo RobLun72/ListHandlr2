@@ -174,11 +174,6 @@ export default function Page() {
       const delItem = removeItem<ListData>(newLists, index);
       insertLast<ListData>(newLists, delItem[0], true);
     }
-    // postLists({
-    //   saveType: "deleteList",
-    //   listName: pageState.lists[index].listName,
-    //   item: { rows: newLists, timeStamp: pageState.timestamp },
-    // });
 
     setPageState((prev) => ({
       ...prev,
@@ -190,28 +185,13 @@ export default function Page() {
 
   const handleNewValues = (item: ListData) => {
     const newLists = [...pageState.lists];
-    //newLists[item.index] = item;
 
     if (item.index >= 0) {
       newLists[item.index] = item;
     } else {
       insertFirst(newLists, item);
     }
-    // if (item.index >= 0) {
-    //   postLists({
-    //     saveType: "editList",
-    //     listName: pageState.lists[item.index].listName,
-    //     newListName: item.listName,
-    //     item: { rows: newLists, timeStamp: pageState.timestamp },
-    //   });
-    // } else {
-    //   insertFirst(newLists, item);
-    //   postLists({
-    //     saveType: "addList",
-    //     newListName: item.listName,
-    //     item: { rows: newLists, timeStamp: pageState.timestamp },
-    //   });
-    // }
+
     setPageState((prev) => ({
       ...prev,
       lists: newLists,

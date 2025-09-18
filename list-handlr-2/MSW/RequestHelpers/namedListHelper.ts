@@ -1,4 +1,4 @@
-import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
+//import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
 import { matLista } from "../MockedData/namedLists";
 import { NamedListData, OneListPostData } from "@/DTO/oneListData";
 import { namedListsDb } from "./apiCallHelper";
@@ -12,27 +12,27 @@ import { NamedListResponse } from "@/actions/baseDbQueries";
 
 let currentNamedListId = 1000;
 
-export const handleNamedListGet = async (
-  request: StrictRequest<DefaultBodyType>
-) => {
-  const url = new URL(request.url);
-  const type = url.searchParams.get("type");
+// export const handleNamedListGet = async (
+//   request: StrictRequest<DefaultBodyType>
+// ) => {
+//   const url = new URL(request.url);
+//   const type = url.searchParams.get("type");
 
-  if (type && type == "List") {
-    const listName = url.searchParams.get("name");
+//   if (type && type == "List") {
+//     const listName = url.searchParams.get("name");
 
-    if (listName) {
-      const listData = namedListsDb.allNamedLists.findFirst({
-        where: { name: { equals: listName } },
-      });
-      if (listData) {
-        return HttpResponse.json(listData.data);
-      } else {
-        return HttpResponse.json(matLista);
-      }
-    }
-  }
-};
+//     if (listName) {
+//       const listData = namedListsDb.allNamedLists.findFirst({
+//         where: { name: { equals: listName } },
+//       });
+//       if (listData) {
+//         return HttpResponse.json(listData.data);
+//       } else {
+//         return HttpResponse.json(matLista);
+//       }
+//     }
+//   }
+// };
 
 export const handleNamedListServerGet = async (listName: string) => {
   if (listName) {
@@ -141,8 +141,6 @@ export const handleDBAddListItem = async (
       timeStamp: listData!.data!.timeStamp,
     },
   });
-
-  //return newItem;
 };
 
 export const handleDBEditListItem = async (
@@ -204,15 +202,15 @@ export const handleNamedListCollabServerGet = async (listName: string) => {
   return result;
 };
 
-export const handleNamedListPost = async (data: OneListPostData) => {
-  if (data.saveType === "oneList") {
-    const responseLists: ApiResponse<ApiData<NamedListData>> = editList(data);
+// export const handleNamedListPost = async (data: OneListPostData) => {
+//   if (data.saveType === "oneList") {
+//     const responseLists: ApiResponse<ApiData<NamedListData>> = editList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
+//     await new Promise((r) => setTimeout(r, 200));
 
-    return HttpResponse.json(responseLists);
-  }
-};
+//     return HttpResponse.json(responseLists);
+//   }
+// };
 
 export const handleNamedListServerPost = async (data: OneListPostData) => {
   if (data.saveType === "oneList") {
