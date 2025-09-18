@@ -4,7 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
 import { formatDate } from "@/Helpers/formatDate";
 import { CollabData } from "@/DTO/collabData";
-import { DbFactory } from "./dbHandling/baseDbFactory";
+import { DbFactory } from "../db/queries/DbFactory";
 
 export async function getNamedListCollab(listName: {
   listName: string;

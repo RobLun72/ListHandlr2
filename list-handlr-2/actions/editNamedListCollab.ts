@@ -5,10 +5,11 @@ import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { formatDate } from "@/Helpers/formatDate";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
 import {
+  DbQueriesInterface,
   NamedListCollab,
   NamedListCollabResponse,
-} from "./dbHandling/baseDbInterfaces";
-import { DbFactory } from "./dbHandling/baseDbFactory";
+} from "../db/queries/DbInterfaces";
+import { DbFactory } from "../db/queries/DbFactory";
 
 function formatAllLists(
   timestamp: string,
@@ -42,9 +43,9 @@ function checkValidTimestamp(
 }
 
 async function formatNamedListResponse(
-  name: string
+  name: string,
+  db: DbQueriesInterface
 ): Promise<ApiResponse<ApiData<CollabData>>> {
-  const db = DbFactory.createDbQueries();
   const namedListData = await db.getCollabDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
@@ -54,18 +55,22 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteCollabs(list_id: number) {
-  const db = DbFactory.createDbQueries();
+async function deleteCollabs(list_id: number, db: DbQueriesInterface) {
   await db.deleteCollabsToDb(list_id);
 }
 
-async function addCollabItem(userId: string, listId: number) {
-  const db = DbFactory.createDbQueries();
+async function addCollabItem(
+  userId: string,
+  listId: number,
+  db: DbQueriesInterface
+) {
   await db.addCollabItemToDb(userId, listId);
 }
 
-async function editCollabListLastUpdated(listId: number) {
-  const db = DbFactory.createDbQueries();
+async function editCollabListLastUpdated(
+  listId: number,
+  db: DbQueriesInterface
+) {
   await db.editCollabListLastUpdatedToDb(listId);
 }
 
@@ -82,23 +87,24 @@ export async function editNamedListCollab(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
-  let result: ApiResponse<ApiData<CollabData>>;
   const db = DbFactory.createDbQueries();
+
+  let result: ApiResponse<ApiData<CollabData>>;
   const namedListData = await db.getCollabDataForNamedList(decodedListName);
 
   const invalidTimestamp = checkValidTimestamp(namedListData, dataToPost);
   if (invalidTimestamp !== undefined) {
     result = invalidTimestamp;
   } else {
-    await deleteCollabs(namedListData.namedList.id);
+    await deleteCollabs(namedListData.namedList.id, db);
     for (const item of dataToPost.item.rows) {
       // add item
-      await addCollabItem(item, namedListData.namedList.id);
+      await addCollabItem(item, namedListData.namedList.id, db);
     }
 
-    await editCollabListLastUpdated(namedListData.namedList.id);
+    await editCollabListLastUpdated(namedListData.namedList.id, db);
 
-    result = await formatNamedListResponse(decodedListName);
+    result = await formatNamedListResponse(decodedListName, db);
   }
 
   return new Promise((resolve) => {

@@ -4,11 +4,12 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { OneListPostData, NamedListData } from "@/DTO/oneListData";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "./dbHandling/baseDbFactory";
+import { DbFactory } from "../db/queries/DbFactory";
 import {
+  DbQueriesInterface,
   NamedListItem,
   NamedListResponse,
-} from "./dbHandling/baseDbInterfaces";
+} from "../db/queries/DbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -45,9 +46,9 @@ function checkValidTimestamp(
 }
 
 async function formatNamedListResponse(
-  name: string
+  name: string,
+  db: DbQueriesInterface
 ): Promise<ApiResponse<ApiData<NamedListData>>> {
-  const db = DbFactory.createDbQueries();
   const namedListData = await db.getListDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
@@ -57,17 +58,20 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteListItem(row: NamedListData) {
-  const db = DbFactory.createDbQueries();
+async function deleteListItem(row: NamedListData, db: DbQueriesInterface) {
   await db.deleteListItemToDb(row);
 }
-async function addListItem(row: NamedListData, listId: number) {
-  const db = DbFactory.createDbQueries();
+async function addListItem(
+  row: NamedListData,
+  listId: number,
+  db: DbQueriesInterface
+) {
   await db.addListItemToDb(row, listId);
 }
 async function editListItem(
   row: NamedListData,
-  namedListData: NamedListResponse
+  namedListData: NamedListResponse,
+  db: DbQueriesInterface
 ) {
   const existingItem = namedListData.listItems.find(
     (item) => item.id === row.id
@@ -79,13 +83,11 @@ async function editListItem(
     existingItem.done !== rowDone ||
     existingItem.link !== row.link
   ) {
-    const db = DbFactory.createDbQueries();
     await db.editListItemToDb(row, namedListData.namedList.id);
   }
 }
 
-async function editListLastUpdated(listId: number) {
-  const db = DbFactory.createDbQueries();
+async function editListLastUpdated(listId: number, db: DbQueriesInterface) {
   await db.editListLastUpdatedToDb(listId);
 }
 
@@ -101,8 +103,9 @@ export async function editNamedList(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
-  let result: ApiResponse<ApiData<NamedListData>>;
   const db = DbFactory.createDbQueries();
+
+  let result: ApiResponse<ApiData<NamedListData>>;
   const namedListData = await db.getListDataForNamedList(decodedListName);
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
 
@@ -115,22 +118,22 @@ export async function editNamedList(
     for (const item of dataToPost.item.rows) {
       if (item.isDeleted) {
         // delete item
-        await deleteListItem(item);
+        await deleteListItem(item, db);
       }
       if (item.id === 0) {
         // add item
-        await addListItem(item, namedListData.namedList.id);
+        await addListItem(item, namedListData.namedList.id, db);
       }
       if (item.id > 0) {
         // edit item
 
-        await editListItem(item, namedListData);
+        await editListItem(item, namedListData, db);
       }
     }
 
-    await editListLastUpdated(namedListData.namedList.id);
+    await editListLastUpdated(namedListData.namedList.id, db);
 
-    result = await formatNamedListResponse(decodedListName);
+    result = await formatNamedListResponse(decodedListName, db);
   }
 
   return new Promise((resolve) => {

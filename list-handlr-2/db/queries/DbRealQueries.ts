@@ -5,7 +5,7 @@ import {
   listsCollaborationsTable,
   listItemsTable,
 } from "@/db/schema";
-import type { AllListRecord, DbQueriesInterface } from "./baseDbInterfaces";
+import type { AllListRecord, DbQueriesInterface } from "./DbInterfaces";
 import { sortAscending } from "@/Helpers/sortAndFilter";
 import { ListData } from "@/DTO/listsData";
 import { NamedListData } from "@/DTO/oneListData";

@@ -1,6 +1,6 @@
-import { DbQueriesInterface } from "./baseDbInterfaces";
-import { RealDbQueries } from "./baseDbRealQueries";
-import { MockDbQueries } from "./baseDbMockQueries";
+import { DbQueriesInterface } from "./DbInterfaces";
+import { RealDbQueries } from "./DbRealQueries";
+import { MockDbQueries } from "./DbMockQueries";
 
 export class DbFactory {
   static createDbQueries(): DbQueriesInterface {

@@ -2,7 +2,7 @@ import type {
   AllListRecord,
   DbQueriesInterface,
   NamedListCollabResponse,
-} from "./baseDbInterfaces";
+} from "./DbInterfaces";
 import { ListData } from "@/DTO/listsData";
 import { NamedListData } from "@/DTO/oneListData";
 import {

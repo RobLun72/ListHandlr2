@@ -4,7 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
 import { NamedListData } from "@/DTO/oneListData";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "./dbHandling/baseDbFactory";
+import { DbFactory } from "../db/queries/DbFactory";
 
 export async function getNamedList(listName: {
   listName: string;

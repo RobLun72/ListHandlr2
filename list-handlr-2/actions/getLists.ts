@@ -5,7 +5,7 @@ import { ListData } from "@/DTO/listsData";
 import { ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "./dbHandling/baseDbFactory";
+import { DbFactory } from "../db/queries/DbFactory";
 
 export async function getLists(user: {
   user_id: string;
