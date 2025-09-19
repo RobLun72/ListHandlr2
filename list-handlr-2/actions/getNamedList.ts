@@ -4,7 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
 import { NamedListData } from "@/DTO/oneListData";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "../db/queries/DbFactory";
+import { OneListDbFactory } from "@/db/queries/oneList/oneListDbFactory";
 
 export async function getNamedList(listName: {
   listName: string;
@@ -19,7 +19,7 @@ export async function getNamedList(listName: {
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(listName.listName);
 
-  const db = DbFactory.createDbQueries();
+  const db = OneListDbFactory.createDbQueries();
   const namedListData = await db.getListDataForNamedList(decodedListName);
 
   const result: ApiData<NamedListData> = {

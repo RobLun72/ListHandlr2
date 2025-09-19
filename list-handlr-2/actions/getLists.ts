@@ -5,7 +5,7 @@ import { ListData } from "@/DTO/listsData";
 import { ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "../db/queries/DbFactory";
+import { ListsDbFactory } from "@/db/queries/lists/listsDbFactory";
 
 export async function getLists(user: {
   user_id: string;
@@ -16,7 +16,7 @@ export async function getLists(user: {
   if (!isUserAuthenticated && process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true") {
     return Promise.reject(new Error("User is not authenticated."));
   }
-  const db = DbFactory.createDbQueries();
+  const db = ListsDbFactory.createDbQueries();
   const allLists = await db.getAllListsForUser(user.user_id);
 
   const maxStamp = formatDate(max(allLists, "last_update")!.last_update!) || "";

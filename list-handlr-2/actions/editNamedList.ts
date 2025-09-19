@@ -4,12 +4,12 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { OneListPostData, NamedListData } from "@/DTO/oneListData";
 import { formatDate } from "@/Helpers/formatDate";
-import { DbFactory } from "../db/queries/DbFactory";
+import { OneListDbFactory } from "@/db/queries/oneList/oneListDbFactory";
 import {
-  DbQueriesInterface,
+  IOneListDbQueries,
   NamedListItem,
   NamedListResponse,
-} from "../db/queries/DbInterfaces";
+} from "@/db/queries/oneList/oneListDbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -47,7 +47,7 @@ function checkValidTimestamp(
 
 async function formatNamedListResponse(
   name: string,
-  db: DbQueriesInterface
+  db: IOneListDbQueries
 ): Promise<ApiResponse<ApiData<NamedListData>>> {
   const namedListData = await db.getListDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
@@ -58,20 +58,20 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteListItem(row: NamedListData, db: DbQueriesInterface) {
+async function deleteListItem(row: NamedListData, db: IOneListDbQueries) {
   await db.deleteListItemToDb(row);
 }
 async function addListItem(
   row: NamedListData,
   listId: number,
-  db: DbQueriesInterface
+  db: IOneListDbQueries
 ) {
   await db.addListItemToDb(row, listId);
 }
 async function editListItem(
   row: NamedListData,
   namedListData: NamedListResponse,
-  db: DbQueriesInterface
+  db: IOneListDbQueries
 ) {
   const existingItem = namedListData.listItems.find(
     (item) => item.id === row.id
@@ -87,7 +87,7 @@ async function editListItem(
   }
 }
 
-async function editListLastUpdated(listId: number, db: DbQueriesInterface) {
+async function editListLastUpdated(listId: number, db: IOneListDbQueries) {
   await db.editListLastUpdatedToDb(listId);
 }
 
@@ -103,7 +103,7 @@ export async function editNamedList(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
-  const db = DbFactory.createDbQueries();
+  const db = OneListDbFactory.createDbQueries();
 
   let result: ApiResponse<ApiData<NamedListData>>;
   const namedListData = await db.getListDataForNamedList(decodedListName);

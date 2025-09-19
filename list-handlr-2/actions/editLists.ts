@@ -5,8 +5,11 @@ import { AllListsPostData, ListData } from "@/DTO/listsData";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
-import { AllListRecord, DbQueriesInterface } from "../db/queries/DbInterfaces";
-import { DbFactory } from "../db/queries/DbFactory";
+import { ListsDbFactory } from "../db/queries/lists/listsDbFactory";
+import {
+  IlistsDbQueries,
+  AllListRecord,
+} from "@/db/queries/lists/listsDbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -24,7 +27,7 @@ function formatAllLists(
 
 async function formatAllListsResponse(
   user_id: string,
-  db: DbQueriesInterface
+  db: IlistsDbQueries
 ): Promise<ApiResponse<ApiData<ListData>>> {
   const allLists = await db.getAllListsForUser(user_id);
 
@@ -56,7 +59,7 @@ function checkValidTimestamp(
 async function editList(
   item: ListData,
   allLists: AllListRecord[],
-  db: DbQueriesInterface
+  db: IlistsDbQueries
 ) {
   const row = allLists.find((list) => list.id === item.id);
   if (!row) throw new Error("List not found");
@@ -66,15 +69,11 @@ async function editList(
   }
 }
 
-async function addList(
-  item: ListData,
-  user_id: string,
-  db: DbQueriesInterface
-) {
+async function addList(item: ListData, user_id: string, db: IlistsDbQueries) {
   await db.addListToDb(item, user_id);
 }
 
-async function deleteList(item: ListData, db: DbQueriesInterface) {
+async function deleteList(item: ListData, db: IlistsDbQueries) {
   await db.deleteListToDb(item);
 }
 
@@ -88,7 +87,7 @@ export async function editLists(
     return Promise.reject(new Error("User is not authenticated."));
   }
 
-  const db = DbFactory.createDbQueries();
+  const db = ListsDbFactory.createDbQueries();
 
   let result: ApiResponse<ApiData<ListData>>;
   const allLists = await db.getAllListsForUser(dataToPost.user_id);

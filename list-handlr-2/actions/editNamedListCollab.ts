@@ -4,12 +4,12 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { formatDate } from "@/Helpers/formatDate";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
+import { ColabDbFactory } from "@/db/queries/collaboration/colabDbFactory";
 import {
-  DbQueriesInterface,
+  IColabDbQueries,
   NamedListCollab,
   NamedListCollabResponse,
-} from "../db/queries/DbInterfaces";
-import { DbFactory } from "../db/queries/DbFactory";
+} from "@/db/queries/collaboration/colabDbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -44,7 +44,7 @@ function checkValidTimestamp(
 
 async function formatNamedListResponse(
   name: string,
-  db: DbQueriesInterface
+  db: IColabDbQueries
 ): Promise<ApiResponse<ApiData<CollabData>>> {
   const namedListData = await db.getCollabDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
@@ -55,22 +55,19 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteCollabs(list_id: number, db: DbQueriesInterface) {
+async function deleteCollabs(list_id: number, db: IColabDbQueries) {
   await db.deleteCollabsToDb(list_id);
 }
 
 async function addCollabItem(
   userId: string,
   listId: number,
-  db: DbQueriesInterface
+  db: IColabDbQueries
 ) {
   await db.addCollabItemToDb(userId, listId);
 }
 
-async function editCollabListLastUpdated(
-  listId: number,
-  db: DbQueriesInterface
-) {
+async function editCollabListLastUpdated(listId: number, db: IColabDbQueries) {
   await db.editCollabListLastUpdatedToDb(listId);
 }
 
@@ -87,7 +84,7 @@ export async function editNamedListCollab(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
-  const db = DbFactory.createDbQueries();
+  const db = ColabDbFactory.createDbQueries();
 
   let result: ApiResponse<ApiData<CollabData>>;
   const namedListData = await db.getCollabDataForNamedList(decodedListName);
