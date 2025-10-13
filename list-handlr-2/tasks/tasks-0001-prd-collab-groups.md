@@ -76,6 +76,23 @@ The existing codebase follows these patterns:
   - [x] 3.11 Format responses using `formatDate` helper for timestamps, return `ApiResponse<ApiData<CollabGroupDetailData>>` structure
   - [x] 3.12 Add error handling for database constraint violations (unique index) and return user-friendly error messages
 
+- [x] 4.0 UI Routes & Components (List View)
+
+  - [x] 4.1 Create `app/collab-groups/` directory
+  - [x] 4.2 Create `app/collab-groups/layout.tsx` with metadata (title: "Collaboration Groups")
+  - [x] 4.3 Create `app/collab-groups/collabGroupsSkeleton.tsx` with skeleton UI matching lists pattern
+  - [x] 4.4 Create `app/collab-groups/collabGroupsForm.tsx` with form fields: groupName (required), description (optional)
+  - [x] 4.5 Add form validation using react-hook-form (similar to listsForm.tsx)
+  - [x] 4.6 Create `app/collab-groups/collabGroupsTable.tsx` with columns: name (clickable), description, updated_at, actions (context menu)
+  - [x] 4.7 Implement context menu with Edit, Delete, Manage Members options
+  - [x] 4.8 Use DataTable component from `components/ui/DataTable/DataTable` (pass filterColumnName="name")
+  - [x] 4.9 Create `app/collab-groups/page.tsx` as main list view component
+  - [x] 4.10 Implement page state management with useState: groups array, timestamp, isDirty, showItemForm, pendingSave
+  - [x] 4.11 Add useEffect to fetch groups on mount using `getCollabGroups` action
+  - [x] 4.12 Implement handleAdd, handleEdit, handleDelete handlers calling `editCollabGroup` action
+  - [x] 4.13 Add optimistic UI updates and toast notifications for success/error
+  - [x] 4.14 Add ConfirmDialog for delete confirmation and OverlayWithCenteredInput for forms
+
 - [ ] 4.0 UI Routes & Components (List View)
 
   - [ ] 4.1 Create `app/collab-groups/layout.tsx` - basic layout wrapper (can be minimal or reuse pattern from lists layout)
