@@ -1,6 +1,8 @@
 # Tasks: CollabGroups Feature Implementation
 
-Generated from: `0001-prd-collab-groups.md`
+Generate### Task 2.0: DTO Layer & TypeScript Interfaces
+
+- [x] 2.1: Create `DTO/collabGroupsData.ts` with `CollabGroupData` interface (id, ownerUserId, name, description, createdAt, updatedAt) from: `0001-prd-collab-groups.md`
 
 ## Current State Assessment
 
@@ -41,7 +43,7 @@ The existing codebase follows these patterns:
 
 ## Tasks
 
-- [ ] 1.0 Database Schema & Migration Setup
+- [x] 1.0 Database Schema & Migration Setup
 
   - [x] 1.1 Update `db/schema.ts` to add `collabGroupsTable` with columns: id (PK identity), owner_user_id (text, not null), name (varchar 255, not null), description (varchar 500, nullable), created_at (timestamp, default now), updated_at (timestamp, default now)
   - [x] 1.2 Update `db/schema.ts` to add `collabGroupMembersTable` with columns: id (PK identity), group_id (int, FK to collabGroupsTable.id with ON DELETE CASCADE), member_user_id (text, not null), added_at (timestamp, default now)
@@ -52,12 +54,12 @@ The existing codebase follows these patterns:
   - [x] 1.7 Run `npm run db:generate` (or equivalent Drizzle command) to validate schema and generate migration metadata
   - [x] 1.8 Test migration by running `npm run db:migrate` against local/dev database
 
-- [ ] 2.0 DTO Layer & TypeScript Interfaces
+- [x] 2.0 DTO Layer & TypeScript Interfaces
 
-  - [ ] 2.1 Create `DTO/collabGroupsData.ts` file with interface `CollabGroupData` containing: id (number), name (string), description (string | null), memberCount (number), updatedAt (string)
-  - [ ] 2.2 Add interface `CollabGroupDetailData` to same file with: id (number), name (string), description (string | null), members (array of `{ user_id: string; email?: string }`)
-  - [ ] 2.3 Add interface `CollabGroupsPostData` for create/edit operations with: groupName (string), description (string | undefined), members (array of `{ user_id: string }`), timeStamp (string), renameTo (string | undefined)
-  - [ ] 2.4 Export all interfaces and ensure they align with existing `ApiData<T>` and `ApiResponse<T>` patterns from `DTO/apiData.ts`
+  - [x] 2.1 Create `DTO/collabGroupsData.ts` file with interface `CollabGroupData` containing: id (number), name (string), description (string | null), memberCount (number), updatedAt (string)
+  - [x] 2.2 Add interface `CollabGroupDetailData` to same file with: id (number), name (string), description (string | null), members (array of `{ user_id: string; email?: string }`)
+  - [x] 2.3 Add interface `CollabGroupsPostData` for create/edit operations with: groupName (string), description (string | undefined), members (array of `{ user_id: string }`), timeStamp (string), renameTo (string | undefined)
+  - [x] 2.4 Export all interfaces and ensure they align with existing `ApiData<T>` and `ApiResponse<T>` patterns from `DTO/apiData.ts`
 
 - [ ] 3.0 Server Actions for CRUD Operations
 
