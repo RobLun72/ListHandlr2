@@ -49,13 +49,7 @@ export function CollabGroupsTable({
 
   return (
     <DataTable
-      columns={GetColumns(
-        theme,
-        isMobile,
-        onEdit,
-        onDelete,
-        isGroupsDataDirty
-      )}
+      columns={GetColumns(theme, isMobile, onEdit, onDelete, isGroupsDataDirty)}
       data={groups}
       addButtonText={
         <PlusCircleIcon
@@ -67,6 +61,7 @@ export function CollabGroupsTable({
       }
       filterColumnName="name"
       pageIndex={pageParam ? parseInt(pageParam) : 0}
+      pageSize={15}
       sortingState={sorting}
       pageParams={pageParams}
       onAdd={handleAdd}

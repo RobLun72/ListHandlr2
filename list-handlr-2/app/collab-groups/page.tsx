@@ -228,7 +228,7 @@ export default function Page() {
 
   return (
     <Fragment>
-      {pageState.groups.length === 0 && (
+      {pageState.load && (
         <div>
           <div className="pt-8 px-3 pb-2 text-xl">Collaboration Groups</div>
           <div className="py-2 px-3 mb-4">
@@ -236,7 +236,7 @@ export default function Page() {
           </div>
         </div>
       )}
-      {pageState.groups.length > 0 && (
+      {!pageState.load && (
         <div>
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">

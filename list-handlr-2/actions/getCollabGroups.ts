@@ -20,9 +20,10 @@ export async function getCollabGroups(user: {
   const db = CollabGroupsDbFactory.createDbQueries();
   const allGroups = await db.getAllGroupsForUser(user.user_id);
 
-  const maxStamp = allGroups.length > 0 
-    ? formatDate(max(allGroups, "updated_at")!.updated_at!) || ""
-    : "";
+  const maxStamp =
+    allGroups.length > 0
+      ? formatDate(max(allGroups, "updated_at")!.updated_at!) || ""
+      : "";
 
   const result: ApiData<CollabGroupData> = {
     timeStamp: maxStamp,

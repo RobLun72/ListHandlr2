@@ -118,7 +118,9 @@ export class CollabGroupsMockDbQueries implements ICollabGroupsDbQueries {
     }
   }
 
-  async getMembersForGroup(groupId: number): Promise<CollabGroupMemberRecord[]> {
+  async getMembersForGroup(
+    groupId: number
+  ): Promise<CollabGroupMemberRecord[]> {
     return this.mockMembers.get(groupId) || [];
   }
 }

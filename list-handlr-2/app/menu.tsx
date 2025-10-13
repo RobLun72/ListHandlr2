@@ -45,7 +45,7 @@ const components: MenuComponentProps[] = [
         title: "Settings",
         href: "/settings",
         path: "settings",
-        description: "The app theme setting.",
+        description: "The app theme setting, Manage collaboration groups.",
       },
       {
         title: "About",

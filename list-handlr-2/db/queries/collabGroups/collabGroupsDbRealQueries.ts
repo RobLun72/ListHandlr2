@@ -127,7 +127,9 @@ export class CollabGroupsRealDbQueries implements ICollabGroupsDbQueries {
       );
   }
 
-  async getMembersForGroup(groupId: number): Promise<CollabGroupMemberRecord[]> {
+  async getMembersForGroup(
+    groupId: number
+  ): Promise<CollabGroupMemberRecord[]> {
     const members = await db
       .select()
       .from(collabGroupMembersTable)

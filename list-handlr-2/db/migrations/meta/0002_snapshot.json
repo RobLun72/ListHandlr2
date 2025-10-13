@@ -73,12 +73,8 @@
           "name": "collab_group_members_group_id_collab_groups_id_fk",
           "tableFrom": "collab_group_members",
           "tableTo": "collab_groups",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -231,12 +227,8 @@
           "name": "list_items_list_id_lists_id_fk",
           "tableFrom": "list_items",
           "tableTo": "lists",
-          "columnsFrom": [
-            "list_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["list_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -287,12 +279,8 @@
           "name": "lists_collaborations_list_id_lists_id_fk",
           "tableFrom": "lists_collaborations",
           "tableTo": "lists",
-          "columnsFrom": [
-            "list_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["list_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

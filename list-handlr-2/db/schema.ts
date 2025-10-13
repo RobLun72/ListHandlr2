@@ -36,27 +36,41 @@ export const listsCollaborationsTable = pgTable("lists_collaborations", {
   user_id: text().notNull(),
 });
 
-export const collabGroupsTable = pgTable("collab_groups", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  owner_user_id: text().notNull(),
-  name: varchar({ length: 255 }).notNull(),
-  description: varchar({ length: 500 }),
-  created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at").notNull().defaultNow(),
-}, (table) => ({
-  ownerNameIdx: uniqueIndex("collab_groups_owner_name_idx").on(table.owner_user_id, table.name),
-}));
+export const collabGroupsTable = pgTable(
+  "collab_groups",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    owner_user_id: text().notNull(),
+    name: varchar({ length: 255 }).notNull(),
+    description: varchar({ length: 500 }),
+    created_at: timestamp("created_at").notNull().defaultNow(),
+    updated_at: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    ownerNameIdx: uniqueIndex("collab_groups_owner_name_idx").on(
+      table.owner_user_id,
+      table.name
+    ),
+  })
+);
 
-export const collabGroupMembersTable = pgTable("collab_group_members", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  group_id: integer()
-    .notNull()
-    .references(() => collabGroupsTable.id, { onDelete: "cascade" }),
-  member_user_id: text().notNull(),
-  added_at: timestamp("added_at").notNull().defaultNow(),
-}, (table) => ({
-  groupMemberIdx: uniqueIndex("collab_group_members_group_member_idx").on(table.group_id, table.member_user_id),
-}));
+export const collabGroupMembersTable = pgTable(
+  "collab_group_members",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    group_id: integer()
+      .notNull()
+      .references(() => collabGroupsTable.id, { onDelete: "cascade" }),
+    member_user_id: text().notNull(),
+    added_at: timestamp("added_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    groupMemberIdx: uniqueIndex("collab_group_members_group_member_idx").on(
+      table.group_id,
+      table.member_user_id
+    ),
+  })
+);
 
 export const listRelations = relations(listItemsTable, ({ one }) => ({
   list: one(listsTable, {
@@ -86,9 +100,12 @@ export const listCollaborationsRelations = relations(
   })
 );
 
-export const collabGroupsRelations = relations(collabGroupsTable, ({ many }) => ({
-  members: many(collabGroupMembersTable),
-}));
+export const collabGroupsRelations = relations(
+  collabGroupsTable,
+  ({ many }) => ({
+    members: many(collabGroupMembersTable),
+  })
+);
 
 export const collabGroupMembersRelations = relations(
   collabGroupMembersTable,
