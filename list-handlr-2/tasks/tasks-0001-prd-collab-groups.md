@@ -61,20 +61,20 @@ The existing codebase follows these patterns:
   - [x] 2.3 Add interface `CollabGroupsPostData` for create/edit operations with: groupName (string), description (string | undefined), members (array of `{ user_id: string }`), timeStamp (string), renameTo (string | undefined)
   - [x] 2.4 Export all interfaces and ensure they align with existing `ApiData<T>` and `ApiResponse<T>` patterns from `DTO/apiData.ts`
 
-- [ ] 3.0 Server Actions for CRUD Operations
+- [x] 3.0 Server Actions for CRUD Operations
 
-  - [ ] 3.1 Create `actions/getCollabGroups.ts` - fetch all groups owned by current user with member counts, return `ApiData<CollabGroupData>`, include auth check using `getKindeServerSession`
-  - [ ] 3.2 Implement query joining collabGroupsTable and aggregating count from collabGroupMembersTable, sort by updated_at DESC
-  - [ ] 3.3 Create `actions/getCollabGroup.ts` - fetch single group by name (URL decoded) with full member list, return `ApiData<CollabGroupDetailData>`, include auth check
-  - [ ] 3.4 Implement query with WHERE clause on owner_user_id and name, join with members table, fetch user emails via existing user fetch mechanism if available
-  - [ ] 3.5 Create `actions/editCollabGroup.ts` - handle create, rename, membership changes, and delete operations based on payload structure
-  - [ ] 3.6 In `editCollabGroup.ts`: validate group name uniqueness per owner (return error message if duplicate), handle empty name validation (reject with error)
-  - [ ] 3.7 In `editCollabGroup.ts`: implement membership diff logic - compare incoming members array with existing, delete removed members, insert new members
-  - [ ] 3.8 In `editCollabGroup.ts`: update `updated_at` timestamp on any change (rename or membership modification)
-  - [ ] 3.9 In `editCollabGroup.ts`: handle rename by updating name column, re-check uniqueness constraint
-  - [ ] 3.10 Add delete operation support (if payload includes `deleteGroup: true` flag) - hard delete group record (cascade will remove members)
-  - [ ] 3.11 Format responses using `formatDate` helper for timestamps, return `ApiResponse<ApiData<CollabGroupDetailData>>` structure
-  - [ ] 3.12 Add error handling for database constraint violations (unique index) and return user-friendly error messages
+  - [x] 3.1 Create `actions/getCollabGroups.ts` - fetch all groups owned by current user with member counts, return `ApiData<CollabGroupData>`, include auth check using `getKindeServerSession`
+  - [x] 3.2 Implement query joining collabGroupsTable and aggregating count from collabGroupMembersTable, sort by updated_at DESC
+  - [x] 3.3 Create `actions/getCollabGroup.ts` - fetch single group by name (URL decoded) with full member list, return `ApiData<CollabGroupDetailData>`, include auth check
+  - [x] 3.4 Implement query with WHERE clause on owner_user_id and name, join with members table, fetch user emails via existing user fetch mechanism if available
+  - [x] 3.5 Create `actions/editCollabGroup.ts` - handle create, rename, membership changes, and delete operations based on payload structure
+  - [x] 3.6 In `editCollabGroup.ts`: validate group name uniqueness per owner (return error message if duplicate), handle empty name validation (reject with error)
+  - [x] 3.7 In `editCollabGroup.ts`: implement membership diff logic - compare incoming members array with existing, delete removed members, insert new members
+  - [x] 3.8 In `editCollabGroup.ts`: update `updated_at` timestamp on any change (rename or membership modification)
+  - [x] 3.9 In `editCollabGroup.ts`: handle rename by updating name column, re-check uniqueness constraint
+  - [x] 3.10 Add delete operation support (if payload includes `deleteGroup: true` flag) - hard delete group record (cascade will remove members)
+  - [x] 3.11 Format responses using `formatDate` helper for timestamps, return `ApiResponse<ApiData<CollabGroupDetailData>>` structure
+  - [x] 3.12 Add error handling for database constraint violations (unique index) and return user-friendly error messages
 
 - [ ] 4.0 UI Routes & Components (List View)
 

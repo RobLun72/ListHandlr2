@@ -25,7 +25,7 @@ export interface CollabGroupsPostData {
   groupId?: number;
   name?: string;
   description?: string;
-  item: ApiData<CollabGroupData>;
+  item: ApiData<CollabGroupDetailData>;
 }
 
 export interface CollabGroupMembersPostData {
