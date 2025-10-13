@@ -51,12 +51,14 @@ export default function Page() {
       </div>
 
       <div className="flex justify-center mt-8">
-        <Button
-          onClick={() => router.push("/collab-groups")}
-          className={`bg-${theme} hover:bg-${theme}/90 text-white`}
-        >
-          Manage Collaboration Groups
-        </Button>
+        <div className="w-3/6">
+          <Button
+            onClick={() => router.push("/collab-groups")}
+            className={`bg-${theme} hover:bg-${theme}/90 text-white w-full`}
+          >
+            Manage Collaboration Groups
+          </Button>
+        </div>
       </div>
     </div>
   );
