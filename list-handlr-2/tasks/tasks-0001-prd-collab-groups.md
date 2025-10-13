@@ -93,6 +93,25 @@ The existing codebase follows these patterns:
   - [x] 4.13 Add optimistic UI updates and toast notifications for success/error
   - [x] 4.14 Add ConfirmDialog for delete confirmation and OverlayWithCenteredInput for forms
 
+- [x] 5.0 UI Routes & Components (Detail/Edit View)
+
+  - [x] 5.1 Create `app/collab-groups/[groupName]/layout.tsx` - layout wrapper for group detail route
+  - [x] 5.2 Create `app/collab-groups/[groupName]/page.tsx` - detail page for editing group membership (client component)
+  - [x] 5.3 In detail `page.tsx`: set up state for: load, pendingSave, isDirty, availableUsers (User[]), groupMembers (User[]), group (CollabGroupDetailData), timestamp
+  - [x] 5.4 In detail `page.tsx`: implement `useEffect` to fetch group details (`getCollabGroup`) and all users (`fetchAllUsers` from existing action), filter current user from available list
+  - [x] 5.5 In detail `page.tsx`: implement `handleSelect` (move user from available to members, set isDirty true) with optimistic update
+  - [x] 5.6 In detail `page.tsx`: implement `handleDeselect` (move user from members to available, set isDirty true) with optimistic update
+  - [x] 5.7 In detail `page.tsx`: implement `handleSave` calling `editCollabGroup` with updated members array, show pending overlay with spinner during save
+  - [x] 5.8 In detail `page.tsx`: implement `handleBack` with unsaved changes warning (confirm dialog if isDirty), navigate to `/collab-groups`
+  - [x] 5.9 In detail `page.tsx`: add header with group name (URL decoded), Save icon (disabled when not dirty), Back icon - matching list detail page pattern
+  - [x] 5.10 Create `app/collab-groups/[groupName]/groupMembersTable.tsx` - dual-list component showing available users (top/left) and current members (bottom/right)
+  - [x] 5.11 In `groupMembersTable.tsx`: display user email/name with action icons (plus for available users, minus for current members)
+  - [x] 5.12 In `groupMembersTable.tsx`: add click handlers calling parent's onSelect/onDeselect callbacks, use theme colors for icons
+  - [x] 5.13 Create `app/collab-groups/[groupName]/groupMembersSkeleton.tsx` - loading skeleton for dual-list layout
+  - [x] 5.14 In detail `page.tsx`: add pending save overlay (reuse OverlayWithCenteredInput + LoadingSpinner pattern from lists)
+  - [x] 5.15 In detail `page.tsx`: handle save success (update timestamp, reset isDirty, show toast), handle save failure (revert optimistic changes or refetch, show error toast)
+  - [x] 5.16 Add `useUnsavedChangesWarning` hook to detail page for browser navigation warnings when isDirty is true
+
 - [ ] 4.0 UI Routes & Components (List View)
 
   - [ ] 4.1 Create `app/collab-groups/layout.tsx` - basic layout wrapper (can be minimal or reuse pattern from lists layout)
