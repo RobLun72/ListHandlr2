@@ -21,6 +21,8 @@ import { getCollabGroups } from "@/actions/getCollabGroups";
 import { useUnsavedChangesWarning } from "@/Helpers/useUnsavedChangesWarning";
 import { useCurrentUser } from "@/contexts/UserContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useRouter } from "next/navigation";
+import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export interface CollabGroupsPageState {
   load: boolean;
@@ -35,6 +37,10 @@ export interface CollabGroupsPageState {
 }
 
 export default function Page() {
+  const router = useRouter();
+  const user = useCurrentUser();
+  const { theme } = useTheme();
+
   const [pageState, setPageState] = useState<CollabGroupsPageState>({
     load: false,
     pendingSave: false,
@@ -51,9 +57,6 @@ export default function Page() {
     isDirty: pageState.isDirty,
     message: "You have unsaved changes. Are you sure you want to leave?",
   });
-
-  const user = useCurrentUser();
-  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -226,6 +229,10 @@ export default function Page() {
     }));
   };
 
+  const handleBack = () => {
+    router.push("/settings");
+  };
+
   return (
     <Fragment>
       {pageState.load && (
@@ -241,6 +248,20 @@ export default function Page() {
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
               Collaboration Groups
+            </div>
+            <div className="pt-8 px-1.5 pb-2 flex flex-row items-center">
+              <div
+                className="flex items-center"
+                onClick={handleBack}
+                data-testid="back-button"
+              >
+                <ArrowLeftStartOnRectangleIcon
+                  className={cn(
+                    `h-8 cursor-pointer`,
+                    theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                  )}
+                />
+              </div>
             </div>
           </div>
           <div className="py-2 px-3">
