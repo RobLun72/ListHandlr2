@@ -59,21 +59,13 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       await stableInit();
-
       if (user) {
         try {
           const groupName = decodeURIComponent(params.groupName as string);
-
           // Fetch group details
           const groupData = await getCollabGroup(groupName, {
             user_id: user.id,
           });
-
-          if (groupData.rows.length === 0) {
-            toast.error("Group not found");
-            router.push("/collab-groups");
-            return;
-          }
 
           const group = groupData.rows[0];
 
@@ -114,7 +106,7 @@ export default function Page() {
 
     setPageState((prev) => ({ ...prev, load: true }));
     fetchData();
-  }, [params.groupName, user, router]);
+  }, [params.groupName, user]);
 
   const handleSelect = (userToAdd: User) => {
     setPageState((prev) => ({

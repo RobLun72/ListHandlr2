@@ -117,13 +117,13 @@ export const addMemberToGroup = async (
   if (!userRow) {
     throw new Error(`Could not find user row for: ${userIdentifier}`);
   }
-  
+
   // Find the "Add to group" button within that row
   const addButton = userRow.querySelector('button[title="Add to group"]');
   if (!addButton) {
     throw new Error(`Could not find add button for user: ${userIdentifier}`);
   }
-  
+
   await user.click(addButton as HTMLElement);
 };
 
@@ -142,12 +142,14 @@ export const removeMemberFromGroup = async (
   if (!userRow) {
     throw new Error(`Could not find user row for: ${userIdentifier}`);
   }
-  
+
   // Find the "Remove from group" button within that row
-  const removeButton = userRow.querySelector('button[title="Remove from group"]');
+  const removeButton = userRow.querySelector(
+    'button[title="Remove from group"]'
+  );
   if (!removeButton) {
     throw new Error(`Could not find remove button for user: ${userIdentifier}`);
   }
-  
+
   await user.click(removeButton as HTMLElement);
 };

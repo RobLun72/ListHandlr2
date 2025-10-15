@@ -1,5 +1,9 @@
 export interface ICollabGroupsDbQueries {
   getAllGroupsForUser(userId: string): Promise<CollabGroupRecord[]>;
+  getGroupById(
+    userId: string,
+    groupId: number
+  ): Promise<CollabGroupDetailRecord | null>;
   getGroupByName(
     userId: string,
     groupName: string

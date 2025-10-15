@@ -39,6 +39,33 @@ export class CollabGroupsRealDbQueries implements ICollabGroupsDbQueries {
     return groups;
   }
 
+  async getGroupById(
+    userId: string,
+    groupId: number
+  ): Promise<CollabGroupDetailRecord | null> {
+    const groups = await db
+      .select()
+      .from(collabGroupsTable)
+      .where(
+        and(
+          eq(collabGroupsTable.owner_user_id, userId),
+          eq(collabGroupsTable.id, groupId)
+        )
+      );
+
+    if (groups.length === 0) {
+      return null;
+    }
+
+    const group = groups[0];
+    const members = await this.getMembersForGroup(group.id);
+
+    return {
+      ...group,
+      members,
+    };
+  }
+
   async getGroupByName(
     userId: string,
     groupName: string

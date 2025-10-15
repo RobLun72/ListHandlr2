@@ -3,9 +3,15 @@ import { CollabGroupsMockDbQueries } from "./collabGroupsDbMockQueries";
 import { CollabGroupsRealDbQueries } from "./collabGroupsDbRealQueries";
 
 export class CollabGroupsDbFactory {
+  private static mockInstance: CollabGroupsMockDbQueries | null = null;
+
   static createDbQueries(): ICollabGroupsDbQueries {
     if (process.env.NODE_ENV === "test") {
-      return new CollabGroupsMockDbQueries();
+      // Return singleton instance in test mode so seeded data persists
+      if (!this.mockInstance) {
+        this.mockInstance = new CollabGroupsMockDbQueries();
+      }
+      return this.mockInstance;
     }
 
     if (
@@ -18,5 +24,12 @@ export class CollabGroupsDbFactory {
 
     console.log("Using CollabGroups RealDbQueries");
     return new CollabGroupsRealDbQueries();
+  }
+
+  /**
+   * Resets the mock instance. Useful for cleaning up between tests.
+   */
+  static resetMockInstance(): void {
+    this.mockInstance = null;
   }
 }

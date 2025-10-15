@@ -149,7 +149,7 @@ function GetColumns(
     {
       accessorKey: "name",
       header: "Group Name",
-      size: isMobile ? 180 : 300,
+      size: isMobile ? 140 : 260,
       cell: ({ row }) => {
         return textLayout(row.original);
       },

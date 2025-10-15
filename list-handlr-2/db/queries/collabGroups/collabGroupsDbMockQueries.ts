@@ -110,6 +110,31 @@ export class CollabGroupsMockDbQueries implements ICollabGroupsDbQueries {
     );
   }
 
+  async getGroupById(
+    userId: string,
+    groupId: number
+  ): Promise<CollabGroupDetailRecord | null> {
+    const group = Array.from(this.mockGroups.values()).find(
+      (g) => g.owner_user_id === userId && g.id === groupId
+    );
+
+    if (!group) {
+      return null;
+    }
+
+    const members = this.mockMembers.get(group.id) || [];
+
+    return {
+      id: group.id,
+      owner_user_id: group.owner_user_id,
+      name: group.name,
+      description: group.description,
+      created_at: group.created_at,
+      updated_at: group.updated_at,
+      members,
+    };
+  }
+
   async getGroupByName(
     userId: string,
     groupName: string

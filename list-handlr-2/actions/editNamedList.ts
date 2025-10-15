@@ -107,6 +107,7 @@ export async function editNamedList(
 
   let result: ApiResponse<ApiData<NamedListData>>;
   const namedListData = await db.getListDataForNamedList(decodedListName);
+
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
 
   const invalidTimestamp = allItemsAreNew

@@ -176,10 +176,7 @@ export async function editCollabGroup(
         }
 
         // Get current group data
-        const currentGroup = await db.getGroupByName(
-          userId,
-          dataToPost.item.rows[0]?.name || ""
-        );
+        const currentGroup = await db.getGroupById(userId, dataToPost.groupId);
 
         if (!currentGroup) {
           return {
@@ -237,7 +234,12 @@ export async function editCollabGroup(
           };
         }
 
-        return await deleteGroup(dataToPost.groupId, db);
+        await deleteGroup(dataToPost.groupId, db);
+        const newTimestamp = formatDate(new Date()) || "";
+        return {
+          message: "",
+          data: { timeStamp: newTimestamp, rows: [] },
+        };
       }
 
       default:
