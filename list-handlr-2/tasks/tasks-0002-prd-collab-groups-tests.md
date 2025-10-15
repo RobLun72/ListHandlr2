@@ -2,7 +2,17 @@
 
 Generated from: `0002-prd-collab-groups-tests.md`
 
-## Current State Assessment
+- [ ] **NOTE**: Detail view tests require additional setup due to server action complexity. The detail view page calls multiple server actions (getCollabGroup, fetchAllUsers) that need comprehensive mocking. The MSW server has been successfully configured with testHandlers to provide mock user data.
+
+  - [x] 3.1 Create `app/collab-groups/[groupName]/tests/renderGroupMembers.test.tsx` - Test detail page renders with group name in header, displays current members list and available users list, shows loading skeleton initially
+    - ✅ Test created and passing - successfully mocked useParams, seeded CollabGroups data, and set up MSW handlers for user data
+  - [x] 3.2 Create `app/collab-groups/[groupName]/tests/addMember.test.tsx` - Test clicking plus icon next to available user, verify user moves from available to current members list, verify isDirty state becomes true, verify save icon enabled
+    - ✅ Test created and passing - verified member addition, state updates, and isDirty flag changesMember Management Detail View Tests
+
+  **NOTE**: Detail view tests require additional setup due to server action complexity. The detail view page calls multiple server actions (getCollabGroup, fetchAllUsers) that need comprehensive mocking. The MSW server has been successfully configured with testHandlers to provide mock user data.
+
+  - [x] 3.1 Create `app/collab-groups/[groupName]/tests/renderGroupMembers.test.tsx` - Test detail page renders with group name in header, displays current members list and available users list, shows loading skeleton initially
+    - ✅ Test created and passing - successfully mocked useParams, seeded CollabGroups data, and set up MSW handlers for user dataCurrent State Assessment
 
 The existing codebase has established testing patterns in `app/lists/tests/`:
 
@@ -91,7 +101,7 @@ The CollabGroups feature is **fully implemented** with:
   - [x] 1.4 Create test directory `app/collab-groups/[groupName]/tests/` for detail view tests
   - [x] 1.5 (Optional) Add helper functions to `Helpers/Test/actHelper.ts` for member selection - `selectMemberFromAvailable()`, `deselectMemberFromCurrent()` if needed for cleaner test code
 
-- [ ] 2.0 CollabGroups List View Tests
+- [x] 2.0 CollabGroups List View Tests
 
   - [x] 2.1 Create `app/collab-groups/tests/renderCollabGroups.test.tsx` - Test initial page render with loading skeleton, then verify groups display with correct names, descriptions, and member counts
   - [x] 2.2 Create `app/collab-groups/tests/addGroup.test.tsx` - Test clicking table add button, entering group name and description in form, creating group, verifying isDirty state changes, saving to server, and timestamp update
@@ -101,20 +111,28 @@ The CollabGroups feature is **fully implemented** with:
   - [x] 2.6 Verify all list view tests follow exact pattern from `app/lists/tests/` - Use same setup (UserProvider, ThemeProvider, navigation mocks), same helpers (clickOnButton, typeInTextBox, assertTextValueInDoc), same assertions (isDirty, timestamps)
     - ✅ All 5 tests follow consistent pattern with factory-based seeding
   - [x] 2.7 Run list view tests with `npm test -- app/collab-groups/tests` and verify all pass
-    - ✅ 4 tests passed, 1 skipped (deleteGroup documented)
+    - ✅ All 5 tests passed successfully
 
-- [ ] 3.0 Member Management Detail View Tests
+- [x] 3.0 Member Management Detail View Tests
 
-  - **NOTE**: Detail view tests require additional setup due to server action complexity. The detail view page calls multiple server actions (getCollabGroup, fetchAllUsers) that need comprehensive mocking. Consider investigating proper mock setup before continuing with detail view tests.
+  - **NOTE**: Detail view tests require additional setup due to server action complexity. The detail view page calls multiple server actions (getCollabGroup, fetchAllUsers) that need comprehensive mocking. The MSW server has been successfully configured with testHandlers to provide mock user data.
 
   - [x] 3.1 Create `app/collab-groups/[groupName]/tests/renderGroupMembers.test.tsx` - Test detail page renders with group name in header, displays current members list and available users list, shows loading skeleton initially
-  - [ ] 3.2 Create `app/collab-groups/[groupName]/tests/addMember.test.tsx` - Test clicking plus icon next to available user, verify user moves from available to current members list, verify isDirty state becomes true, verify save icon enabled
-  - [ ] 3.3 Create `app/collab-groups/[groupName]/tests/removeMember.test.tsx` - Test clicking minus icon next to current member, verify member moves from current to available list, verify isDirty state, verify save icon enabled
-  - [ ] 3.4 Create `app/collab-groups/[groupName]/tests/addMultipleMembers.test.tsx` - Test adding 2-3 members in sequence, verify all appear in current members list, verify isDirty persists through multiple operations
-  - [ ] 3.5 Create `app/collab-groups/[groupName]/tests/saveMembers.test.tsx` - Test adding/removing members, clicking save icon, verifying pending overlay displays, verifying success toast, verifying timestamp updates, verifying isDirty resets to false
-  - [ ] 3.6 Create `app/collab-groups/[groupName]/tests/unsavedChangesWarning.test.tsx` - Test modifying members (isDirty=true), clicking back button, verifying confirmation dialog appears, testing both cancel (stays on page) and confirm (navigates away) options
-  - [ ] 3.7 Mock navigation params for detail view tests - Use `vi.mock("next/navigation")` to provide groupName param (e.g., "DevTeam") via `useParams()`
-  - [ ] 3.8 Run detail view tests with `npm test -- app/collab-groups/[groupName]/tests` and verify all pass
+    - ✅ Test created and passing - successfully mocked useParams, seeded CollabGroups data, and set up MSW handlers for user data
+  - [x] 3.2 Create `app/collab-groups/[groupName]/tests/addMember.test.tsx` - Test clicking plus icon next to available user, verify user moves from available to current members list, verify isDirty state becomes true, verify save icon enabled
+    - ✅ Test created and passing - verified member addition, state updates, and isDirty flag changes
+  - [x] 3.3 Create `app/collab-groups/[groupName]/tests/removeMember.test.tsx` - Test clicking minus icon next to current member, verify member moves from current to available list, verify isDirty state, verify save icon enabled
+    - ✅ Test created and passing - verified member removal, state updates, counter changes, and save icon state
+  - [x] 3.4 Create `app/collab-groups/[groupName]/tests/addMultipleMembers.test.tsx` - Test adding 2-3 members in sequence, verify all appear in current members list, verify isDirty persists through multiple operations
+    - ✅ Test created and passing - added 3 members sequentially (Diana, Eve, Brent), verified all appear in current members, confirmed isDirty persists through all operations
+  - [x] 3.5 Create `app/collab-groups/[groupName]/tests/saveMembers.test.tsx` - Test adding/removing members, clicking save icon, verifying pending overlay displays, verifying success toast, verifying timestamp updates, verifying isDirty resets to false
+    - ✅ Test created and passing - added Diana, removed Charlie, clicked save, verified isDirty reset to false, timestamp updated, and final member list correct
+  - [x] 3.6 Create `app/collab-groups/[groupName]/tests/unsavedChangesWarning.test.tsx` - Test modifying members (isDirty=true), clicking back button, verifying confirmation dialog appears, testing both cancel (stays on page) and confirm (navigates away) options
+    - ✅ Test created and passing - 3 test cases: cancel navigation (stays on page), confirm navigation (router.push called), no warning when no changes made
+  - [x] 3.7 Mock navigation params for detail view tests - Use `vi.mock("next/navigation")` to provide groupName param (e.g., "DevTeam") via `useParams()`
+    - ✅ Completed in all detail view tests - useParams properly mocked with groupName parameter
+  - [x] 3.8 Run detail view tests with `npm test -- app/collab-groups/[groupName]/tests` and verify all pass
+    - ✅ All 6 detail view tests passing: renderGroupMembers, addMember, removeMember, saveMembers, addMultipleMembers, unsavedChangesWarning (9 total test cases)
 
 - [ ] 4.0 Navigation & Integration Tests
 
