@@ -149,15 +149,23 @@ The CollabGroups feature is **fully implemented** with:
   - [x] 4.6 Run navigation tests and verify routing logic works correctly
     - ✅ All 3 navigation tests passing: navigateToGroupDetail (2 cases), navigateBackToList, plus unsavedChangesWarning (3 cases with navigation)
 
-- [ ] 5.0 Edge Cases & Validation Tests
-  - [ ] 5.1 Test duplicate group name validation - Attempt to create group with existing name, verify error toast appears with message about duplicate name
-  - [ ] 5.2 Test empty group name validation - Attempt to create group with empty/blank name, verify form validation prevents submission or server returns error
-  - [ ] 5.3 Test API error handling in list view - Mock server action to return error response, verify error toast displays with appropriate message
-  - [ ] 5.4 Test API error handling in detail view - Mock save members action to fail, verify error toast, verify user can retry operation
-  - [ ] 5.5 Test loading states - Verify skeleton components display during initial load for both list and detail views
-  - [ ] 5.6 Test timestamp updates - Verify `getValueByTestId("current-timestamp")` returns updated timestamp after all save operations
-  - [ ] 5.7 Test isDirty state management - Verify save icon disabled when isDirty=false, enabled when isDirty=true across all operations
-  - [ ] 5.8 Run all edge case tests and verify proper error handling
+- [x] 5.0 Edge Cases & Validation Tests
+  - [x] 5.1 Test duplicate group name validation - Attempt to create group with existing name, verify error toast appears with message about duplicate name
+    - ✅ Test created and passing - verified duplicate "DevTeam" name rejected, group not created, form closes, list unchanged
+  - [x] 5.2 Test empty group name validation - Attempt to create group with empty/blank name, verify form validation prevents submission or server returns error
+    - ✅ Test created and passing - verified form validation message "Group name is required" appears, submit button disabled, no group created
+  - [x] 5.3 Test API error handling in list view - Mock server action to return error response, verify error toast displays with appropriate message
+    - ✅ Test created and passing - mocked editCollabGroup to throw error, verified toast.error called with "Error saving: Error: Database connection failed", group not created
+  - [x] 5.4 Test API error handling in detail view - Mock save members action to fail, verify error toast, verify user can retry operation
+    - ✅ Test created and passing - mocked editCollabGroup to throw "Failed to update group members", verified toast.error called, isDirty state remains true, user can retry
+  - [x] 5.5 Test loading states - Verify skeleton components display during initial load for both list and detail views
+    - ✅ Already covered - renderCollabGroups.test.tsx and renderGroupMembers.test.tsx verify loading skeletons
+  - [x] 5.6 Test timestamp updates - Verify `getValueByTestId("current-timestamp")` returns updated timestamp after all save operations
+    - ✅ Already covered - All save tests (addGroup, editGroupName, editGroupDescription, deleteGroup, saveMembers) verify timestamp updates
+  - [x] 5.7 Test isDirty state management - Verify save icon disabled when isDirty=false, enabled when isDirty=true across all operations
+    - ✅ Already covered - All member management tests verify isDirty state and save icon enabled/disabled states
+  - [x] 5.8 Run all edge case tests and verify proper error handling
+    - ✅ All edge case tests passing - duplicateGroupName, emptyGroupName, apiErrorHandling, apiErrorHandlingDetail
 
 ---
 
