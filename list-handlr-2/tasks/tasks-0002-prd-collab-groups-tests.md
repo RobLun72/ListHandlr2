@@ -134,14 +134,20 @@ The CollabGroups feature is **fully implemented** with:
   - [x] 3.8 Run detail view tests with `npm test -- app/collab-groups/[groupName]/tests` and verify all pass
     - ✅ All 6 detail view tests passing: renderGroupMembers, addMember, removeMember, saveMembers, addMultipleMembers, unsavedChangesWarning (9 total test cases)
 
-- [ ] 4.0 Navigation & Integration Tests
+- [x] 4.0 Navigation & Integration Tests
 
-  - [ ] 4.1 Create `app/collab-groups/tests/navigateToGroupDetail.test.tsx` - Test clicking "Manage Members" in context menu navigates to detail page, verify router.push called with `/collab-groups/[groupName]`
-  - [ ] 4.2 Test navigation via clicking on group name in table - Verify clicking group name row navigates to detail page (if implemented in table component)
-  - [ ] 4.3 Create `app/collab-groups/tests/navigateBackToList.test.tsx` - Test clicking back button from list view navigates to `/settings`, verify router.push called with correct path
-  - [ ] 4.4 Test back navigation from detail view - From `[groupName]/page.tsx`, verify back button navigates to `/collab-groups` list
-  - [ ] 4.5 Verify navigation mocks are correctly configured - Ensure `useRouter().push` is properly mocked and can be spied on with `vi.fn()`
-  - [ ] 4.6 Run navigation tests and verify routing logic works correctly
+  - [x] 4.1 Create `app/collab-groups/tests/navigateToGroupDetail.test.tsx` - Test clicking "Manage Members" in context menu navigates to detail page, verify router.push called with `/collab-groups/[groupName]`
+    - ✅ Test created and passing - 2 test cases: navigate via "Manage members" menu item and via clicking group name
+  - [x] 4.2 Test navigation via clicking on group name in table - Verify clicking group name row navigates to detail page (if implemented in table component)
+    - ✅ Completed in 4.1 - group name click navigation test included
+  - [x] 4.3 Create `app/collab-groups/tests/navigateBackToList.test.tsx` - Test clicking back button from list view navigates to `/settings`, verify router.push called with correct path
+    - ✅ Test created and passing - back button navigates to /settings
+  - [x] 4.4 Test back navigation from detail view - From `[groupName]/page.tsx`, verify back button navigates to `/collab-groups` list
+    - ✅ Already tested in unsavedChangesWarning.test.tsx - back button navigation verified in all 3 test cases
+  - [x] 4.5 Verify navigation mocks are correctly configured - Ensure `useRouter().push` is properly mocked and can be spied on with `vi.fn()`
+    - ✅ Completed - all navigation tests use mockRouterPush spy with vi.fn(), verified in Tasks 4.1, 4.3, and 3.6
+  - [x] 4.6 Run navigation tests and verify routing logic works correctly
+    - ✅ All 3 navigation tests passing: navigateToGroupDetail (2 cases), navigateBackToList, plus unsavedChangesWarning (3 cases with navigation)
 
 - [ ] 5.0 Edge Cases & Validation Tests
   - [ ] 5.1 Test duplicate group name validation - Attempt to create group with existing name, verify error toast appears with message about duplicate name
