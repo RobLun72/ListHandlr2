@@ -101,3 +101,55 @@ export const selectOptionInRadixCombo = async (
   const opt = screen.getByRole("option", { name: option });
   await user.click(opt);
 };
+
+/**
+ * Helper to add a member to a collaboration group by clicking the plus icon
+ * next to the user in the "Available Users" list
+ * @param user - UserEvent instance from userEvent.setup()
+ * @param userIdentifier - User's email, username, or display text
+ */
+export const addMemberToGroup = async (
+  user: UserEvent,
+  userIdentifier: string
+) => {
+  // Find the user's row by text content
+  const userRow = screen.getByText(userIdentifier).closest("div");
+  if (!userRow) {
+    throw new Error(`Could not find user row for: ${userIdentifier}`);
+  }
+
+  // Find the "Add to group" button within that row
+  const addButton = userRow.querySelector('button[title="Add to group"]');
+  if (!addButton) {
+    throw new Error(`Could not find add button for user: ${userIdentifier}`);
+  }
+
+  await user.click(addButton as HTMLElement);
+};
+
+/**
+ * Helper to remove a member from a collaboration group by clicking the minus icon
+ * next to the user in the "Current Members" list
+ * @param user - UserEvent instance from userEvent.setup()
+ * @param userIdentifier - User's email, username, or display text
+ */
+export const removeMemberFromGroup = async (
+  user: UserEvent,
+  userIdentifier: string
+) => {
+  // Find the user's row by text content
+  const userRow = screen.getByText(userIdentifier).closest("div");
+  if (!userRow) {
+    throw new Error(`Could not find user row for: ${userIdentifier}`);
+  }
+
+  // Find the "Remove from group" button within that row
+  const removeButton = userRow.querySelector(
+    'button[title="Remove from group"]'
+  );
+  if (!removeButton) {
+    throw new Error(`Could not find remove button for user: ${userIdentifier}`);
+  }
+
+  await user.click(removeButton as HTMLElement);
+};

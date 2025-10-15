@@ -65,6 +65,8 @@ test("Delete testy list", async () => {
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");
   await assertTextValueInDoc("testy");
+  await assertTextValueInDoc("testy da besty");
+
   const loadedTimeStamp = getValueByTestId("current-timestamp");
 
   await clickOnButtonWithIndex(user, "Open menu", 0);
@@ -87,11 +89,12 @@ test("Delete testy list", async () => {
   await clickOnElementWithTestId(user, "save-list");
 
   await assertTextValueInDoc(/Saving the list.../);
-  await waitForRender(300);
+  await waitForRender(600);
 
   await assertTextValueInDoc("Matlista");
   await assertTextValueInDoc("Handla");
   await assertMissingTextValue("testy");
+  await assertTextValueInDoc("testy da besty");
 
   const updTimeStamp = getValueByTestId("current-timestamp");
   expect(loadedTimeStamp).not.toEqual(updTimeStamp);

@@ -2,16 +2,14 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
-import { listsCollaborationsTable, listsTable } from "@/db/schema";
 import { formatDate } from "@/Helpers/formatDate";
-import { db } from "@/db/index";
-import { eq } from "drizzle-orm";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
+import { ColabDbFactory } from "@/db/queries/collaboration/colabDbFactory";
 import {
-  getCollabDataForNamedList,
+  IColabDbQueries,
   NamedListCollab,
   NamedListCollabResponse,
-} from "./baseDbQueries";
+} from "@/db/queries/collaboration/colabDbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -45,9 +43,10 @@ function checkValidTimestamp(
 }
 
 async function formatNamedListResponse(
-  name: string
+  name: string,
+  db: IColabDbQueries
 ): Promise<ApiResponse<ApiData<CollabData>>> {
-  const namedListData = await getCollabDataForNamedList(name);
+  const namedListData = await db.getCollabDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
   return {
@@ -56,24 +55,20 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteCollabs(list_id: number) {
-  await db
-    .delete(listsCollaborationsTable)
-    .where(eq(listsCollaborationsTable.list_id, list_id));
+async function deleteCollabs(list_id: number, db: IColabDbQueries) {
+  await db.deleteCollabsToDb(list_id);
 }
 
-async function addCollabItem(userId: string, listId: number) {
-  await db.insert(listsCollaborationsTable).values({
-    list_id: listId,
-    user_id: userId,
-  });
+async function addCollabItem(
+  userId: string,
+  listId: number,
+  db: IColabDbQueries
+) {
+  await db.addCollabItemToDb(userId, listId);
 }
 
-async function editListLastUpdated(listId: number) {
-  await db
-    .update(listsTable)
-    .set({ last_item_update: new Date() })
-    .where(eq(listsTable.id, listId));
+async function editCollabListLastUpdated(listId: number, db: IColabDbQueries) {
+  await db.editCollabListLastUpdatedToDb(listId);
 }
 
 export async function editNamedListCollab(
@@ -89,22 +84,24 @@ export async function editNamedListCollab(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
+  const db = ColabDbFactory.createDbQueries();
+
   let result: ApiResponse<ApiData<CollabData>>;
-  const namedListData = await getCollabDataForNamedList(decodedListName);
+  const namedListData = await db.getCollabDataForNamedList(decodedListName);
 
   const invalidTimestamp = checkValidTimestamp(namedListData, dataToPost);
   if (invalidTimestamp !== undefined) {
     result = invalidTimestamp;
   } else {
-    await deleteCollabs(namedListData.namedList.id);
+    await deleteCollabs(namedListData.namedList.id, db);
     for (const item of dataToPost.item.rows) {
       // add item
-      await addCollabItem(item, namedListData.namedList.id);
+      await addCollabItem(item, namedListData.namedList.id, db);
     }
 
-    await editListLastUpdated(namedListData.namedList.id);
+    await editCollabListLastUpdated(namedListData.namedList.id, db);
 
-    result = await formatNamedListResponse(decodedListName);
+    result = await formatNamedListResponse(decodedListName, db);
   }
 
   return new Promise((resolve) => {

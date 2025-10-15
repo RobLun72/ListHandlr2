@@ -19,6 +19,11 @@ export const allListsMockData: ApiData<ListData> = {
       listName: "Handla",
       id: 3,
     },
+    {
+      index: 3,
+      listName: "testy da besty",
+      id: 4,
+    },
   ],
 };
 

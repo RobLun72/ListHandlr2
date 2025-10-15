@@ -28,7 +28,8 @@ export function ListsForm({ mode, item, onClose, onDone }: ListsFormProps) {
 
   const onSubmit: SubmitHandler<ListsFormValues> = ({ itemName }) => {
     if (onDone) {
-      onDone({ ...item, listName: itemName });
+      const itemNameTrimmed = itemName.trim();
+      onDone({ ...item, listName: itemNameTrimmed });
     }
   };
 

@@ -3,34 +3,34 @@ import { httpHandler, passThroughHandler } from "./handlerHelper";
 
 const allListsHandlers = (responseDelay: number) => {
   return [
-    httpHandler(
-      "post",
-      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
-      "/about",
-      "",
-      responseDelay
-    ),
-    httpHandler(
-      "post",
-      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
-      "/lists",
-      "",
-      responseDelay
-    ),
-    httpHandler(
-      "post",
-      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
-      "/lists",
-      "/:listId",
-      responseDelay
-    ),
-    httpHandler(
-      "post",
-      process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
-      "/lists",
-      "/:listId/format",
-      responseDelay
-    ),
+    // httpHandler(
+    //   "post",
+    //   process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+    //   "/about",
+    //   "",
+    //   responseDelay
+    // ),
+    // httpHandler(
+    //   "post",
+    //   process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+    //   "/lists",
+    //   "",
+    //   responseDelay
+    // ),
+    // httpHandler(
+    //   "post",
+    //   process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+    //   "/lists",
+    //   "/:listId",
+    //   responseDelay
+    // ),
+    // httpHandler(
+    //   "post",
+    //   process.env.NEXT_PUBLIC_SERVER_ACTION_URL,
+    //   "/lists",
+    //   "/:listId/format",
+    //   responseDelay
+    // ),
     httpHandler(
       "post",
       process.env.NEXT_PUBLIC_SERVER_ACTION_URL,

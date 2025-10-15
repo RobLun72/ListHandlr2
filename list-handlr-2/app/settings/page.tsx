@@ -3,9 +3,12 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <div>
@@ -44,6 +47,17 @@ export default function Page() {
               </Label>
             </div>
           </RadioGroup>
+        </div>
+      </div>
+
+      <div className="flex justify-center mt-8">
+        <div className="w-3/6">
+          <Button
+            onClick={() => router.push("/collab-groups")}
+            className={`bg-${theme} hover:bg-${theme}/90 text-white w-full`}
+          >
+            Manage Collaboration Groups
+          </Button>
         </div>
       </div>
     </div>

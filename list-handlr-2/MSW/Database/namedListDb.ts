@@ -5,6 +5,7 @@ export const db = factory({
   // Create a "lists" model,
   allNamedLists: {
     name: primaryKey(String),
+    id: Number,
     data: oneOf("namedList"), // A list can have many items
   },
   namedList: {
@@ -40,6 +41,7 @@ export const setupNamedListsDb = () => {
 
     db.allNamedLists.create({
       name: item.name,
+      id: item.id,
       data: namedList,
     });
   });

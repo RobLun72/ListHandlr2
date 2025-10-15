@@ -1,4 +1,4 @@
-import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
+//import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
 import { AllListsPostData, ListData } from "@/DTO/listsData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { filter, sortAscending } from "@/Helpers/sortAndFilter";
@@ -6,21 +6,21 @@ import { allListsDb, namedListsDb } from "./apiCallHelper";
 
 let currentAllListId = 100;
 
-export const handleAllListsGet = async (
-  request: StrictRequest<DefaultBodyType>
-) => {
-  const url = new URL(request.url);
-  const type = url.searchParams.get("type");
+// export const handleAllListsGet = async (
+//   request: StrictRequest<DefaultBodyType>
+// ) => {
+//   const url = new URL(request.url);
+//   const type = url.searchParams.get("type");
 
-  if (type === "Lists") {
-    const lists = allListsDb.allLists.getAll();
+//   if (type === "Lists") {
+//     const lists = allListsDb.allLists.getAll();
 
-    return HttpResponse.json({
-      timeStamp: lists[0].timeStamp,
-      rows: sortAscending(lists[0].rows, "index"),
-    });
-  }
-};
+//     return HttpResponse.json({
+//       timeStamp: lists[0].timeStamp,
+//       rows: sortAscending(lists[0].rows, "index"),
+//     });
+//   }
+// };
 
 export const handleAllListsServerGet = async (user: string) => {
   if (user == "userWithFeverLists") {
@@ -41,61 +41,132 @@ export const handleAllListsServerGet = async (user: string) => {
   }
 };
 
-export const handleAllListsPost = async (data: AllListsPostData) => {
-  if (data.saveType === "editList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
-
-    await new Promise((r) => setTimeout(r, 200));
-
-    return HttpResponse.json(responseLists);
+export const handleAllListsServerDBGet = async (user_id: string) => {
+  const allLists = allListsDb.allLists.getAll();
+  let lists = allLists[0].rows;
+  if (user_id == "userWithFeverLists") {
+    const allLists = allListsDb.allLists.getAll();
+    lists = allLists[0].rows.filter((l) => l.listName !== "Matlista");
   }
-  if (data.saveType === "addList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
+  lists = sortAscending(lists, "index");
 
-    await new Promise((r) => setTimeout(r, 200));
-
-    return HttpResponse.json(responseLists);
-  }
-  if (data.saveType === "deleteList") {
-    const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
-
-    await new Promise((r) => setTimeout(r, 200));
-
-    return HttpResponse.json(responseLists);
-  } else {
-    const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
-
-    await new Promise((r) => setTimeout(r, 200));
-
-    return HttpResponse.json(responseLists);
-  }
+  return lists.map((list) => {
+    return {
+      id: list.id,
+      index: list.index,
+      list_name: list.listName,
+      user_id: user_id,
+      last_update: allLists[0].timeStamp
+        ? new Date(allLists[0].timeStamp)
+        : new Date(),
+      last_item_update: new Date(),
+    };
+  });
 };
 
+export const handleDBAddList = async (item: ListData, user_id: string) => {
+  if (!user_id) {
+    throw new Error("No user_id provided");
+  }
+
+  const newList = allListsDb.todoList.create({
+    id: currentAllListId++,
+    index: 0,
+    listName: item.listName!,
+  });
+
+  const allLists = allListsDb.allLists.getAll()[0];
+
+  const resultingList = [...(allLists.rows ?? []), newList];
+
+  allListsDb.allLists.update({
+    where: {},
+    data: {
+      rows: resultingList,
+      timeStamp: new Date().toLocaleDateString(),
+    },
+  });
+};
+
+export const handleDBEditList = async (item: ListData) => {
+  allListsDb.todoList.update({
+    where: { id: { equals: item.id } },
+    data: {
+      index: item.index,
+      listName: item.listName,
+    },
+  });
+
+  allListsDb.allLists.update({
+    where: {},
+    data: {
+      timeStamp: new Date().toLocaleDateString(),
+    },
+  });
+};
+
+export const handleDBDeleteList = async (item: ListData) => {
+  allListsDb.todoList.delete({
+    where: { id: { equals: item.id } },
+  });
+
+  allListsDb.allLists.update({
+    where: {},
+    data: {
+      timeStamp: new Date().toLocaleDateString(),
+    },
+  });
+};
+
+// export const handleAllListsPost = async (data: AllListsPostData) => {
+//   if (data.saveType === "editList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
+
+//     await new Promise((r) => setTimeout(r, 200));
+
+//     return HttpResponse.json(responseLists);
+//   }
+//   if (data.saveType === "addList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
+
+//     await new Promise((r) => setTimeout(r, 200));
+
+//     return HttpResponse.json(responseLists);
+//   }
+//   if (data.saveType === "deleteList") {
+//     const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
+
+//     await new Promise((r) => setTimeout(r, 200));
+
+//     return HttpResponse.json(responseLists);
+//   } else {
+//     const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
+
+//     await new Promise((r) => setTimeout(r, 200));
+
+//     return HttpResponse.json(responseLists);
+//   }
+// };
+
 export const handleAllListsServerPost = async (data: AllListsPostData) => {
+  await new Promise((r) => setTimeout(r, 200));
+
   if (data.saveType === "editList") {
     const responseLists: ApiResponse<ApiData<ListData>> = editList(data);
-
-    await new Promise((r) => setTimeout(r, 200));
 
     return responseLists;
   }
   if (data.saveType === "addList") {
     const responseLists: ApiResponse<ApiData<ListData>> = addList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
-
     return responseLists;
   }
   if (data.saveType === "deleteList") {
     const responseLists: ApiResponse<ApiData<ListData>> = deleteList(data);
 
-    await new Promise((r) => setTimeout(r, 200));
-
     return responseLists;
   } else {
     const responseLists: ApiResponse<ApiData<ListData>> = sortList(data);
-
-    await new Promise((r) => setTimeout(r, 200));
 
     return responseLists;
   }

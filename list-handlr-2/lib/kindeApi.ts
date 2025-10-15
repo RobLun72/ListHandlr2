@@ -1,3 +1,4 @@
+import { allUsers } from "@/db/queries/users/usersDbMockData";
 import { Users, init } from "@kinde/management-api-js";
 
 // Initialize the Kinde Management API
@@ -72,22 +73,36 @@ export async function getAllUsers(pageSize = 100, nextToken?: string) {
 // Alternative: Direct API call method
 export async function getAllUsersDirectAPI() {
   try {
-    const accessToken = await getKindeAccessToken();
+    if (process.env.NODE_ENV === "test") {
+      return { users: allUsers };
+    } else if (
+      process.env.NEXT_PUBLIC_ENABLE_MSW_MOCKING === "true" &&
+      process.env.NODE_ENV === "development"
+    ) {
+      // Mocked response for development
+      return {
+        users: allUsers,
+      };
+    } else {
+      const accessToken = await getKindeAccessToken();
 
-    const response = await fetch(`${process.env.KINDE_DOMAIN}/api/v1/users`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: "application/json",
-      },
-    });
+      const response = await fetch(`${process.env.KINDE_DOMAIN}/api/v1/users`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorText}`
+        );
+      }
+
+      const result = await response.json();
+      return result;
     }
-
-    const result = await response.json();
-    return result;
   } catch (error) {
     throw error;
   }

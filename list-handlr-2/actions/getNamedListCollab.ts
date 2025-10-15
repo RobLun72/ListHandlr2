@@ -4,7 +4,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiData } from "@/DTO/apiData";
 import { formatDate } from "@/Helpers/formatDate";
 import { CollabData } from "@/DTO/collabData";
-import { getCollabDataForNamedList } from "./baseDbQueries";
+import { ColabDbFactory } from "@/db/queries/collaboration/colabDbFactory";
 
 export async function getNamedListCollab(listName: {
   listName: string;
@@ -19,7 +19,10 @@ export async function getNamedListCollab(listName: {
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(listName.listName);
 
-  const namedListCollabData = await getCollabDataForNamedList(decodedListName);
+  const db = ColabDbFactory.createDbQueries();
+  const namedListCollabData = await db.getCollabDataForNamedList(
+    decodedListName
+  );
 
   const result: ApiData<CollabData> = {
     timeStamp:

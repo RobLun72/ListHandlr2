@@ -15,6 +15,13 @@
       "when": 1756886891366,
       "tag": "0001_windy_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760345855908,
+      "tag": "0002_lovely_madelyne_pryor",
+      "breakpoints": true
     }
   ]
 }

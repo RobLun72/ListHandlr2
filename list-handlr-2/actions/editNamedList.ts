@@ -3,15 +3,13 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { OneListPostData, NamedListData } from "@/DTO/oneListData";
-import { listItemsTable, listsTable } from "@/db/schema";
 import { formatDate } from "@/Helpers/formatDate";
-import { db } from "@/db/index";
-import { eq } from "drizzle-orm";
+import { OneListDbFactory } from "@/db/queries/oneList/oneListDbFactory";
 import {
-  getListDataForNamedList,
+  IOneListDbQueries,
   NamedListItem,
   NamedListResponse,
-} from "./baseDbQueries";
+} from "@/db/queries/oneList/oneListDbInterfaces";
 
 function formatAllLists(
   timestamp: string,
@@ -48,9 +46,10 @@ function checkValidTimestamp(
 }
 
 async function formatNamedListResponse(
-  name: string
+  name: string,
+  db: IOneListDbQueries
 ): Promise<ApiResponse<ApiData<NamedListData>>> {
-  const namedListData = await getListDataForNamedList(name);
+  const namedListData = await db.getListDataForNamedList(name);
   const maxStamp = formatDate(namedListData.namedList.last_item_update!) || "";
 
   return {
@@ -59,21 +58,20 @@ async function formatNamedListResponse(
   };
 }
 
-async function deleteListItem(row: NamedListData) {
-  await db.delete(listItemsTable).where(eq(listItemsTable.id, row.id));
+async function deleteListItem(row: NamedListData, db: IOneListDbQueries) {
+  await db.deleteListItemToDb(row);
 }
-async function addListItem(row: NamedListData, listId: number) {
-  await db.insert(listItemsTable).values({
-    list_id: listId,
-    index: row.index,
-    text: row.text,
-    done: row.done ? "true" : "false",
-    link: row.link,
-  });
+async function addListItem(
+  row: NamedListData,
+  listId: number,
+  db: IOneListDbQueries
+) {
+  await db.addListItemToDb(row, listId);
 }
 async function editListItem(
   row: NamedListData,
-  namedListData: NamedListResponse
+  namedListData: NamedListResponse,
+  db: IOneListDbQueries
 ) {
   const existingItem = namedListData.listItems.find(
     (item) => item.id === row.id
@@ -85,24 +83,12 @@ async function editListItem(
     existingItem.done !== rowDone ||
     existingItem.link !== row.link
   ) {
-    await db
-      .update(listItemsTable)
-      .set({
-        list_id: namedListData.namedList.id,
-        index: row.index,
-        text: row.text,
-        done: row.done ? "true" : "false",
-        link: row.link,
-      })
-      .where(eq(listItemsTable.id, row.id));
+    await db.editListItemToDb(row, namedListData.namedList.id);
   }
 }
 
-async function editListLastUpdated(listId: number) {
-  await db
-    .update(listsTable)
-    .set({ last_item_update: new Date() })
-    .where(eq(listsTable.id, listId));
+async function editListLastUpdated(listId: number, db: IOneListDbQueries) {
+  await db.editListLastUpdatedToDb(listId);
 }
 
 export async function editNamedList(
@@ -117,10 +103,12 @@ export async function editNamedList(
   // URL decode the listName parameter
   const decodedListName = decodeURIComponent(dataToPost.listName);
 
+  const db = OneListDbFactory.createDbQueries();
+
   let result: ApiResponse<ApiData<NamedListData>>;
-  const namedListData = await getListDataForNamedList(decodedListName);
+  const namedListData = await db.getListDataForNamedList(decodedListName);
+
   const allItemsAreNew = dataToPost.item.rows.every((item) => item.id === 0);
-  console.log("namedListData:", namedListData);
 
   const invalidTimestamp = allItemsAreNew
     ? undefined
@@ -131,22 +119,22 @@ export async function editNamedList(
     for (const item of dataToPost.item.rows) {
       if (item.isDeleted) {
         // delete item
-        await deleteListItem(item);
+        await deleteListItem(item, db);
       }
       if (item.id === 0) {
         // add item
-        await addListItem(item, namedListData.namedList.id);
+        await addListItem(item, namedListData.namedList.id, db);
       }
       if (item.id > 0) {
         // edit item
 
-        await editListItem(item, namedListData);
+        await editListItem(item, namedListData, db);
       }
     }
 
-    await editListLastUpdated(namedListData.namedList.id);
+    await editListLastUpdated(namedListData.namedList.id, db);
 
-    result = await formatNamedListResponse(decodedListName);
+    result = await formatNamedListResponse(decodedListName, db);
   }
 
   return new Promise((resolve) => {
