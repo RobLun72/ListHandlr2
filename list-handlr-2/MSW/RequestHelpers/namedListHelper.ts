@@ -8,7 +8,7 @@ import { Entity } from "@mswjs/data/lib/glossary";
 import { PrimaryKey } from "@mswjs/data/lib/primaryKey";
 import { OneOf, ManyOf } from "@mswjs/data/lib/relations/Relation";
 import { CollabData } from "@/DTO/collabData";
-import { NamedListResponse } from "@/db/queries/DbInterfaces";
+import { NamedListResponse } from "@/db/queries/oneList/oneListDbInterfaces";
 
 let currentNamedListId = 1000;
 
