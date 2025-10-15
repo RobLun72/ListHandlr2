@@ -149,7 +149,7 @@ function GetColumns(
     {
       accessorKey: "name",
       header: "Group Name",
-      size: isMobile ? 140 : 260,
+      size: isMobile ? 100 : 220,
       cell: ({ row }) => {
         return textLayout(row.original);
       },
@@ -157,7 +157,7 @@ function GetColumns(
     {
       accessorKey: "description",
       header: "Description",
-      size: isMobile ? 150 : 250,
+      size: isMobile ? 100 : 220,
       cell: ({ row }) => {
         return (
           <div className="text-neutral-600">
@@ -169,7 +169,7 @@ function GetColumns(
     {
       accessorKey: "updatedAt",
       header: "Last Updated",
-      size: isMobile ? 100 : 150,
+      size: isMobile ? 90 : 150,
       cell: ({ row }) => {
         return (
           <div className="text-neutral-600 text-sm">
