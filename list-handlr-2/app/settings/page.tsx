@@ -56,7 +56,7 @@ export default function Page() {
             onClick={() => router.push("/collab-groups")}
             className={`bg-${theme} hover:bg-${theme}/90 text-white w-full`}
           >
-            Manage Collaboration Groups
+            Manage Collab Groups
           </Button>
         </div>
       </div>
