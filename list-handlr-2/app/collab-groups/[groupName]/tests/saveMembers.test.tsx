@@ -101,7 +101,7 @@ test("Save member changes and verify complete workflow", async () => {
 
   // Click save icon
   await clickOnElementWithTestId(user, "save-members");
-  
+
   // Wait for save to complete - isDirty becomes false (save icon disabled)
   await waitFor(
     async () => {
@@ -128,7 +128,7 @@ test("Save member changes and verify complete workflow", async () => {
   await assertTextValueInDoc("alice@example.com");
   await assertTextValueInDoc("bob@example.com");
   await assertTextValueInDoc("diana@example.com");
-  
+
   // Verify Charlie is now in available users
   const availableSection = screen
     .getByText("Available Users (3)")

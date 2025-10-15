@@ -38,7 +38,7 @@ vi.mock("next/navigation", async () => {
 beforeEach(() => {
   // Reset the mock
   mockRouterPush.mockClear();
-  
+
   // Seed the mock DB with test data
   const queries =
     CollabGroupsDbFactory.createDbQueries() as CollabGroupsMockDbQueries;

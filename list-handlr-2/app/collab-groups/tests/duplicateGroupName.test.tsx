@@ -102,7 +102,5 @@ test("Prevent duplicate group name - attempt to create group with existing name"
   ).not.toBeInTheDocument();
 
   // Verify form has closed (form closes even on error)
-  expect(
-    screen.queryByText("Add Collaboration Group")
-  ).not.toBeInTheDocument();
+  expect(screen.queryByText("Add Collaboration Group")).not.toBeInTheDocument();
 });

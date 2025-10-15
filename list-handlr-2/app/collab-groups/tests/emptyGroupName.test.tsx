@@ -73,7 +73,7 @@ test("Prevent empty group name - form validation prevents submission", async () 
   // Try to submit the form without entering a name
   // First, we need to trigger the form validation by clicking submit
   const createButton = screen.getByRole("button", { name: /Create Group/i });
-  
+
   // The button should be enabled initially (no errors yet)
   expect(createButton).not.toBeDisabled();
 

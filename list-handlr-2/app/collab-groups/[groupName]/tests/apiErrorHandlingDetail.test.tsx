@@ -12,10 +12,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { CollabGroupsDbFactory } from "@/db/queries/collabGroups/collabGroupsDbFactory";
 import { CollabGroupsMockDbQueries } from "@/db/queries/collabGroups/collabGroupsDbMockQueries";
-import {
-  serverWithHandlers,
-  setupServerWithHandlers,
-} from "@/MSW/server";
+import { serverWithHandlers, setupServerWithHandlers } from "@/MSW/server";
 import { testHandlers } from "@/MSW/handlers";
 import { toast } from "sonner";
 
@@ -98,7 +95,8 @@ test("Handle API error in detail view - save members failure with retry capabili
   await addMemberToGroup(user, "diana@example.com");
 
   // Verify Diana moved to current members
-  const currentMembersSection = screen.getByText(/Current Members/i).parentElement;
+  const currentMembersSection =
+    screen.getByText(/Current Members/i).parentElement;
   expect(currentMembersSection).toHaveTextContent("diana@example.com");
 
   // Verify isDirty state by checking save icon is enabled
