@@ -81,13 +81,11 @@ export default function Page() {
       try {
         const lists: { success: boolean; users: User[]; error?: string } =
           await fetchAllUsers();
-        console.log("lists data:", lists);
 
         const collabs = await getNamedListCollab({
           listName: params.slug!.toString(),
         });
 
-        console.log("Collabs data:", collabs);
         let collabUsers: User[] = [];
         if (collabs.rows && collabs.rows.length > 0 && lists.users) {
           collabUsers = lists.users.filter((u) =>
@@ -107,8 +105,6 @@ export default function Page() {
         const collabGroups = user
           ? await getCollabGroups({ user_id: user.id })
           : { rows: [] };
-
-        console.log("Collab groups data:", collabGroups);
 
         setPageState((prev) => ({
           ...prev,
@@ -202,8 +198,6 @@ export default function Page() {
         return;
       }
 
-      console.log("Selected group:", selectedGroup);
-
       // Fetch group details with members
       const groupDetails = await getCollabGroup(selectedGroup.name, {
         user_id: user.id,
@@ -217,8 +211,6 @@ export default function Page() {
       const groupWithMembers = groupDetails.rows[0];
       const memberUserIds = groupWithMembers.members.map((m) => m.memberUserId);
 
-      console.log("Group member IDs:", memberUserIds);
-
       if (memberUserIds.length === 0) {
         toast.info(`Group "${selectedGroup.name}" has no members to add`);
         return;
@@ -228,8 +220,6 @@ export default function Page() {
       const usersToAdd = pageState.users.filter((user) =>
         memberUserIds.includes(user.id!)
       );
-
-      console.log("Users to add:", usersToAdd);
 
       if (usersToAdd.length === 0) {
         toast.info(
@@ -366,7 +356,9 @@ export default function Page() {
                       ? "focus-visible:ring-appBlue/20 focus-visible:border-appBlue"
                       : "focus-visible:ring-appGreen/20 focus-visible:border-appGreen"
                   )}
-                  disabled={pageState.load || pageState.collabGroups.length === 0}
+                  disabled={
+                    pageState.load || pageState.collabGroups.length === 0
+                  }
                 >
                   <SelectValue
                     placeholder={
