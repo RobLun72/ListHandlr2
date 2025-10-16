@@ -23,6 +23,8 @@ import { getNamedListCollab } from "@/actions/getNamedListCollab";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { editNamedListCollab } from "@/actions/editNamedListCollab";
+import { getCollabGroups } from "@/actions/getCollabGroups";
+import { CollabGroupData } from "@/DTO/collabGroupsData";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export interface CollabPageState {
@@ -34,6 +36,7 @@ export interface CollabPageState {
   showItemForm: boolean;
   users: User[];
   collabUsers: User[];
+  collabGroups: CollabGroupData[];
   timestamp: string;
 }
 
@@ -56,6 +59,7 @@ export default function Page() {
     showItemForm: false,
     users: [],
     collabUsers: [],
+    collabGroups: [],
     timestamp: "",
   });
 
@@ -89,17 +93,26 @@ export default function Page() {
             ? users.filter((u) => !collabUsers.some((c) => c.id === u.id))
             : [];
 
+        // Fetch collaboration groups for the current user
+        const collabGroups = user
+          ? await getCollabGroups({ user_id: user.id })
+          : { rows: [] };
+
+        console.log("Collab groups data:", collabGroups);
+
         setPageState((prev) => ({
           ...prev,
           load: false,
           users: filteredUsers,
           collabUsers: collabUsers,
+          collabGroups: collabGroups.rows,
           timestamp: collabs.timeStamp,
         }));
       } catch (error) {
         setPageState((prev) => ({
           ...prev,
           load: false,
+          collabGroups: [],
         }));
         toast.error("Error loading: " + error);
       }
