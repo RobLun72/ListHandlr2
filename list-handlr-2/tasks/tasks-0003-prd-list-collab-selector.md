@@ -4,7 +4,7 @@ Based on the PRD analysis and current codebase assessment, this task list guides
 
 ## Relevant Files
 
-- `app/lists/[slug]/collab/page.tsx` - Main collaboration page that needs the dropdown selector
+- `app/lists/[slug]/collab/page.tsx` - Main collaboration page that needs the dropdown selector (MODIFIED: Added collabGroups state and data fetching)
 - `actions/getCollabGroups.ts` - Existing action to fetch user's collaboration groups
 - `actions/getCollabGroup.ts` - Existing action to fetch group details with members (if needed)
 - `DTO/collabGroupsData.ts` - Existing interfaces for CollabGroupData and CollabGroupDetailData
@@ -33,14 +33,14 @@ Based on the PRD analysis and current codebase assessment, this task list guides
   - [x] 1.5 Update `setPageState` call to include the fetched `collabGroups` in the state update
   - [x] 1.6 Ensure collaboration groups are only fetched when `user` is available (same pattern as existing code)
 
-- [ ] 2.0 Create Collaboration Group Selector Component
+- [x] 2.0 Create Collaboration Group Selector Component
 
-  - [ ] 2.1 Check if `components/ui/select.tsx` exists and examine its API, or reference `TableTopView.tsx` for select patterns
-  - [ ] 2.2 Create inline JSX for the selector using existing component patterns (similar to save/back button area)
-  - [ ] 2.3 Style the selector with Tailwind CSS using theme-aware colors (appBlue/appGreen pattern from existing elements)
-  - [ ] 2.4 Add responsive design classes following existing mobile/desktop patterns in the page
-  - [ ] 2.5 Implement proper accessibility attributes (aria-label, role) for the dropdown
-  - [ ] 2.6 Add loading and disabled states that integrate with existing `pageState.load` pattern
+  - [x] 2.1 Check if `components/ui/select.tsx` exists and examine its API, or reference `TableTopView.tsx` for select patterns
+  - [x] 2.2 Create inline JSX for the selector using existing component patterns (similar to save/back button area)
+  - [x] 2.3 Style the selector with Tailwind CSS using theme-aware colors (appBlue/appGreen pattern from existing elements)
+  - [x] 2.4 Add responsive design classes following existing mobile/desktop patterns in the page
+  - [x] 2.5 Implement proper accessibility attributes (aria-label, role) for the dropdown
+  - [x] 2.6 Add loading and disabled states that integrate with existing `pageState.load` pattern
 
 - [ ] 3.0 Implement Group Selection Logic and Member Addition
 

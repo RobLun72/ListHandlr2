@@ -25,6 +25,13 @@ import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { editNamedListCollab } from "@/actions/editNamedListCollab";
 import { getCollabGroups } from "@/actions/getCollabGroups";
 import { CollabGroupData } from "@/DTO/collabGroupsData";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export interface CollabPageState {
@@ -253,6 +260,52 @@ export default function Page() {
             </Suspense>
           </div>
           <div className="py-2 px-3">
+            <div className="mb-4">
+              <label
+                htmlFor="group-selector"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+              >
+                Add group members:
+              </label>
+              <Select onValueChange={() => {}}>
+                <SelectTrigger
+                  id="group-selector"
+                  className={cn(
+                    "w-64",
+                    theme === "appBlue"
+                      ? "focus-visible:ring-appBlue/20 focus-visible:border-appBlue"
+                      : "focus-visible:ring-appGreen/20 focus-visible:border-appGreen"
+                  )}
+                  disabled={pageState.load || pageState.collabGroups.length === 0}
+                >
+                  <SelectValue
+                    placeholder={
+                      pageState.collabGroups.length === 0
+                        ? "No collab groups defined"
+                        : "Select a collaboration group..."
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageState.collabGroups.length === 0 ? (
+                    <SelectItem value="no-groups" disabled>
+                      No collab groups defined
+                    </SelectItem>
+                  ) : (
+                    pageState.collabGroups.map((group) => (
+                      <SelectItem key={group.id} value={group.id.toString()}>
+                        {group.name}
+                        {group.description && (
+                          <span className="text-gray-500 text-xs ml-2">
+                            - {group.description}
+                          </span>
+                        )}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
             <CollabTable
               showHeaderAndFooter={false}
               list={pageState.collabUsers}
