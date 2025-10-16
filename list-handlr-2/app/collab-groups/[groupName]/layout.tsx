@@ -10,5 +10,5 @@ export default function GroupDetailLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <section className="md:min-w-3xl">{children}</section>;
+  return <section className="md:min-w-2xl">{children}</section>;
 }

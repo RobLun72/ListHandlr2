@@ -23,6 +23,16 @@ import { getNamedListCollab } from "@/actions/getNamedListCollab";
 import { CollabData, CollabPostData } from "@/DTO/collabData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { editNamedListCollab } from "@/actions/editNamedListCollab";
+import { getCollabGroups } from "@/actions/getCollabGroups";
+import { getCollabGroup } from "@/actions/getCollabGroup";
+import { CollabGroupData } from "@/DTO/collabGroupsData";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export interface CollabPageState {
@@ -34,6 +44,8 @@ export interface CollabPageState {
   showItemForm: boolean;
   users: User[];
   collabUsers: User[];
+  collabGroups: CollabGroupData[];
+  selectedGroupId: string;
   timestamp: string;
 }
 
@@ -56,6 +68,8 @@ export default function Page() {
     showItemForm: false,
     users: [],
     collabUsers: [],
+    collabGroups: [],
+    selectedGroupId: "",
     timestamp: "",
   });
 
@@ -67,13 +81,11 @@ export default function Page() {
       try {
         const lists: { success: boolean; users: User[]; error?: string } =
           await fetchAllUsers();
-        console.log("lists data:", lists);
 
         const collabs = await getNamedListCollab({
           listName: params.slug!.toString(),
         });
 
-        console.log("Collabs data:", collabs);
         let collabUsers: User[] = [];
         if (collabs.rows && collabs.rows.length > 0 && lists.users) {
           collabUsers = lists.users.filter((u) =>
@@ -89,17 +101,24 @@ export default function Page() {
             ? users.filter((u) => !collabUsers.some((c) => c.id === u.id))
             : [];
 
+        // Fetch collaboration groups for the current user
+        const collabGroups = user
+          ? await getCollabGroups({ user_id: user.id })
+          : { rows: [] };
+
         setPageState((prev) => ({
           ...prev,
           load: false,
           users: filteredUsers,
           collabUsers: collabUsers,
+          collabGroups: collabGroups.rows,
           timestamp: collabs.timeStamp,
         }));
       } catch (error) {
         setPageState((prev) => ({
           ...prev,
           load: false,
+          collabGroups: [],
         }));
         toast.error("Error loading: " + error);
       }
@@ -156,6 +175,84 @@ export default function Page() {
       collabUsers: prev.collabUsers.filter((u) => u.id !== user.id),
       isDirty: prev.collabUsers.length === 1 ? false : true,
     }));
+  };
+
+  const handleGroupSelection = async (selectedGroupId: string) => {
+    if (!selectedGroupId || selectedGroupId === "no-groups") {
+      return;
+    }
+
+    // Update selected value in state
+    setPageState((prev) => ({
+      ...prev,
+      selectedGroupId,
+    }));
+
+    try {
+      // Find the selected group from our loaded groups
+      const selectedGroup = pageState.collabGroups.find(
+        (group) => group.id.toString() === selectedGroupId
+      );
+
+      if (!selectedGroup || !user) {
+        return;
+      }
+
+      // Fetch group details with members
+      const groupDetails = await getCollabGroup(selectedGroup.name, {
+        user_id: user.id,
+      });
+
+      if (!groupDetails.rows || groupDetails.rows.length === 0) {
+        toast.error("Could not load group details");
+        return;
+      }
+
+      const groupWithMembers = groupDetails.rows[0];
+      const memberUserIds = groupWithMembers.members.map((m) => m.memberUserId);
+
+      if (memberUserIds.length === 0) {
+        toast.info(`Group "${selectedGroup.name}" has no members to add`);
+        return;
+      }
+
+      // Find users who are members of this group but not already collaborating
+      const usersToAdd = pageState.users.filter((user) =>
+        memberUserIds.includes(user.id!)
+      );
+
+      if (usersToAdd.length === 0) {
+        toast.info(
+          `All members of "${selectedGroup.name}" are already collaborating on this list`
+        );
+        return;
+      }
+
+      // Add each eligible user using the existing handleSelect logic
+      usersToAdd.forEach((user) => {
+        handleSelect(user);
+      });
+
+      toast.success(
+        `Added ${usersToAdd.length} member${
+          usersToAdd.length > 1 ? "s" : ""
+        } from "${selectedGroup.name}"`
+      );
+
+      // Reset the selector to empty state
+      setPageState((prev) => ({
+        ...prev,
+        selectedGroupId: "",
+      }));
+    } catch (error) {
+      console.error("Error handling group selection:", error);
+      toast.error("Failed to add group members: " + error);
+      // Reset selector on error too
+      setPageState((prev) => ({
+        ...prev,
+        selectedGroupId: "",
+      }));
+    }
   };
 
   const handleBack = () => {
@@ -240,6 +337,57 @@ export default function Page() {
             </Suspense>
           </div>
           <div className="py-2 px-3">
+            <div className="mb-4">
+              <label
+                htmlFor="group-selector"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+              >
+                Add group members:
+              </label>
+              <Select
+                value={pageState.selectedGroupId}
+                onValueChange={handleGroupSelection}
+              >
+                <SelectTrigger
+                  id="group-selector"
+                  className={cn(
+                    "w-full md:w-64",
+                    theme === "appBlue"
+                      ? "focus-visible:ring-appBlue/20 focus-visible:border-appBlue"
+                      : "focus-visible:ring-appGreen/20 focus-visible:border-appGreen"
+                  )}
+                  disabled={
+                    pageState.load || pageState.collabGroups.length === 0
+                  }
+                >
+                  <SelectValue
+                    placeholder={
+                      pageState.collabGroups.length === 0
+                        ? "No collab groups defined"
+                        : "Select a collaboration group..."
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageState.collabGroups.length === 0 ? (
+                    <SelectItem value="no-groups" disabled>
+                      No collab groups defined
+                    </SelectItem>
+                  ) : (
+                    pageState.collabGroups.map((group) => (
+                      <SelectItem key={group.id} value={group.id.toString()}>
+                        {group.name}
+                        {group.description && (
+                          <span className="text-gray-500 text-xs ml-2">
+                            - {group.description}
+                          </span>
+                        )}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
             <CollabTable
               showHeaderAndFooter={false}
               list={pageState.collabUsers}
