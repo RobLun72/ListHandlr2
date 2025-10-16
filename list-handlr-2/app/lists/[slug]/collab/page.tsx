@@ -24,6 +24,7 @@ import { CollabData, CollabPostData } from "@/DTO/collabData";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { editNamedListCollab } from "@/actions/editNamedListCollab";
 import { getCollabGroups } from "@/actions/getCollabGroups";
+import { getCollabGroup } from "@/actions/getCollabGroup";
 import { CollabGroupData } from "@/DTO/collabGroupsData";
 import {
   Select,
@@ -44,6 +45,7 @@ export interface CollabPageState {
   users: User[];
   collabUsers: User[];
   collabGroups: CollabGroupData[];
+  selectedGroupId: string;
   timestamp: string;
 }
 
@@ -67,6 +69,7 @@ export default function Page() {
     users: [],
     collabUsers: [],
     collabGroups: [],
+    selectedGroupId: "",
     timestamp: "",
   });
 
@@ -178,6 +181,90 @@ export default function Page() {
     }));
   };
 
+  const handleGroupSelection = async (selectedGroupId: string) => {
+    if (!selectedGroupId || selectedGroupId === "no-groups") {
+      return;
+    }
+
+    // Update selected value in state
+    setPageState((prev) => ({
+      ...prev,
+      selectedGroupId,
+    }));
+
+    try {
+      // Find the selected group from our loaded groups
+      const selectedGroup = pageState.collabGroups.find(
+        (group) => group.id.toString() === selectedGroupId
+      );
+
+      if (!selectedGroup || !user) {
+        return;
+      }
+
+      console.log("Selected group:", selectedGroup);
+
+      // Fetch group details with members
+      const groupDetails = await getCollabGroup(selectedGroup.name, {
+        user_id: user.id,
+      });
+
+      if (!groupDetails.rows || groupDetails.rows.length === 0) {
+        toast.error("Could not load group details");
+        return;
+      }
+
+      const groupWithMembers = groupDetails.rows[0];
+      const memberUserIds = groupWithMembers.members.map((m) => m.memberUserId);
+
+      console.log("Group member IDs:", memberUserIds);
+
+      if (memberUserIds.length === 0) {
+        toast.info(`Group "${selectedGroup.name}" has no members to add`);
+        return;
+      }
+
+      // Find users who are members of this group but not already collaborating
+      const usersToAdd = pageState.users.filter((user) =>
+        memberUserIds.includes(user.id!)
+      );
+
+      console.log("Users to add:", usersToAdd);
+
+      if (usersToAdd.length === 0) {
+        toast.info(
+          `All members of "${selectedGroup.name}" are already collaborating on this list`
+        );
+        return;
+      }
+
+      // Add each eligible user using the existing handleSelect logic
+      usersToAdd.forEach((user) => {
+        handleSelect(user);
+      });
+
+      toast.success(
+        `Added ${usersToAdd.length} member${
+          usersToAdd.length > 1 ? "s" : ""
+        } from "${selectedGroup.name}"`
+      );
+
+      // Reset the selector to empty state
+      setPageState((prev) => ({
+        ...prev,
+        selectedGroupId: "",
+      }));
+    } catch (error) {
+      console.error("Error handling group selection:", error);
+      toast.error("Failed to add group members: " + error);
+      // Reset selector on error too
+      setPageState((prev) => ({
+        ...prev,
+        selectedGroupId: "",
+      }));
+    }
+  };
+
   const handleBack = () => {
     if (pageState.isDirty) {
       const action = window.confirm(
@@ -267,7 +354,10 @@ export default function Page() {
               >
                 Add group members:
               </label>
-              <Select onValueChange={() => {}}>
+              <Select
+                value={pageState.selectedGroupId}
+                onValueChange={handleGroupSelection}
+              >
                 <SelectTrigger
                   id="group-selector"
                   className={cn(

@@ -42,16 +42,16 @@ Based on the PRD analysis and current codebase assessment, this task list guides
   - [x] 2.5 Implement proper accessibility attributes (aria-label, role) for the dropdown
   - [x] 2.6 Add loading and disabled states that integrate with existing `pageState.load` pattern
 
-- [ ] 3.0 Implement Group Selection Logic and Member Addition
+- [x] 3.0 Implement Group Selection Logic and Member Addition
 
-  - [ ] 3.1 Create `handleGroupSelection` function that receives the selected group ID as parameter
-  - [ ] 3.2 Implement logic to find the selected group from `pageState.collabGroups` by ID
-  - [ ] 3.3 Extract member user IDs from the selected group's member data (note: `CollabGroupData` may not include members, verify interface)
-  - [ ] 3.4 If members are not included in `CollabGroupData`, add logic to fetch group details using `getCollabGroup` action
-  - [ ] 3.5 Cross-reference member user IDs with `pageState.users` array to get full `User` objects for members not already collaborating
-  - [ ] 3.6 Call existing `handleSelect` function for each eligible user to add them to collaborators (reusing existing logic)
-  - [ ] 3.7 Reset the selector value to empty/placeholder state after processing
-  - [ ] 3.8 Handle edge case where group has no members or all members are already collaborating (no-op)
+  - [x] 3.1 Create `handleGroupSelection` function that receives the selected group ID as parameter
+  - [x] 3.2 Implement logic to find the selected group from `pageState.collabGroups` by ID
+  - [x] 3.3 Extract member user IDs from the selected group's member data (note: `CollabGroupData` may not include members, verify interface)
+  - [x] 3.4 If members are not included in `CollabGroupData`, add logic to fetch group details using `getCollabGroup` action
+  - [x] 3.5 Cross-reference member user IDs with `pageState.users` array to get full `User` objects for members not already collaborating
+  - [x] 3.6 Call existing `handleSelect` function for each eligible user to add them to collaborators (reusing existing logic)
+  - [x] 3.7 Reset the selector value to empty/placeholder state after processing
+  - [x] 3.8 Handle edge case where group has no members or all members are already collaborating (no-op)
 
 - [ ] 4.0 Integrate Selector into Collaboration Page Layout
 
