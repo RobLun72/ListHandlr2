@@ -53,10 +53,10 @@ Based on the PRD analysis and current codebase assessment, this task list guides
   - [x] 3.7 Reset the selector value to empty/placeholder state after processing
   - [x] 3.8 Handle edge case where group has no members or all members are already collaborating (no-op)
 
-- [ ] 4.0 Integrate Selector into Collaboration Page Layout
+- [x] 4.0 Integrate Selector into Collaboration Page Layout
 
-  - [ ] 4.1 Position the selector above the "Collaborating users" table within the existing layout structure
-  - [ ] 4.2 Add appropriate spacing using existing Tailwind classes (`py-2 px-3` pattern used throughout)
-  - [ ] 4.3 Include descriptive label text such as "Add group members:" following existing text styling patterns
-  - [ ] 4.4 Ensure selector is only rendered when not in loading state (`!pageState.load` condition)
-  - [ ] 4.5 When no collaboration groups are available add a item to the selector and select it. The item has the text `no collab groups defined`. Also disable the selector.
+  - [x] 4.1 Position the selector above the "Collaborating users" table within the existing layout structure
+  - [x] 4.2 Add appropriate spacing using existing Tailwind classes (`py-2 px-3` pattern used throughout)
+  - [x] 4.3 Include descriptive label text such as "Add group members:" following existing text styling patterns
+  - [x] 4.4 Ensure selector is only rendered when not in loading state (`!pageState.load` condition)
+  - [x] 4.5 When no collaboration groups are available add a item to the selector and select it. The item has the text `no collab groups defined`. Also disable the selector.

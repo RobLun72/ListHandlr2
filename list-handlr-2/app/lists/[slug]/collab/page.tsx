@@ -361,7 +361,7 @@ export default function Page() {
                 <SelectTrigger
                   id="group-selector"
                   className={cn(
-                    "w-64",
+                    "w-full md:w-64",
                     theme === "appBlue"
                       ? "focus-visible:ring-appBlue/20 focus-visible:border-appBlue"
                       : "focus-visible:ring-appGreen/20 focus-visible:border-appGreen"
