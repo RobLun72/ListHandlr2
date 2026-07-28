@@ -12,7 +12,7 @@ export const withKindeAuth: MiddlewareFactory = (next) => {
       publicPaths:
         process.env.NEXT_PUBLIC_AUTH_ACTIVE === "true"
           ? ["/", "/about"]
-          : ["/", "/lists", "/about"],
+          : ["/", "/lists", "/driving-journal", "/about"],
     }) as Promise<NextResponse<unknown>>;
   };
 };

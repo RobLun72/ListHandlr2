@@ -12,6 +12,7 @@ export interface AllListRecord {
   id: number;
   index: number;
   list_name: string;
+  list_type: string;
   last_update: Date;
   last_item_update: Date;
 }

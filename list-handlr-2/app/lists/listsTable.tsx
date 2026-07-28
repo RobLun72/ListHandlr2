@@ -69,14 +69,14 @@ export function ListsTable({
         onDelete,
         onUp,
         onDown,
-        isListsDataDirty
+        isListsDataDirty,
       )}
       data={lists}
       addButtonText={
         <PlusCircleIcon
           className={cn(
             `h-8 cursor-pointer`,
-            theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+            theme === "appBlue" ? "text-appBlue" : "text-appGreen",
           )}
         />
       }
@@ -108,7 +108,9 @@ function ContextMenu({
     if (isListsDataDirty) {
       alert("You have unsaved changes, save first.");
     } else {
-      router.push("/lists/" + row.listName);
+      const basePath =
+        row.listType === "DrivingJournal" ? "/driving-journal" : "/lists";
+      router.push(basePath + "/" + row.listName);
     }
   };
 
@@ -171,18 +173,20 @@ function GetColumns(
   onDelete: (index: number) => void,
   onUp: (index: number) => void,
   onDown: (index: number) => void,
-  isListsDataDirty: boolean
+  isListsDataDirty: boolean,
 ): ColumnDef<ListData>[] {
   const router = useRouter();
 
   const textLayout = (row: ListData) => {
+    const basePath =
+      row.listType === "DrivingJournal" ? "/driving-journal" : "/lists";
     return (
       <div
         className="cursor-pointer hover:underline"
         onClick={() =>
           isListsDataDirty
             ? alert("You have unsaved changes, save first.")
-            : router.push("/lists/" + row.listName)
+            : router.push(basePath + "/" + row.listName)
         }
       >
         {row.listName}
@@ -201,7 +205,7 @@ function GetColumns(
             <Squares2X2Icon
               className={cn(
                 `h-5 cursor-grab pr-1 pt-1`,
-                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen",
               )}
               data-testid={"drag-button-" + row.original.index}
             />
@@ -209,7 +213,7 @@ function GetColumns(
             <ChevronUpIcon
               className={cn(
                 `h-6 cursor-pointer pr-1`,
-                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen",
               )}
               onClick={() => onUp(row.original.index)}
               data-testid={"up-button-" + row.original.index}
@@ -218,7 +222,7 @@ function GetColumns(
             <ChevronDownIcon
               className={cn(
                 `h-6 cursor-pointer`,
-                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen",
               )}
               onClick={() => onDown(row.original.index)}
               data-testid={"down-button-" + row.original.index}

@@ -13,6 +13,7 @@ export const db = factory({
     id: primaryKey(Number),
     index: Number,
     listName: String,
+    listType: String,
   },
 });
 
@@ -23,6 +24,7 @@ export const setupListsDb = () => {
       id: itemId++,
       index: item.index,
       listName: item.listName,
+      listType: item.listType || "SortableList",
     });
   });
 
