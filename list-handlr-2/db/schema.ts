@@ -12,6 +12,7 @@ export const listsTable = pgTable("lists", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   index: integer().notNull(),
   list_name: varchar({ length: 255 }).notNull(),
+  list_type: varchar({ length: 50 }).notNull().default("SortableList"),
   last_update: timestamp("last_update").notNull().defaultNow(),
   last_item_update: timestamp("last_item_update").notNull().defaultNow(),
   user_id: text(),
@@ -26,6 +27,19 @@ export const listItemsTable = pgTable("list_items", {
   text: varchar({ length: 255 }).notNull(),
   done: text().notNull(),
   link: varchar({ length: 255 }).notNull(),
+});
+
+export const drivingJournalItemsTable = pgTable("driving_journal_items", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  list_id: integer()
+    .notNull()
+    .references(() => listsTable.id),
+  index: integer().notNull(),
+  start_odometer: varchar({ length: 255 }).notNull(),
+  end_odometer: varchar({ length: 255 }).notNull(),
+  distance: integer().notNull(),
+  notes: text(),
+  item_date: timestamp("item_date").notNull(),
 });
 
 export const listsCollaborationsTable = pgTable("lists_collaborations", {
@@ -49,9 +63,9 @@ export const collabGroupsTable = pgTable(
   (table) => ({
     ownerNameIdx: uniqueIndex("collab_groups_owner_name_idx").on(
       table.owner_user_id,
-      table.name
+      table.name,
     ),
-  })
+  }),
 );
 
 export const collabGroupMembersTable = pgTable(
@@ -67,9 +81,9 @@ export const collabGroupMembersTable = pgTable(
   (table) => ({
     groupMemberIdx: uniqueIndex("collab_group_members_group_member_idx").on(
       table.group_id,
-      table.member_user_id
+      table.member_user_id,
     ),
-  })
+  }),
 );
 
 export const listRelations = relations(listItemsTable, ({ one }) => ({
@@ -79,8 +93,19 @@ export const listRelations = relations(listItemsTable, ({ one }) => ({
   }),
 }));
 
+export const drivingJournalItemRelations = relations(
+  drivingJournalItemsTable,
+  ({ one }) => ({
+    list: one(listsTable, {
+      fields: [drivingJournalItemsTable.list_id],
+      references: [listsTable.id],
+    }),
+  }),
+);
+
 export const listsRelations = relations(listsTable, ({ many }) => ({
   items: many(listItemsTable),
+  drivingJournalItems: many(drivingJournalItemsTable),
 }));
 
 export const listsCollaborationsRelations = relations(
@@ -90,21 +115,21 @@ export const listsCollaborationsRelations = relations(
       fields: [listsCollaborationsTable.list_id],
       references: [listsTable.id],
     }),
-  })
+  }),
 );
 
 export const listCollaborationsRelations = relations(
   listsTable,
   ({ many }) => ({
     items: many(listsCollaborationsTable),
-  })
+  }),
 );
 
 export const collabGroupsRelations = relations(
   collabGroupsTable,
   ({ many }) => ({
     members: many(collabGroupMembersTable),
-  })
+  }),
 );
 
 export const collabGroupMembersRelations = relations(
@@ -114,5 +139,5 @@ export const collabGroupMembersRelations = relations(
       fields: [collabGroupMembersTable.group_id],
       references: [collabGroupsTable.id],
     }),
-  })
+  }),
 );

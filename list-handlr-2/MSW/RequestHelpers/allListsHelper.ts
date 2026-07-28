@@ -1,8 +1,21 @@
-//import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
 import { AllListsPostData, ListData } from "@/DTO/listsData";
+import { ListType } from "@/DTO/listTypes";
 import { ApiData, ApiResponse } from "@/DTO/apiData";
 import { filter, sortAscending } from "@/Helpers/sortAndFilter";
 import { allListsDb, namedListsDb } from "./apiCallHelper";
+import { handleRegisterDrivingJournalList } from "./drivingJournalHelper";
+
+const toApiListData = (
+  entity: ReturnType<typeof allListsDb.allLists.getAll>[0],
+): ApiData<ListData> => ({
+  timeStamp: entity.timeStamp,
+  rows: entity.rows.map((r) => ({
+    index: r.index,
+    listName: r.listName,
+    listType: r.listType as ListType,
+    id: r.id,
+  })),
+});
 
 let currentAllListId = 100;
 
@@ -55,6 +68,7 @@ export const handleAllListsServerDBGet = async (user_id: string) => {
       id: list.id,
       index: list.index,
       list_name: list.listName,
+      list_type: list.listType || "SortableList",
       user_id: user_id,
       last_update: allLists[0].timeStamp
         ? new Date(allLists[0].timeStamp)
@@ -69,13 +83,19 @@ export const handleDBAddList = async (item: ListData, user_id: string) => {
     throw new Error("No user_id provided");
   }
 
+  const newId = currentAllListId++;
   const newList = allListsDb.todoList.create({
-    id: currentAllListId++,
+    id: newId,
     index: 0,
     listName: item.listName!,
+    listType: item.listType!,
   });
 
   const allLists = allListsDb.allLists.getAll()[0];
+
+  if (item.listType === "DrivingJournal") {
+    handleRegisterDrivingJournalList(newId, item.listName!);
+  }
 
   const resultingList = [...(allLists.rows ?? []), newList];
 
@@ -94,6 +114,7 @@ export const handleDBEditList = async (item: ListData) => {
     data: {
       index: item.index,
       listName: item.listName,
+      listType: item.listType,
     },
   });
 
@@ -177,7 +198,7 @@ const editList = (data: AllListsPostData) => {
   if (lists[0].timeStamp !== data.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "Timestamp mismatch",
-      data: allListsDb.allLists.getAll()[0],
+      data: toApiListData(allListsDb.allLists.getAll()[0]),
     };
     return responseLists;
   } else {
@@ -212,7 +233,7 @@ const editList = (data: AllListsPostData) => {
 
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "",
-      data: allListsDb.allLists.getAll()[0],
+      data: toApiListData(allListsDb.allLists.getAll()[0]),
     };
 
     return responseLists;
@@ -224,7 +245,7 @@ const addList = (data: AllListsPostData) => {
   if (lists[0].timeStamp !== data.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "Timestamp mismatch",
-      data: allListsDb.allLists.getAll()[0],
+      data: toApiListData(allListsDb.allLists.getAll()[0]),
     };
     return responseLists;
   } else {
@@ -272,7 +293,7 @@ const addList = (data: AllListsPostData) => {
       message: "",
       data: {
         timeStamp: new Date(Date.now()).toISOString(),
-        rows: sortAscending(updData.rows, "index"),
+        rows: sortAscending(updData.rows, "index") as ListData[],
       },
     };
 
@@ -285,7 +306,7 @@ const deleteList = (data: AllListsPostData) => {
   if (lists[0].timeStamp !== data.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "Timestamp mismatch",
-      data: allListsDb.allLists.getAll()[0],
+      data: toApiListData(allListsDb.allLists.getAll()[0]),
     };
     return responseLists;
   } else {
@@ -337,7 +358,7 @@ const deleteList = (data: AllListsPostData) => {
       message: "",
       data: {
         timeStamp: updData.timeStamp,
-        rows: sortAscending(updData.rows, "index"),
+        rows: sortAscending(updData.rows, "index") as ListData[],
       },
     };
 
@@ -350,7 +371,7 @@ const sortList = (data: AllListsPostData) => {
   if (lists[0].timeStamp !== data.item.timeStamp) {
     const responseLists: ApiResponse<ApiData<ListData>> = {
       message: "Timestamp mismatch",
-      data: allListsDb.allLists.getAll()[0],
+      data: toApiListData(allListsDb.allLists.getAll()[0]),
     };
     return responseLists;
   } else {
@@ -374,7 +395,7 @@ const sortList = (data: AllListsPostData) => {
       message: "",
       data: {
         timeStamp: new Date(Date.now()).toISOString(),
-        rows: sortAscending(updData.rows, "index"),
+        rows: sortAscending(updData.rows, "index") as ListData[],
       },
     };
 

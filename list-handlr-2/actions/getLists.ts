@@ -2,6 +2,7 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ListData } from "@/DTO/listsData";
+import { ListType } from "@/DTO/listTypes";
 import { ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
@@ -26,6 +27,7 @@ export async function getLists(user: {
     rows: allLists.map((list) => ({
       index: list.index,
       listName: list.list_name,
+      listType: list.list_type as ListType,
       id: list.id,
     })),
   };

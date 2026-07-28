@@ -2,6 +2,7 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { AllListsPostData, ListData } from "@/DTO/listsData";
+import { ListType } from "@/DTO/listTypes";
 import { ApiResponse, ApiData } from "@/DTO/apiData";
 import { max } from "@/Helpers/sortAndFilter";
 import { formatDate } from "@/Helpers/formatDate";
@@ -13,13 +14,14 @@ import {
 
 function formatAllLists(
   timestamp: string,
-  data: AllListRecord[]
+  data: AllListRecord[],
 ): ApiData<ListData> {
   return {
     timeStamp: timestamp,
     rows: data.map((list) => ({
       index: list.index,
       listName: list.list_name,
+      listType: list.list_type as ListType,
       id: list.id,
     })),
   };
@@ -27,7 +29,7 @@ function formatAllLists(
 
 async function formatAllListsResponse(
   user_id: string,
-  db: IlistsDbQueries
+  db: IlistsDbQueries,
 ): Promise<ApiResponse<ApiData<ListData>>> {
   const allLists = await db.getAllListsForUser(user_id);
 
@@ -41,7 +43,7 @@ async function formatAllListsResponse(
 
 function checkValidTimestamp(
   allLists: AllListRecord[],
-  dataToPost: AllListsPostData
+  dataToPost: AllListsPostData,
 ) {
   const maxStamp = formatDate(max(allLists, "last_update")!.last_update!) || "";
 
@@ -59,7 +61,7 @@ function checkValidTimestamp(
 async function editList(
   item: ListData,
   allLists: AllListRecord[],
-  db: IlistsDbQueries
+  db: IlistsDbQueries,
 ) {
   const row = allLists.find((list) => list.id === item.id);
   if (!row) throw new Error("List not found");
@@ -78,7 +80,7 @@ async function deleteList(item: ListData, db: IlistsDbQueries) {
 }
 
 export async function editLists(
-  dataToPost: AllListsPostData
+  dataToPost: AllListsPostData,
 ): Promise<ApiResponse<ApiData<ListData>>> {
   const { isAuthenticated } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();

@@ -29,8 +29,8 @@ export class ListsRealDbQueries implements IlistsDbQueries {
             .where(
               inArray(
                 listsTable.id,
-                collabLists.map((c) => c.list_id)
-              )
+                collabLists.map((c) => c.list_id),
+              ),
             )
         : [];
     const unsortedAllLists = [...myLists, ...myCollabLists];
@@ -42,6 +42,7 @@ export class ListsRealDbQueries implements IlistsDbQueries {
     await db.insert(listsTable).values({
       index: item.index,
       list_name: item.listName!,
+      list_type: item.listType!,
       last_update: new Date(),
       last_item_update: new Date(),
       user_id: userId,
@@ -53,6 +54,7 @@ export class ListsRealDbQueries implements IlistsDbQueries {
       .set({
         index: item.index,
         list_name: item.listName,
+        list_type: item.listType,
         last_update: new Date(),
       })
       .where(eq(listsTable.id, item.id));

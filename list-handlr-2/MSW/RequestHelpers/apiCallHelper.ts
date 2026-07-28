@@ -4,14 +4,16 @@ import { StrictRequest, DefaultBodyType, HttpResponse } from "msw";
 import { AllListsPostData } from "@/DTO/listsData";
 import { setupListsDb } from "../Database/allListsDb";
 import { setupNamedListsDb } from "../Database/namedListDb";
+import { setupNamedDateListsDb } from "../Database/namedDateListDb";
 import { matLista } from "../MockedData/namedLists";
 //import { OneListPostData } from "@/DTO/oneListData";
 
 export const allListsDb = setupListsDb();
 export const namedListsDb = setupNamedListsDb();
+export const namedDateListsDb = setupNamedDateListsDb();
 
 export const handleApiGetCallsSearchParams = async (
-  request: StrictRequest<DefaultBodyType>
+  request: StrictRequest<DefaultBodyType>,
 ) => {
   const url = new URL(request.url);
   const type = url.searchParams.get("type");
@@ -30,7 +32,7 @@ export const handleApiGetCallsSearchParams = async (
 };
 
 export const handleApiPostCallsBody = async (
-  request: StrictRequest<DefaultBodyType>
+  request: StrictRequest<DefaultBodyType>,
 ) => {
   const bodyContent = await request.json();
   const data: AllListsPostData = bodyContent as AllListsPostData;

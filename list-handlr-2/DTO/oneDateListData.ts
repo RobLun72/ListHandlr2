@@ -2,6 +2,7 @@ import { ApiData } from "./apiData";
 import { DateItem } from "./dateItem";
 
 export interface NamedDateListData<T> extends DateItem {
+  index: number;
   itemData: T;
   id: number;
 }

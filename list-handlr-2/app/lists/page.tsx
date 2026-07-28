@@ -1,6 +1,7 @@
 "use client";
 import { ApiData, ApiResponse } from "../../DTO/apiData";
 import { AllListsPostData, ListData } from "../../DTO/listsData";
+import { ListType } from "../../DTO/listTypes";
 import { ListsTable } from "./listsTable";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { ListsSkeleton } from "./listsSkeleton";
@@ -96,9 +97,8 @@ export default function Page() {
 
   const postLists = (dataToPost: AllListsPostData) => {
     async function doPost(dataToPost: AllListsPostData) {
-      const result: ApiResponse<ApiData<ListData>> = await editLists(
-        dataToPost
-      );
+      const result: ApiResponse<ApiData<ListData>> =
+        await editLists(dataToPost);
 
       if (result && result.data && result.message === "") {
         setPageState((prev) => ({
@@ -273,7 +273,7 @@ export default function Page() {
                   className={cn(
                     `h-8 cursor-pointer`,
                     theme === "appBlue" ? "text-appBlue" : "text-appGreen",
-                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed"
+                    !pageState.isDirty && "text-neutral-300 cursor-not-allowed",
                   )}
                   data-testid="save-list-icon"
                 />
@@ -310,7 +310,12 @@ export default function Page() {
               item={
                 pageState.item
                   ? pageState.item
-                  : { index: -1, listName: "", id: 0 }
+                  : {
+                      index: -1,
+                      listName: "",
+                      listType: ListType.SortableList,
+                      id: 0,
+                    }
               }
               onDone={handleNewValues}
               onClose={() => {
@@ -330,7 +335,7 @@ export default function Page() {
             <LoadingSpinner
               className={cn(
                 `h-12 w-12 animate-spin`,
-                theme === "appBlue" ? "text-appBlue" : "text-appGreen"
+                theme === "appBlue" ? "text-appBlue" : "text-appGreen",
               )}
             />
             <div className="text-center text-lg font-semibold mb-4">
