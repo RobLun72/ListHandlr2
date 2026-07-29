@@ -51,7 +51,7 @@ export default function Page() {
     item: undefined,
     timestamp: "",
   });
-
+  console.log("Page state: ", pageState);
   useUnsavedChangesWarning({
     isDirty: pageState.isDirty,
     message: "You have unsaved changes. Are you sure you want to leave?",
@@ -233,7 +233,7 @@ export default function Page() {
         </OverlayWithCenteredInput>
       )}
 
-      {pageState.items.length === 0 && !pageState.load && (
+      {pageState.load && (
         <div>
           <div className="pt-8 px-3 pb-2 text-xl">
             {decodeURIComponent(params.slug!.toString())}
@@ -244,7 +244,7 @@ export default function Page() {
         </div>
       )}
 
-      {pageState.items.length > 0 && (
+      {!pageState.load && pageState.items && (
         <div>
           <div className="flex flex-row justify-between items-center">
             <div className="pt-8 px-3 pb-2 md:text-xl text-lg">
