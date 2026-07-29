@@ -12,7 +12,6 @@ export interface IDrivingJournalDbQueries {
   ): Promise<void>;
   editDrivingJournalItemToDb(
     row: NamedDateListData<DrivingJournalItemData>,
-    listId: number,
   ): Promise<void>;
   deleteDrivingJournalItemToDb(
     row: NamedDateListData<DrivingJournalItemData>,

@@ -1,17 +1,12 @@
 import { db } from "@/db/index";
 import { eq } from "drizzle-orm";
-import {
-  listsTable,
-  drivingJournalItemsTable,
-  listsCollaborationsTable,
-} from "@/db/schema";
+import { listsTable, drivingJournalItemsTable } from "@/db/schema";
 import type {
   IDrivingJournalDbQueries,
   DrivingJournalListResponse,
   DrivingJournalListRecord,
-  DrivingJournalItemRecord,
 } from "./drivingJournalDbInterfaces";
-import { sortAscending } from "@/Helpers/sortAndFilter";
+import { sortDescending } from "@/Helpers/sortAndFilter";
 import { NamedDateListData } from "@/DTO/oneDateListData";
 import { DrivingJournalItemData } from "@/DTO/drivingJournalItemData";
 
@@ -34,7 +29,7 @@ export class DrivingJournalRealDbQueries implements IDrivingJournalDbQueries {
       .from(drivingJournalItemsTable)
       .where(eq(drivingJournalItemsTable.list_id, listId));
 
-    const sortedItems = sortAscending(listItems, "index");
+    const sortedItems = sortDescending(listItems, "item_date");
 
     const drivingJournalList: DrivingJournalListRecord = {
       id: list[0].id,
@@ -69,7 +64,6 @@ export class DrivingJournalRealDbQueries implements IDrivingJournalDbQueries {
 
   async editDrivingJournalItemToDb(
     row: NamedDateListData<DrivingJournalItemData>,
-    listId: number,
   ): Promise<void> {
     await db
       .update(drivingJournalItemsTable)
