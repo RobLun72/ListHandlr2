@@ -13,7 +13,11 @@ import {
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/ThemeContext";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import { formatDateFromString } from "@/Helpers/formatDate";
+import {
+  formatDateFromString,
+  formatDateFromStringWithoutTime,
+} from "@/Helpers/formatDate";
+import { useResponsive } from "@/Helpers/useResponsive";
 
 export interface DrivingJournalTableProps {
   items: NamedDateListData<DrivingJournalItemData>[];
@@ -62,6 +66,7 @@ function ContextMenu({
 
 function getColumns(
   theme: string,
+  isMobile: boolean,
   onEdit: (index: number) => void,
   onDelete: (index: number) => void,
 ): ColumnDef<NamedDateListData<DrivingJournalItemData>>[] {
@@ -69,30 +74,32 @@ function getColumns(
     {
       accessorKey: "date",
       header: "Date",
-      size: 120,
-      cell: ({ row }) => formatDateFromString(String(row.original.date)),
+      size: 50,
+      cell: ({ row }) =>
+        formatDateFromStringWithoutTime(String(row.original.date)),
     },
     {
       id: "startOdometer",
-      header: "Start Odometer",
-      size: 140,
+      header: "Start",
+      size: 50,
       cell: ({ row }) => row.original.itemData.startOdometer,
     },
     {
       id: "endOdometer",
-      header: "End Odometer",
-      size: 140,
+      header: "End",
+      size: 50,
       cell: ({ row }) => row.original.itemData.endOdometer,
     },
     {
       id: "distance",
-      header: "Distance",
-      size: 100,
+      header: "Dist.",
+      size: 30,
       cell: ({ row }) => row.original.itemData.distance,
     },
     {
       id: "notes",
       header: "Notes",
+      size: isMobile ? 50 : 100,
       cell: ({ row }) => row.original.itemData.notes ?? "-",
     },
     {
@@ -111,10 +118,16 @@ export function DrivingJournalTable({
   onDelete,
 }: DrivingJournalTableProps) {
   const { theme } = useTheme();
+  const { isMobile } = useResponsive();
 
   return (
     <DataTable
-      columns={getColumns(theme, onEdit ?? (() => {}), onDelete ?? (() => {}))}
+      columns={getColumns(
+        theme,
+        isMobile,
+        onEdit ?? (() => {}),
+        onDelete ?? (() => {}),
+      )}
       data={items}
       addButtonText={
         <PlusCircleIcon

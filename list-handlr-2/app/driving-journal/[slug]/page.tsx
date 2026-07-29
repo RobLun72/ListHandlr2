@@ -51,7 +51,7 @@ export default function Page() {
     item: undefined,
     timestamp: "",
   });
-  console.log("Page state: ", pageState);
+
   useUnsavedChangesWarning({
     isDirty: pageState.isDirty,
     message: "You have unsaved changes. Are you sure you want to leave?",

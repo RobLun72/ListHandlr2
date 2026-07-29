@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { ThemedLayout } from "./ThemedLayout";
 
 export const metadata: Metadata = {
   title: "Driving Journal",
@@ -10,5 +11,9 @@ export default function DrivingJournalLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <section className="md:min-w-3xl">{children}</section>;
+  return (
+    <section className="md:min-w-3xl">
+      <ThemedLayout>{children}</ThemedLayout>
+    </section>
+  );
 }
