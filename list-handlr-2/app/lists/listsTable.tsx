@@ -18,6 +18,8 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   Squares2X2Icon,
+  TruckIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 
 import { useResponsive } from "@/Helpers/useResponsive";
@@ -234,9 +236,31 @@ function GetColumns(
     {
       accessorKey: "listName",
       header: "Name",
-      size: isMobile ? 180 : 400,
+      size: isMobile ? 160 : 380,
       cell: ({ row }) => {
         return textLayout(row.original);
+      },
+    },
+    {
+      accessorKey: "listType",
+      header: "Type",
+      size: 20,
+      cell: ({ row }) => {
+        return row.original.listType === "DrivingJournal" ? (
+          <TruckIcon
+            className={cn(
+              `h-5`,
+              theme === "appBlue" ? "text-appBlue" : "text-appGreen",
+            )}
+          />
+        ) : (
+          <ClipboardDocumentListIcon
+            className={cn(
+              `h-5`,
+              theme === "appBlue" ? "text-appBlue" : "text-appGreen",
+            )}
+          />
+        );
       },
     },
     {
