@@ -27,8 +27,8 @@ export async function getDrivingJournalList(params: {
   const result: ApiData<NamedDateListData<DrivingJournalItemData>> = {
     timeStamp:
       formatDate(drivingJournalData.drivingJournalList?.last_item_update) || "",
-    rows: drivingJournalData.listItems.map((item) => ({
-      index: item.index,
+    rows: drivingJournalData.listItems.map((item, index) => ({
+      index: index,
       date: new Date(item.item_date),
       itemData: {
         startOdometer: item.start_odometer,
