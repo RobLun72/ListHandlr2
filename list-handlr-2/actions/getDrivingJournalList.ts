@@ -6,6 +6,7 @@ import { NamedDateListData } from "@/DTO/oneDateListData";
 import { DrivingJournalItemData } from "@/DTO/drivingJournalItemData";
 import { formatDate } from "@/Helpers/formatDate";
 import { DrivingJournalDbFactory } from "@/db/queries/drivingJournal/drivingJournalDbFactory";
+import { sortDescending } from "@/Helpers/sortAndFilter";
 
 export async function getDrivingJournalList(params: {
   listName: string;
@@ -23,11 +24,12 @@ export async function getDrivingJournalList(params: {
   const db = DrivingJournalDbFactory.createDbQueries();
   const drivingJournalData =
     await db.getListDataForDrivingJournal(decodedListName);
+  const sortedItems = sortDescending(drivingJournalData.listItems, "item_date");
 
   const result: ApiData<NamedDateListData<DrivingJournalItemData>> = {
     timeStamp:
       formatDate(drivingJournalData.drivingJournalList?.last_item_update) || "",
-    rows: drivingJournalData.listItems.map((item, index) => ({
+    rows: sortedItems.map((item, index) => ({
       index: index,
       date: new Date(item.item_date),
       itemData: {

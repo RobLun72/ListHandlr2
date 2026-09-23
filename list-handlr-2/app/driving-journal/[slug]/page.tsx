@@ -7,7 +7,7 @@ import { NamedDateListData } from "@/DTO/oneDateListData";
 import { DrivingJournalItemData } from "@/DTO/drivingJournalItemData";
 import { DrivingJournalSkeleton } from "./drivingJournalSkeleton";
 import { OverlayWithCenteredInput } from "@/components/ui/overlayCenteredInput";
-import { filterGetAllExcept } from "@/Helpers/sortAndFilter";
+import { filterGetAllExcept, sortDescending } from "@/Helpers/sortAndFilter";
 import { DrivingJournalForm } from "./drivingJournalForm";
 import {
   ArrowLeftStartOnRectangleIcon,
@@ -183,9 +183,16 @@ export default function Page() {
       // existing item — replace by index
       newItems[item.index] = item;
     }
+
+    const sortedItems = sortDescending(newItems, "date");
+    const reIndexedItems = sortedItems.map((item, index) => ({
+      ...item,
+      index: index,
+    }));
+
     setPageState((prev) => ({
       ...prev,
-      items: newItems,
+      items: reIndexedItems,
       showItemForm: false,
       item: undefined,
       isDirty: true,
